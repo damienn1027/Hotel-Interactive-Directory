@@ -231,17 +231,28 @@
     }
 
     .room-block:hover { transform: translateZ(12px) scale(1.05); z-index: 50; }
-    .room-block:hover .face-top { box-shadow: 0 0 20px rgba(56, 189, 248, 0.8), inset 0 0 0 2px #ffffff; }
-
-    /* Dimming logic for Search & Filters */
-    .viewport.filtered .room-block:not(.highlight) {
-      opacity: 0.2;
-      filter: grayscale(80%);
-      pointer-events: none;
-    }
     
-    .room-block.highlight .face-top {
-      box-shadow: 0 0 25px rgba(56, 189, 248, 1), inset 0 0 0 2px #ffffff !important;
+    /* Highlighted Match Glow */
+    .room-block:hover .face-top, .room-block.highlight .face-top { 
+      box-shadow: 0 0 25px rgba(56, 189, 248, 1), inset 0 0 0 2px #ffffff !important; 
+    }
+
+    /* Safari-Safe Dimming logic for Search & Filters */
+    .viewport.filtered .room-block:not(.highlight) .face-top {
+      background-color: #1e293b !important;
+      color: #475569 !important;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05) !important;
+      border-top: none !important; /* hide occupancy line */
+    }
+
+    .viewport.filtered .room-block:not(.highlight) .face-front {
+      background-color: #0f172a !important;
+      filter: none !important;
+    }
+
+    .viewport.filtered .room-block:not(.highlight) {
+      pointer-events: none;
+      transform: translateZ(0) scale(0.98) !important; /* flatten the block slightly */
     }
 
     /* Room Colors mapped to classes */
@@ -363,12 +374,12 @@
         <div class="room-block type-double" data-room="320"><div class="face-top">320</div><div class="face-front"></div></div>
         <div class="room-block type-twin" data-room="319"><div class="face-top">319</div><div class="face-front"></div></div>
         
-        <!-- Base classes for 314-318 updated to default to double, but JS will override -->
-        <div class="room-block type-double" data-room="318"><div class="face-top">318</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="317"><div class="face-top">317</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="316"><div class="face-top">316</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="315"><div class="face-top">315</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="314"><div class="face-top">314</div><div class="face-front"></div></div>
+        <!-- Physically fixed to Triple Rooms matching the building floor plan -->
+        <div class="room-block type-triple" data-room="318"><div class="face-top">318</div><div class="face-front"></div></div>
+        <div class="room-block type-triple" data-room="317"><div class="face-top">317</div><div class="face-front"></div></div>
+        <div class="room-block type-triple" data-room="316"><div class="face-top">316</div><div class="face-front"></div></div>
+        <div class="room-block type-triple" data-room="315"><div class="face-top">315</div><div class="face-front"></div></div>
+        <div class="room-block type-triple" data-room="314"><div class="face-top">314</div><div class="face-front"></div></div>
         <div class="room-block type-corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
     </div>
@@ -500,32 +511,16 @@
         }
       });
 
-      // Synchronize visual block colors with Google Sheet Room Type data
+      // Update occupancy lines (colors remain fixed to physical building)
       document.querySelectorAll('.room-block[data-room]').forEach(block => {
         const roomNo = block.getAttribute('data-room');
         const topFace = block.querySelector('.face-top');
         const data = roomData[roomNo];
 
-        if (data) {
-          // Dynamic Coloring based on parsed sheet data
-          if (data.type) {
-            block.classList.remove('type-twin', 'type-double', 'type-triple', 'type-family');
-            const t = data.type.toLowerCase();
-            
-            if (t.includes('twin')) block.classList.add('type-twin');
-            else if (t.includes('double')) block.classList.add('type-double');
-            else if (t.includes('triple')) block.classList.add('type-triple');
-            else if (t.includes('family')) block.classList.add('type-family');
-          }
-
-          // Green occupied accent line
-          if (data.occupants.length > 0) {
-            if (topFace) topFace.style.borderTop = "4px solid #10b981";
-          } else {
-            if (topFace) topFace.style.borderTop = "none";
-          }
+        if (data && data.occupants.length > 0) {
+          if (topFace) topFace.style.borderTop = "4px solid #10b981";
         } else {
-           if (topFace) topFace.style.borderTop = "none";
+          if (topFace) topFace.style.borderTop = "none";
         }
       });
       
