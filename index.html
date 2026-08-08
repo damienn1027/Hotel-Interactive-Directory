@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Youth Policy Lab - YMCA Hostel Directory</title>
+  <title>Youth Policy Lab 2026 - YMCA Hostel Directory</title>
   
   <!-- PapaParse for direct Google Sheets CSV integration -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -237,34 +237,34 @@
       box-shadow: 0 0 25px rgba(56, 189, 248, 1), inset 0 0 0 2px #ffffff !important; 
     }
 
+    /* Strict Data-Attribute Styling for Room Colors */
+    .room-block[data-room-type="twin"] .face-top, .room-block[data-room-type="twin"] .face-front { background-color: var(--twin-room); }
+    .room-block[data-room-type="double"] .face-top, .room-block[data-room-type="double"] .face-front { background-color: var(--double-room); }
+    .room-block[data-room-type="triple"] .face-top, .room-block[data-room-type="triple"] .face-front { background-color: var(--triple-room); }
+    .room-block[data-room-type="family"] .face-top, .room-block[data-room-type="family"] .face-front { background-color: var(--family-room); }
+    
+    .room-block[data-room-type="corridor"] { cursor: default; }
+    .room-block[data-room-type="corridor"] .face-top { background-color: var(--corridor); color: #64748b; transform: translateZ(2px); }
+    .room-block[data-room-type="corridor"] .face-front { background-color: var(--corridor); height: 2px; }
+    .room-block[data-room-type="corridor"]:hover { transform: none; }
+
     /* Safari-Safe Dimming logic for Search & Filters */
-    .viewport.filtered .room-block:not(.highlight) .face-top {
+    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-top {
       background-color: #1e293b !important;
       color: #475569 !important;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05) !important;
-      border-top: none !important; /* hide occupancy line */
+      border-top: none !important;
     }
 
-    .viewport.filtered .room-block:not(.highlight) .face-front {
+    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-front {
       background-color: #0f172a !important;
       filter: none !important;
     }
 
     .viewport.filtered .room-block:not(.highlight) {
       pointer-events: none;
-      transform: translateZ(0) scale(0.98) !important; /* flatten the block slightly */
+      transform: translateZ(0) scale(0.98) !important;
     }
-
-    /* Room Colors mapped to classes */
-    .type-twin .face-top, .type-twin .face-front { background-color: var(--twin-room); }
-    .type-double .face-top, .type-double .face-front { background-color: var(--double-room); }
-    .type-triple .face-top, .type-triple .face-front { background-color: var(--triple-room); }
-    .type-family .face-top, .type-family .face-front { background-color: var(--family-room); }
-    
-    .type-corridor { cursor: default; }
-    .type-corridor .face-top { background-color: var(--corridor); color: #64748b; transform: translateZ(2px); }
-    .type-corridor .face-front { background-color: var(--corridor); height: 2px; }
-    .type-corridor:hover { transform: none; }
 
     /* Tooltip Card */
     #tooltip {
@@ -348,39 +348,39 @@
       
       <div class="wing-title">Wing C</div>
       <div class="room-row">
-        <div class="room-block type-corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="312"><div class="face-top">312</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="311"><div class="face-top">311</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="310"><div class="face-top">310</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="309"><div class="face-top">309</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="307"><div class="face-top">307</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="305"><div class="face-top">305</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="304"><div class="face-top">304</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="303"><div class="face-top">303</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="302"><div class="face-top">302</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="301"><div class="face-top">301</div><div class="face-front"></div></div>
-        <div class="room-block type-corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
+        <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="312" data-room-type="double"><div class="face-top">312</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="311" data-room-type="twin"><div class="face-top">311</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="310" data-room-type="double"><div class="face-top">310</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="309" data-room-type="twin"><div class="face-top">309</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="307" data-room-type="twin"><div class="face-top">307</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="305" data-room-type="twin"><div class="face-top">305</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="304" data-room-type="double"><div class="face-top">304</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="303" data-room-type="twin"><div class="face-top">303</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="302" data-room-type="double"><div class="face-top">302</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="301" data-room-type="twin"><div class="face-top">301</div><div class="face-front"></div></div>
+        <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
 
       <div class="wing-title">Wing D</div>
       <div class="room-row">
-        <div class="room-block type-corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="329"><div class="face-top">329</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="328"><div class="face-top">328</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="327"><div class="face-top">327</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="325"><div class="face-top">325</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="323"><div class="face-top">323</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="321"><div class="face-top">321</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="320"><div class="face-top">320</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="319"><div class="face-top">319</div><div class="face-front"></div></div>
+        <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="329" data-room-type="twin"><div class="face-top">329</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="328" data-room-type="double"><div class="face-top">328</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="327" data-room-type="twin"><div class="face-top">327</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="325" data-room-type="twin"><div class="face-top">325</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="323" data-room-type="twin"><div class="face-top">323</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="321" data-room-type="twin"><div class="face-top">321</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="320" data-room-type="double"><div class="face-top">320</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="319" data-room-type="twin"><div class="face-top">319</div><div class="face-front"></div></div>
         
-        <!-- Physically fixed to Triple Rooms matching the building floor plan -->
-        <div class="room-block type-triple" data-room="318"><div class="face-top">318</div><div class="face-front"></div></div>
-        <div class="room-block type-triple" data-room="317"><div class="face-top">317</div><div class="face-front"></div></div>
-        <div class="room-block type-triple" data-room="316"><div class="face-top">316</div><div class="face-front"></div></div>
-        <div class="room-block type-triple" data-room="315"><div class="face-top">315</div><div class="face-front"></div></div>
-        <div class="room-block type-triple" data-room="314"><div class="face-top">314</div><div class="face-front"></div></div>
-        <div class="room-block type-corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
+        <!-- Physically mapped as Triple initially, but script will override -->
+        <div class="room-block" data-room="318" data-room-type="triple"><div class="face-top">318</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="317" data-room-type="triple"><div class="face-top">317</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="316" data-room-type="triple"><div class="face-top">316</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="315" data-room-type="triple"><div class="face-top">315</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="314" data-room-type="triple"><div class="face-top">314</div><div class="face-front"></div></div>
+        <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
     </div>
 
@@ -390,42 +390,42 @@
       
       <div class="wing-title">Wing A</div>
       <div class="room-row">
-        <div class="room-block type-corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="212"><div class="face-top">212</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="211"><div class="face-top">211</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="210"><div class="face-top">210</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="209"><div class="face-top">209</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="208"><div class="face-top">208</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="207"><div class="face-top">207</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="206"><div class="face-top">206</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="205"><div class="face-top">205</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="204"><div class="face-top">204</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="203"><div class="face-top">203</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="202"><div class="face-top">202</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="201"><div class="face-top">201</div><div class="face-front"></div></div>
-        <div class="room-block type-corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
+        <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="212" data-room-type="double"><div class="face-top">212</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="211" data-room-type="twin"><div class="face-top">211</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="210" data-room-type="double"><div class="face-top">210</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="209" data-room-type="twin"><div class="face-top">209</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="208" data-room-type="twin"><div class="face-top">208</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="207" data-room-type="twin"><div class="face-top">207</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="206" data-room-type="twin"><div class="face-top">206</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="205" data-room-type="double"><div class="face-top">205</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="204" data-room-type="twin"><div class="face-top">204</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="203" data-room-type="double"><div class="face-top">203</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="202" data-room-type="double"><div class="face-top">202</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="201" data-room-type="twin"><div class="face-top">201</div><div class="face-front"></div></div>
+        <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
 
       <div class="wing-title">Wing B</div>
       <div class="room-row">
-        <div class="room-block type-corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="229"><div class="face-top">229</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="228"><div class="face-top">228</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="227"><div class="face-top">227</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="226"><div class="face-top">226</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="225"><div class="face-top">225</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="224"><div class="face-top">224</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="223"><div class="face-top">223</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="222"><div class="face-top">222</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="221"><div class="face-top">221</div><div class="face-front"></div></div>
-        <div class="room-block type-double" data-room="220"><div class="face-top">220</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="219"><div class="face-top">219</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="218"><div class="face-top">218</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="217"><div class="face-top">217</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="216"><div class="face-top">216</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="215"><div class="face-top">215</div><div class="face-front"></div></div>
-        <div class="room-block type-twin" data-room="214"><div class="face-top">214</div><div class="face-front"></div></div>
-        <div class="room-block type-corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
+        <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="229" data-room-type="twin"><div class="face-top">229</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="228" data-room-type="double"><div class="face-top">228</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="227" data-room-type="twin"><div class="face-top">227</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="226" data-room-type="twin"><div class="face-top">226</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="225" data-room-type="twin"><div class="face-top">225</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="224" data-room-type="twin"><div class="face-top">224</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="223" data-room-type="twin"><div class="face-top">223</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="222" data-room-type="twin"><div class="face-top">222</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="221" data-room-type="twin"><div class="face-top">221</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="220" data-room-type="double"><div class="face-top">220</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="219" data-room-type="twin"><div class="face-top">219</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="218" data-room-type="twin"><div class="face-top">218</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="217" data-room-type="twin"><div class="face-top">217</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="216" data-room-type="twin"><div class="face-top">216</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="215" data-room-type="twin"><div class="face-top">215</div><div class="face-front"></div></div>
+        <div class="room-block" data-room="214" data-room-type="twin"><div class="face-top">214</div><div class="face-front"></div></div>
+        <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
     </div>
 
@@ -511,16 +511,31 @@
         }
       });
 
-      // Update occupancy lines (colors remain fixed to physical building)
+      // Synchronize visual block colors strictly based on Google Sheet Room Type data
       document.querySelectorAll('.room-block[data-room]').forEach(block => {
         const roomNo = block.getAttribute('data-room');
         const topFace = block.querySelector('.face-top');
         const data = roomData[roomNo];
 
-        if (data && data.occupants.length > 0) {
-          if (topFace) topFace.style.borderTop = "4px solid #10b981";
+        if (data) {
+          // Dynamic Coloring based on parsed sheet data enforcing strict data-attributes
+          if (data.type) {
+            const t = data.type.toLowerCase();
+            
+            if (t.includes('twin')) block.setAttribute('data-room-type', 'twin');
+            else if (t.includes('double')) block.setAttribute('data-room-type', 'double');
+            else if (t.includes('triple')) block.setAttribute('data-room-type', 'triple');
+            else if (t.includes('family')) block.setAttribute('data-room-type', 'family');
+          }
+
+          // Green occupied accent line
+          if (data.occupants.length > 0) {
+            if (topFace) topFace.style.borderTop = "4px solid #10b981";
+          } else {
+            if (topFace) topFace.style.borderTop = "none";
+          }
         } else {
-          if (topFace) topFace.style.borderTop = "none";
+           if (topFace) topFace.style.borderTop = "none";
         }
       });
       
@@ -649,6 +664,8 @@
       });
 
       block.addEventListener('click', () => {
+        if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return;
+
         const roomNo = block.getAttribute('data-room');
         const data = roomData[roomNo];
         let textToCopy = `Room ${roomNo}\n`;
