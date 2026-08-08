@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Youth Policy Lab - YMCA Hostel Directory</title>
   
-  <!-- PapaParse for direct Google Sheets CSV integration -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <style>
     :root {
-      /* Premium Apple Dark Theme */
       --bg-color: #000000;
       --surface-color: #1c1c1e;
       --surface-secondary: #2c2c2e;
@@ -19,12 +17,11 @@
       --accent-blue: #0a84ff;
       --accent-green: #30d158;
       
-      /* Dynamic Room Colors */
-      --twin-room: #32ade6;       /* Cyan/Blue */
-      --double-room: #ffd60a;     /* Yellow */
-      --triple-room: #30d158;     /* Green */
-      --family-room: #bf5af2;     /* Purple */
-      --corridor: #2c2c2e;        /* Dark Gray */
+      --twin-room: #32ade6; 
+      --double-room: #ffd60a; 
+      --triple-room: #30d158; 
+      --family-room: #bf5af2; 
+      --corridor: #2c2c2e; 
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -42,14 +39,18 @@
       overflow-x: hidden;
     }
 
-    /* Frosted Glass Sticky Header */
+    /* ------------------------------------- */
+    /* TRUE APPLE FROSTED GLASS HEADER       */
+    /* ------------------------------------- */
     header {
       position: sticky;
       top: 0;
       width: 100%;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      /* Opacity dropped to 0.5 to let the blur show through */
+      background: rgba(20, 20, 20, 0.55);
+      /* Saturate added for the Apple glass 'pop' */
+      backdrop-filter: blur(25px) saturate(180%);
+      -webkit-backdrop-filter: blur(25px) saturate(180%);
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       padding: 24px 24px 16px 24px;
       z-index: 100;
@@ -62,212 +63,91 @@
     h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; transition: all 0.3s ease; }
     
     .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-secondary);
-      margin-bottom: 20px;
-      transition: all 0.3s ease;
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+      background: rgba(255, 255, 255, 0.1); color: var(--text-secondary); margin-bottom: 20px;
     }
-    
     .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-secondary); }
     .status-badge.synced .status-dot { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
     .status-badge.synced { color: var(--text-primary); }
 
-    /* Live Stats Dashboard */
     .stats-container {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 24px;
-      width: 100%;
-      max-width: 900px;
-      flex-wrap: wrap;
-      justify-content: center;
-      transition: all 0.3s ease;
+      display: flex; gap: 16px; margin-bottom: 24px; width: 100%; max-width: 900px;
+      flex-wrap: wrap; justify-content: center; transition: all 0.3s ease;
     }
-
     .stat-card {
-      background: var(--surface-color);
+      background: rgba(28, 28, 30, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      padding: 12px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 120px;
-      transition: all 0.3s ease;
+      border-radius: 16px; padding: 12px 20px; display: flex; flex-direction: column; align-items: center; min-width: 120px;
     }
+    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+    .stat-label { font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
 
-    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); transition: all 0.3s ease; }
-    .stat-label { font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; }
-
-    /* Interactive Tools: Search & Filters */
-    .tools-container {
-      width: 100%;
-      max-width: 900px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      align-items: center;
-      transition: all 0.3s ease;
-    }
+    .tools-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 16px; align-items: center; }
 
     #searchInput {
-      width: 100%;
-      max-width: 480px;
-      padding: 12px 20px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.05);
-      color: var(--text-primary);
-      font-size: 1rem;
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      width: 100%; max-width: 480px; padding: 12px 20px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--text-primary); font-size: 1rem;
     }
-
     #searchInput:focus { outline: none; border-color: var(--accent-blue); background: rgba(255,255,255,0.1); box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.2); }
     #searchInput::placeholder { color: #636366; }
 
-    /* Segmented Controls */
     .filter-group, .controls {
-      display: flex;
-      background: var(--surface-color);
-      padding: 4px;
-      border-radius: 10px;
-      gap: 2px;
-      flex-wrap: wrap;
-      justify-content: center;
-      transition: all 0.3s ease;
+      display: flex; background: rgba(28, 28, 30, 0.8); padding: 4px; border-radius: 10px; gap: 2px; flex-wrap: wrap; justify-content: center;
     }
-    
     .filter-btn, .btn {
-      background: transparent;
-      color: var(--text-primary);
-      border: none;
-      padding: 6px 16px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.2s ease;
+      background: transparent; color: var(--text-primary); border: none; padding: 6px 16px;
+      border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 500; transition: all 0.2s ease;
     }
-    
-    .filter-btn:hover, .btn:hover { background: rgba(255,255,255,0.1); }
     .filter-btn.active, .btn.active { background: #636366; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); font-weight: 600; }
 
-    /* Legend */
     .legend-container { display: flex; gap: 20px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
     .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-secondary); font-weight: 500; }
     .legend-box { width: 12px; height: 12px; border-radius: 3px; }
 
-    /* Map Viewport */
-    .viewport {
-      perspective: 1400px;
-      width: 100%;
-      max-width: 1250px;
-      display: flex;
-      flex-direction: column;
-      gap: 60px;
-      padding: 40px 20px;
-    }
-
+    /* ------------------------------------- */
+    /* 3D DESKTOP CANVAS                     */
+    /* ------------------------------------- */
+    .viewport { perspective: 1400px; width: 100%; max-width: 1250px; display: flex; flex-direction: column; gap: 60px; padding: 40px 20px; }
+    
     .floor-container {
-      background: rgba(28, 28, 30, 0.6);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px;
-      padding: 40px;
-      transform-style: preserve-3d;
-      transform: rotateX(45deg) rotateZ(-5deg) translateZ(0);
+      background: rgba(28, 28, 30, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 40px;
+      transform-style: preserve-3d; transform: rotateX(45deg) rotateZ(-5deg) translateZ(0);
       transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
       box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
     }
+    .viewport.flat .floor-container { transform: rotateX(0deg) rotateZ(0deg) translateZ(0); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); }
 
-    .viewport.flat .floor-container {
-      transform: rotateX(0deg) rotateZ(0deg) translateZ(0);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    }
-
-    .floor-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      color: var(--text-primary);
-      margin-bottom: 24px;
-      transform: translateZ(10px);
-    }
-
-    .wing-title {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin: 16px 0 8px 0;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transform: translateZ(10px);
-    }
+    .floor-title { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 24px; transform: translateZ(10px); }
+    .wing-title { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin: 16px 0 8px 0; transform: translateZ(10px); }
 
     .room-row { display: flex; gap: 6px; margin-bottom: 8px; transform-style: preserve-3d; }
 
-    /* 3D Room Blocks */
     .room-block {
-      flex: 1;
-      min-width: 52px;
-      height: 60px;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease, opacity 0.3s ease;
-      cursor: pointer;
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
+      flex: 1; min-width: 52px; height: 60px; position: relative;
+      transform-style: preserve-3d; transition: transform 0.3s ease, filter 0.3s ease;
+      cursor: pointer; -webkit-backface-visibility: hidden; backface-visibility: hidden;
     }
-    
     .room-block:focus { outline: none; }
     .room-block:focus .face-top { box-shadow: 0 0 0 3px var(--accent-blue), inset 0 0 0 1px #ffffff !important; }
 
     .room-block .face-top {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: #000000;
-      border-radius: 6px;
-      transform: translateZ(16px);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
-      transition: all 0.3s ease;
+      position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.85rem; color: #000000; border-radius: 6px;
+      transform: translateZ(16px); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4); transition: all 0.3s ease;
     }
-
     .room-block .face-front {
-      position: absolute;
-      width: 100%;
-      height: 16px;
-      bottom: 0;
-      transform-origin: bottom;
-      transform: rotateX(-90deg);
-      filter: brightness(0.6);
-      border-radius: 0 0 6px 6px;
-      transition: all 0.3s ease;
+      position: absolute; width: 100%; height: 16px; bottom: 0; transform-origin: bottom;
+      transform: rotateX(-90deg); filter: brightness(0.6); border-radius: 0 0 6px 6px; transition: all 0.3s ease;
     }
 
     .room-block:hover { transform: translateZ(16px) scale(1.03); z-index: 50; }
     .room-block:hover .face-top { box-shadow: 0 0 25px rgba(255, 255, 255, 0.4), inset 0 0 0 2px #ffffff; }
 
-    /* Active Tap State */
-    .room-block:active { transform: translateZ(10px) scale(0.95); transition: transform 0.1s; }
-
-    /* Safari-Safe Dimming for Search */
+    /* Dimming logic for Search & Filters */
     .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-top {
-      background-color: var(--surface-secondary) !important;
-      color: #636366 !important;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05) !important;
-      border-top: none !important;
+      background-color: var(--surface-secondary) !important; color: #636366 !important;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05) !important; border-top: none !important;
     }
     .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-front { background-color: var(--surface-color) !important; }
     .viewport.filtered .room-block:not(.highlight) { pointer-events: none; transform: translateZ(0) scale(0.98) !important; }
@@ -278,90 +158,55 @@
     .room-block[data-room-type="double"] .face-top, .room-block[data-room-type="double"] .face-front { background-color: var(--double-room); }
     .room-block[data-room-type="triple"] .face-top, .room-block[data-room-type="triple"] .face-front { background-color: var(--triple-room); }
     .room-block[data-room-type="family"] .face-top, .room-block[data-room-type="family"] .face-front { background-color: var(--family-room); }
-    
     .room-block[data-room-type="corridor"] { cursor: default; }
     .room-block[data-room-type="corridor"] .face-top { background-color: var(--corridor); color: #86868b; transform: translateZ(2px); }
     .room-block[data-room-type="corridor"] .face-front { background-color: #1c1c1e; height: 2px; }
-    .room-block[data-room-type="corridor"]:hover, .room-block[data-room-type="corridor"]:active { transform: none; }
 
-    /* Desktop Tooltip (Default) */
+    /* ------------------------------------- */
+    /* DESKTOP INFO CARD (HOVER)             */
+    /* ------------------------------------- */
     #infoCard {
-      position: fixed;
-      display: none;
-      background: rgba(28, 28, 30, 0.85);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      color: var(--text-primary);
-      padding: 16px;
-      border-radius: 14px;
-      font-size: 0.85rem;
-      pointer-events: none;
-      z-index: 1000;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-      min-width: 230px;
-      border: 1px solid rgba(255,255,255,0.1);
+      position: fixed; display: none;
+      background: rgba(28, 28, 30, 0.65);
+      backdrop-filter: blur(30px) saturate(200%);
+      -webkit-backdrop-filter: blur(30px) saturate(200%);
+      color: var(--text-primary); padding: 16px; border-radius: 14px; pointer-events: none; z-index: 1000;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1); min-width: 230px; border: 1px solid rgba(255,255,255,0.1);
     }
     .click-hint { font-size: 0.7rem; color: var(--text-secondary); margin-top: 10px; text-align: center; }
 
-    /* Toast Notification */
     #toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translate(-50%, 100px);
-      background: rgba(48, 209, 88, 0.9);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 30px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-      opacity: 0;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      z-index: 2000;
-      pointer-events: none;
+      position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 100px);
+      background: rgba(48, 209, 88, 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      color: white; padding: 12px 24px; border-radius: 30px; font-weight: 600; font-size: 0.9rem;
+      opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000;
     }
     #toast.show { transform: translate(-50%, 0); opacity: 1; }
 
-    /* Mobile Dark Overlay Background */
     #mobileOverlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      z-index: 900;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+      z-index: 900; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
     }
     #mobileOverlay.active { opacity: 1; pointer-events: auto; }
 
     /* ========================================= */
-    /* IOS MOBILE REDESIGN (BOMBASTIC UI)        */
+    /* iOS SAFARI NUCLEAR OPTION (ANTI-FLICKER)  */
     /* ========================================= */
     @media (max-width: 768px) {
       body { padding-bottom: 20px; }
       
-      /* Dynamic Header Restyling */
       header { padding: 16px 12px 12px 12px; }
       h1 { font-size: 1.4rem; text-align: center; margin-bottom: 4px; }
       .status-badge { margin-bottom: 12px; }
       .legend-container, .controls { display: none; }
       
-      /* Make Stats a horizontal swipe widget */
       .stats-container { 
         flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; 
-        padding-bottom: 8px; margin-bottom: 12px;
-        -webkit-overflow-scrolling: touch; 
-        scrollbar-width: none;
+        padding-bottom: 8px; margin-bottom: 12px; -webkit-overflow-scrolling: touch; scrollbar-width: none;
       }
       .stats-container::-webkit-scrollbar { display: none; }
-      .stat-card { min-width: 100px; padding: 10px; border-radius: 14px; }
-      .stat-value { font-size: 1.2rem; }
-      .stat-label { font-size: 0.65rem; }
+      .stat-card { min-width: 100px; padding: 10px; border-radius: 14px; background: rgba(44, 44, 46, 0.6); }
 
       /* Compact Scrolled Header State */
       header.compact { padding: 10px 12px; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; }
@@ -374,104 +219,71 @@
       
       header.compact #searchInput {
         width: 40px; height: 40px; border-radius: 20px; padding: 0; color: transparent;
-        background-color: var(--surface-color);
+        background-color: var(--surface-secondary);
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%2386868b' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
         background-repeat: no-repeat; background-position: center; border: none;
       }
       header.compact #searchInput:focus, header.compact #searchInput:not(:placeholder-shown) {
-        width: 180px; color: var(--text-primary); background-image: none;
-        background-color: rgba(255,255,255,0.1); padding: 10px 16px;
+        width: 180px; color: var(--text-primary); background-image: none; background-color: rgba(255,255,255,0.1); padding: 10px 16px;
       }
 
-      /* ------------------------------------- */
-      /* AIRLINE SEAT MOBILE GRID UI           */
-      /* ------------------------------------- */
-      .viewport { padding: 10px; gap: 30px; perspective: none; }
+      /* --------------------------------------------- */
+      /* KILL ALL 3D RENDERING TO FIX SAFARI FLICKER   */
+      /* --------------------------------------------- */
+      .viewport { perspective: none !important; -webkit-perspective: none !important; padding: 10px; gap: 30px; }
       .floor-container { 
-        transform: none !important; 
-        padding: 20px 10px; 
-        border-radius: 20px;
-        overflow-x: auto; 
-        -webkit-overflow-scrolling: touch;
+        transform-style: flat !important; -webkit-transform-style: flat !important;
+        transform: none !important; -webkit-transform: none !important;
+        padding: 20px 10px; border-radius: 20px; overflow-x: auto; -webkit-overflow-scrolling: touch;
       }
+      .room-row { min-width: 700px; gap: 10px; margin-bottom: 10px; transform-style: flat !important; -webkit-transform-style: flat !important; }
       
-      .room-row { min-width: 700px; gap: 10px; margin-bottom: 10px; }
-      
-      /* Strip 3D completely on mobile for tap targets */
-      .room-block { height: 65px; border-radius: 12px; transform-style: flat; }
-      .room-block .face-front { display: none; } /* Hide 3D shadows */
+      .room-block { 
+        height: 65px; border-radius: 12px; 
+        transform-style: flat !important; -webkit-transform-style: flat !important;
+        transform: none !important; -webkit-transform: none !important;
+        transition: none !important; /* Disabling transition stops Safari repaint loops on scroll */
+      }
+      .room-block .face-front { display: none !important; } /* Destroy 3D faces */
       .room-block .face-top { 
-        transform: none !important; 
-        border-radius: 12px;
-        font-size: 1rem;
+        transform: none !important; -webkit-transform: none !important;
+        border-radius: 12px; font-size: 1rem;
         box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.2) !important;
+        transition: background-color 0.2s ease !important; /* Only allow color changes */
       }
-      .room-block:hover { transform: none; }
-      .room-block:active { transform: scale(0.92); } /* Satisfying tap shrink */
+      .room-block:hover { transform: none !important; }
+      .room-block:active .face-top { transform: scale(0.92) !important; transition: transform 0.1s !important; } /* Tap feedback */
 
       /* ------------------------------------- */
       /* APPLE MAPS BOTTOM SHEET TOOLTIP       */
       /* ------------------------------------- */
       #infoCard {
-        position: fixed !important;
-        display: block !important;
-        left: 0 !important;
-        top: auto !important;
-        bottom: 0 !important;
-        width: 100%;
-        margin: 0;
-        border-radius: 32px 32px 0 0;
-        padding: 12px 24px 40px 24px;
-        background: rgba(28, 28, 30, 0.95);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-bottom: none;
-        box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-        transform: translateY(100%);
-        transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
-        z-index: 1000;
-        pointer-events: auto; /* Allow tapping copy button */
+        position: fixed !important; display: block !important; left: 0 !important; top: auto !important; bottom: 0 !important;
+        width: 100%; margin: 0; border-radius: 32px 32px 0 0; padding: 12px 24px 40px 24px;
+        background: rgba(28, 28, 30, 0.75);
+        backdrop-filter: blur(30px) saturate(200%); -webkit-backdrop-filter: blur(30px) saturate(200%);
+        border: 1px solid rgba(255,255,255,0.08); border-bottom: none; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+        transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+        z-index: 1000; pointer-events: auto;
       }
-
       #infoCard.sheet-open { transform: translateY(0); }
-      
-      .click-hint { display: none; } /* Hide generic hint on mobile */
-
-      /* The Swipe Down Handle */
+      .click-hint { display: none; }
       #infoCard::before {
-        content: '';
-        display: block;
-        width: 40px;
-        height: 5px;
-        background: rgba(255,255,255,0.3);
-        border-radius: 10px;
-        margin: 0 auto 16px auto;
+        content: ''; display: block; width: 40px; height: 5px; background: rgba(255,255,255,0.3);
+        border-radius: 10px; margin: 0 auto 16px auto;
       }
-
-      /* Native Mobile Copy Button */
       .mobile-copy-btn {
-        display: block !important;
-        width: 100%;
-        background: var(--accent-blue);
-        color: white;
-        text-align: center;
-        padding: 14px;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 1rem;
-        margin-top: 20px;
-        border: none;
+        display: block !important; width: 100%; background: var(--accent-blue); color: white;
+        text-align: center; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 1rem; margin-top: 20px; border: none;
       }
       .mobile-copy-btn:active { background: #0071e3; }
     }
-
-    /* Hide Mobile Copy Button on Desktop */
     .mobile-copy-btn { display: none; }
 
   </style>
 </head>
 <body>
 
-  <!-- The Dark Overlay for the Bottom Sheet -->
   <div id="mobileOverlay"></div>
 
   <header id="mainHeader">
@@ -595,7 +407,6 @@
     </div>
   </div>
 
-  <!-- Unified Info Card (Tooltip on Desktop, Bottom Sheet on Mobile) -->
   <div id="infoCard">
     <div id="infoCardContent"></div>
     <button class="mobile-copy-btn" id="mobileCopyBtn">Copy Room Details</button>
@@ -610,7 +421,7 @@
     let roomData = {};
     const totalRoomsCount = document.querySelectorAll('.room-block[data-room]').length;
 
-    // Optimized Scroll Detection for Safari (Header Morphing)
+    // Optimized Scroll Detection
     let ticking = false;
     window.addEventListener('scroll', () => {
       if (!ticking) {
@@ -746,7 +557,6 @@
       });
     }
 
-    // UI Tools
     document.getElementById('searchInput').addEventListener('input', (e) => {
       applySearchAndFilter(e.target.value, document.querySelector('.filter-btn.active').getAttribute('data-filter'));
     });
@@ -760,7 +570,7 @@
     });
 
     // ----------------------------------------------------------------
-    // INFO CARD ENGINE (Desktop Tooltip vs Mobile Bottom Sheet)
+    // INFO CARD ENGINE
     // ----------------------------------------------------------------
     const infoCard = document.getElementById('infoCard');
     const infoCardContent = document.getElementById('infoCardContent');
@@ -780,28 +590,28 @@
       if (data) {
         infoCardContent.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <strong style="font-size:1.2rem; color:var(--accent-blue);">Room ${roomNo}</strong>
+            <strong style="font-size:1.4rem; color:var(--text-primary);">Room ${roomNo}</strong>
             <span style="font-size:0.75rem; background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:8px; color:#e5e5ea; font-weight:600;">${data.type || 'Room'}</span>
           </div>
-          <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
-            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Occupants</div>
+          <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:14px;">
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">Occupants</div>
             ${data.occupants.length > 0 
               ? data.occupants.map(occ => `
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span style="font-weight:500; font-size:1rem;">${occ.name}</span>
-                    <span style="font-size:0.75rem; color:${(occ.gender.toLowerCase().includes('boy') || occ.gender.toLowerCase().includes('male')) ? 'var(--twin-room)' : 'var(--family-room)'}; font-weight:600;">${occ.gender}</span>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-weight:600; font-size:1.1rem;">${occ.name}</span>
+                    <span style="font-size:0.8rem; color:${(occ.gender.toLowerCase().includes('boy') || occ.gender.toLowerCase().includes('male')) ? 'var(--twin-room)' : 'var(--family-room)'}; font-weight:600;">${occ.gender}</span>
                   </div>
                 `).join('')
-              : '<div style="color:var(--text-secondary); font-size:0.9rem; font-style:italic;">No occupants assigned</div>'
+              : '<div style="color:var(--text-secondary); font-size:1rem; font-style:italic;">No occupants assigned</div>'
             }
           </div>
-          ${data.remarks ? `<div style="margin-top:10px; background:rgba(255, 59, 48, 0.2); color:#ff453a; font-size:0.8rem; font-weight:600; padding:6px 10px; border-radius:8px; display:inline-block; border:1px solid rgba(255,59,48,0.3);">${data.remarks}</div>` : ''}
+          ${data.remarks ? `<div style="margin-top:14px; background:rgba(255, 59, 48, 0.2); color:#ff453a; font-size:0.9rem; font-weight:600; padding:8px 12px; border-radius:8px; display:inline-block; border:1px solid rgba(255,59,48,0.3);">${data.remarks}</div>` : ''}
           <div class="click-hint">Click or press Enter to copy</div>
         `;
       } else {
         infoCardContent.innerHTML = `
-          <strong style="font-size:1.2rem; color:var(--text-primary);">Room ${roomNo}</strong>
-          <div style="color:var(--text-secondary); font-size:0.9rem; margin-top:8px;">Vacant / Unassigned</div>
+          <strong style="font-size:1.4rem; color:var(--text-primary);">Room ${roomNo}</strong>
+          <div style="color:var(--text-secondary); font-size:1rem; margin-top:10px;">Vacant / Unassigned</div>
           <div class="click-hint">Click or press Enter to copy</div>
         `;
       }
@@ -823,9 +633,8 @@
       });
     }
 
-    // Bottom Sheet Controls (Mobile)
     function openMobileSheet(roomNo) {
-      if(window.innerWidth > 768) return; // Only trigger on mobile
+      if(window.innerWidth > 768) return; 
       currentActiveRoomNo = roomNo;
       populateInfoCard(roomNo);
       mobileOverlay.classList.add('active');
@@ -843,12 +652,9 @@
       if(currentActiveRoomNo) copyToClipboard(currentActiveRoomNo);
     });
 
-    // Room Block Listeners
     document.querySelectorAll('.room-block[data-room]').forEach(block => {
-      
-      // Desktop Hover
       block.addEventListener('mousemove', (e) => {
-        if(window.innerWidth <= 768) return; // Disable hover logic on mobile
+        if(window.innerWidth <= 768) return; 
         if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return; 
 
         populateInfoCard(block.getAttribute('data-room'));
@@ -861,19 +667,13 @@
         if(window.innerWidth > 768) infoCard.style.display = 'none';
       });
 
-      // Unified Click (Copy on Desktop, Open Sheet on Mobile)
       block.addEventListener('click', () => {
         if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return;
-        
         const roomNo = block.getAttribute('data-room');
-        if (window.innerWidth <= 768) {
-          openMobileSheet(roomNo);
-        } else {
-          copyToClipboard(roomNo);
-        }
+        if (window.innerWidth <= 768) openMobileSheet(roomNo);
+        else copyToClipboard(roomNo);
       });
 
-      // Keyboard (Enter to Copy/Open)
       block.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
