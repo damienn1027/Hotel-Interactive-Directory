@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Youth Policy Lab - YMCA Hostel Directory</title>
   
   <!-- PapaParse for direct Google Sheets CSV integration -->
@@ -10,7 +10,7 @@
 
   <style>
     :root {
-      /* Apple-inspired Dark Theme */
+      /* Premium Apple Dark Theme */
       --bg-color: #000000;
       --surface-color: #1c1c1e;
       --surface-secondary: #2c2c2e;
@@ -27,12 +27,12 @@
       --corridor: #2c2c2e;        /* Dark Gray */
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     
     body { 
       background-color: var(--bg-color); 
       color: var(--text-primary); 
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
       display: flex; 
@@ -56,7 +56,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; transition: all 0.3s ease; }
@@ -129,16 +129,10 @@
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
-    #searchInput:focus {
-      outline: none;
-      border-color: var(--accent-blue);
-      background: rgba(255,255,255,0.1);
-      box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.2);
-    }
-
+    #searchInput:focus { outline: none; border-color: var(--accent-blue); background: rgba(255,255,255,0.1); box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.2); }
     #searchInput::placeholder { color: #636366; }
 
-    /* Segmented Control iOS Style */
+    /* Segmented Controls */
     .filter-group, .controls {
       display: flex;
       background: var(--surface-color);
@@ -166,18 +160,11 @@
     .filter-btn.active, .btn.active { background: #636366; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); font-weight: 600; }
 
     /* Legend */
-    .legend-container {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      margin-top: 16px;
-      flex-wrap: wrap;
-    }
-
+    .legend-container { display: flex; gap: 20px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
     .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-secondary); font-weight: 500; }
     .legend-box { width: 12px; height: 12px; border-radius: 3px; }
 
-    /* 3D Perspective Canvas */
+    /* Map Viewport */
     .viewport {
       perspective: 1400px;
       width: 100%;
@@ -225,23 +212,19 @@
 
     .room-row { display: flex; gap: 6px; margin-bottom: 8px; transform-style: preserve-3d; }
 
-      /* 3D Block Element */
+    /* 3D Room Blocks */
     .room-block {
       flex: 1;
       min-width: 52px;
       height: 60px;
       position: relative;
       transform-style: preserve-3d;
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease, opacity 0.3s ease, background-color 0.3s ease;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease, opacity 0.3s ease;
       cursor: pointer;
-      /* Safari Flicker Fixes */
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
-      transform: translateZ(0); 
     }
-
     
-    /* Keyboard Focus Accessibility */
     .room-block:focus { outline: none; }
     .room-block:focus .face-top { box-shadow: 0 0 0 3px var(--accent-blue), inset 0 0 0 1px #ffffff !important; }
 
@@ -276,23 +259,21 @@
     .room-block:hover { transform: translateZ(16px) scale(1.03); z-index: 50; }
     .room-block:hover .face-top { box-shadow: 0 0 25px rgba(255, 255, 255, 0.4), inset 0 0 0 2px #ffffff; }
 
-    /* Dimming logic for Search & Filters (Safari Safe) */
+    /* Active Tap State */
+    .room-block:active { transform: translateZ(10px) scale(0.95); transition: transform 0.1s; }
+
+    /* Safari-Safe Dimming for Search */
     .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-top {
       background-color: var(--surface-secondary) !important;
       color: #636366 !important;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05) !important;
       border-top: none !important;
     }
-
-    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-front {
-      background-color: var(--surface-color) !important;
-    }
-
+    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-front { background-color: var(--surface-color) !important; }
     .viewport.filtered .room-block:not(.highlight) { pointer-events: none; transform: translateZ(0) scale(0.98) !important; }
-    
     .room-block.highlight .face-top { box-shadow: 0 0 30px var(--accent-blue), inset 0 0 0 2px #ffffff !important; }
 
-    /* Room Colors mapped to classes */
+    /* Data-Attribute Room Colors */
     .room-block[data-room-type="twin"] .face-top, .room-block[data-room-type="twin"] .face-front { background-color: var(--twin-room); }
     .room-block[data-room-type="double"] .face-top, .room-block[data-room-type="double"] .face-front { background-color: var(--double-room); }
     .room-block[data-room-type="triple"] .face-top, .room-block[data-room-type="triple"] .face-front { background-color: var(--triple-room); }
@@ -301,10 +282,10 @@
     .room-block[data-room-type="corridor"] { cursor: default; }
     .room-block[data-room-type="corridor"] .face-top { background-color: var(--corridor); color: #86868b; transform: translateZ(2px); }
     .room-block[data-room-type="corridor"] .face-front { background-color: #1c1c1e; height: 2px; }
-    .room-block[data-room-type="corridor"]:hover { transform: none; }
+    .room-block[data-room-type="corridor"]:hover, .room-block[data-room-type="corridor"]:active { transform: none; }
 
-    /* Frosted Tooltip Card */
-    #tooltip {
+    /* Desktop Tooltip (Default) */
+    #infoCard {
       position: fixed;
       display: none;
       background: rgba(28, 28, 30, 0.85);
@@ -320,10 +301,9 @@
       min-width: 230px;
       border: 1px solid rgba(255,255,255,0.1);
     }
-    
     .click-hint { font-size: 0.7rem; color: var(--text-secondary); margin-top: 10px; text-align: center; }
 
-    /* Apple-style Toast Notification */
+    /* Toast Notification */
     #toast {
       position: fixed;
       bottom: 30px;
@@ -345,115 +325,159 @@
     }
     #toast.show { transform: translate(-50%, 0); opacity: 1; }
 
+    /* Mobile Dark Overlay Background */
+    #mobileOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 900;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    #mobileOverlay.active { opacity: 1; pointer-events: auto; }
+
     /* ========================================= */
-    /* Mobile Responsiveness & Dynamic Header UI */
+    /* IOS MOBILE REDESIGN (BOMBASTIC UI)        */
     /* ========================================= */
     @media (max-width: 768px) {
-      /* Base Mobile Adjustments */
+      body { padding-bottom: 20px; }
+      
+      /* Dynamic Header Restyling */
       header { padding: 16px 12px 12px 12px; }
       h1 { font-size: 1.4rem; text-align: center; margin-bottom: 4px; }
       .status-badge { margin-bottom: 12px; }
-      
       .legend-container, .controls { display: none; }
       
+      /* Make Stats a horizontal swipe widget */
+      .stats-container { 
+        flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; 
+        padding-bottom: 8px; margin-bottom: 12px;
+        -webkit-overflow-scrolling: touch; 
+        scrollbar-width: none;
+      }
+      .stats-container::-webkit-scrollbar { display: none; }
+      .stat-card { min-width: 100px; padding: 10px; border-radius: 14px; }
+      .stat-value { font-size: 1.2rem; }
+      .stat-label { font-size: 0.65rem; }
+
+      /* Compact Scrolled Header State */
+      header.compact { padding: 10px 12px; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+      header.compact h1, header.compact .status-badge, header.compact .filter-group { display: none; }
+      header.compact .stats-container { margin-bottom: 0; padding-bottom: 0; flex: 1; order: 1; }
+      header.compact .stat-card { min-width: auto; padding: 6px 10px; flex-direction: row; gap: 6px; }
+      header.compact .stat-value { font-size: 1rem; }
+      header.compact .stat-label { font-size: 0.6rem; }
+      header.compact .tools-container { width: auto; margin-bottom: 0; order: 2; margin-left: 8px; }
+      
+      header.compact #searchInput {
+        width: 40px; height: 40px; border-radius: 20px; padding: 0; color: transparent;
+        background-color: var(--surface-color);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%2386868b' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: center; border: none;
+      }
+      header.compact #searchInput:focus, header.compact #searchInput:not(:placeholder-shown) {
+        width: 180px; color: var(--text-primary); background-image: none;
+        background-color: rgba(255,255,255,0.1); padding: 10px 16px;
+      }
+
+      /* ------------------------------------- */
+      /* AIRLINE SEAT MOBILE GRID UI           */
+      /* ------------------------------------- */
       .viewport { padding: 10px; gap: 30px; perspective: none; }
       .floor-container { 
         transform: none !important; 
         padding: 20px 10px; 
-        border-radius: 16px;
-        overflow-x: auto; 
-      }
-      .room-block:hover { transform: none; z-index: 1; }
-      .room-row { min-width: 600px; } 
-
-      /* Make Stats a horizontal swipeable row initially */
-      .stats-container { 
-        flex-wrap: nowrap; 
-        overflow-x: auto; 
-        justify-content: flex-start; 
-        padding-bottom: 8px; 
-        -webkit-overflow-scrolling: touch; 
-        margin-bottom: 12px;
-      }
-      .stat-card { min-width: 105px; padding: 8px 12px; }
-      .stat-value { font-size: 1.2rem; }
-      .stat-label { font-size: 0.65rem; }
-
-      /* ------------------------------------- */
-      /* THE COMPACT "SCROLLED" STATE (MOBILE) */
-      /* ------------------------------------- */
-      header.compact {
-        padding: 10px 12px;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      /* Hide unneeded elements to save space */
-      header.compact h1,
-      header.compact .status-badge,
-      header.compact .filter-group {
-        display: none; 
-      }
-
-      /* Shrink the stats container into tiny pills on the left */
-      header.compact .stats-container {
-        margin-bottom: 0;
-        padding-bottom: 0;
-        flex: 1;
-        order: 1;
-      }
-      header.compact .stat-card {
-        min-width: auto;
-        padding: 6px 10px;
-        flex-direction: row; /* Horizontal layout for stats */
-        gap: 6px;
-      }
-      header.compact .stat-value { font-size: 1rem; }
-      header.compact .stat-label { font-size: 0.6rem; }
-
-      /* Morph Search Bar into a Magnifying Glass Icon on the right */
-      header.compact .tools-container {
-        width: auto;
-        margin-bottom: 0;
-        order: 2;
-        margin-left: 8px;
-      }
-      header.compact #searchInput {
-        width: 40px;
-        height: 40px;
         border-radius: 20px;
-        padding: 0;
-        color: transparent; /* Hides text */
-        background-color: var(--surface-color);
-        /* Inject a clean SVG Search Icon via CSS */
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%2386868b' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: center;
-        cursor: pointer;
+        overflow-x: auto; 
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .room-row { min-width: 700px; gap: 10px; margin-bottom: 10px; }
+      
+      /* Strip 3D completely on mobile for tap targets */
+      .room-block { height: 65px; border-radius: 12px; transform-style: flat; }
+      .room-block .face-front { display: none; } /* Hide 3D shadows */
+      .room-block .face-top { 
+        transform: none !important; 
+        border-radius: 12px;
+        font-size: 1rem;
+        box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.2) !important;
+      }
+      .room-block:hover { transform: none; }
+      .room-block:active { transform: scale(0.92); } /* Satisfying tap shrink */
+
+      /* ------------------------------------- */
+      /* APPLE MAPS BOTTOM SHEET TOOLTIP       */
+      /* ------------------------------------- */
+      #infoCard {
+        position: fixed !important;
+        display: block !important;
+        left: 0 !important;
+        top: auto !important;
+        bottom: 0 !important;
+        width: 100%;
+        margin: 0;
+        border-radius: 32px 32px 0 0;
+        padding: 12px 24px 40px 24px;
+        background: rgba(28, 28, 30, 0.95);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-bottom: none;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+        transform: translateY(100%);
+        transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        z-index: 1000;
+        pointer-events: auto; /* Allow tapping copy button */
+      }
+
+      #infoCard.sheet-open { transform: translateY(0); }
+      
+      .click-hint { display: none; } /* Hide generic hint on mobile */
+
+      /* The Swipe Down Handle */
+      #infoCard::before {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 5px;
+        background: rgba(255,255,255,0.3);
+        border-radius: 10px;
+        margin: 0 auto 16px auto;
+      }
+
+      /* Native Mobile Copy Button */
+      .mobile-copy-btn {
+        display: block !important;
+        width: 100%;
+        background: var(--accent-blue);
+        color: white;
+        text-align: center;
+        padding: 14px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-top: 20px;
         border: none;
       }
-
-      /* Expand Search Bar back out when tapped! */
-      header.compact #searchInput:focus,
-      header.compact #searchInput:not(:placeholder-shown) {
-        width: 180px;
-        color: var(--text-primary);
-        background-image: none; /* Hide icon when typing */
-        background-color: rgba(255,255,255,0.1);
-        padding: 10px 16px;
-      }
+      .mobile-copy-btn:active { background: #0071e3; }
     }
+
+    /* Hide Mobile Copy Button on Desktop */
+    .mobile-copy-btn { display: none; }
+
   </style>
 </head>
 <body>
+
+  <!-- The Dark Overlay for the Bottom Sheet -->
+  <div id="mobileOverlay"></div>
 
   <header id="mainHeader">
     <h1>YMCA Hostel Directory</h1>
     <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting to Live Google Sheet...</span></div>
     
-    <!-- Live Statistics Dashboard -->
     <div class="stats-container">
       <div class="stat-card"><span class="stat-value" id="stat-pax">-</span><span class="stat-label">Participants</span></div>
       <div class="stat-card"><span class="stat-value" id="stat-boys">-</span><span class="stat-label">Boys</span></div>
@@ -461,10 +485,8 @@
       <div class="stat-card"><span class="stat-value" id="stat-vacant">-</span><span class="stat-label">Vacant Rooms</span></div>
     </div>
 
-    <!-- Search and Filters -->
     <div class="tools-container">
       <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
-      
       <div class="filter-group">
         <button class="filter-btn active" data-filter="all">All</button>
         <button class="filter-btn" data-filter="vacant">Vacant</button>
@@ -472,8 +494,6 @@
         <button class="filter-btn" data-filter="boys">Boys</button>
         <button class="filter-btn" data-filter="girls">Girls</button>
       </div>
-
-      <!-- Desktop View Controls -->
       <div class="controls">
         <button class="btn active" onclick="setView('3d')">3D View</button>
         <button class="btn" onclick="setView('2d')">Flat View</button>
@@ -493,7 +513,6 @@
     <!-- LEVEL 3 -->
     <div class="floor-container">
       <div class="floor-title">Level 3</div>
-      
       <div class="wing-title">Wing C</div>
       <div class="room-row">
         <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
@@ -534,7 +553,6 @@
     <!-- LEVEL 2 -->
     <div class="floor-container">
       <div class="floor-title">Level 2</div>
-      
       <div class="wing-title">Wing A</div>
       <div class="room-row">
         <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
@@ -575,37 +593,41 @@
         <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
     </div>
-
   </div>
 
-  <div id="tooltip"></div>
+  <!-- Unified Info Card (Tooltip on Desktop, Bottom Sheet on Mobile) -->
+  <div id="infoCard">
+    <div id="infoCardContent"></div>
+    <button class="mobile-copy-btn" id="mobileCopyBtn">Copy Room Details</button>
+  </div>
+  
   <div id="toast">Copied to clipboard!</div>
 
   <script>
-    // Live Google Sheets CSV URL
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRMmnBQIEjwVoJhvD9l8LelAodWCfdSg8v3z8dNcBt7PkMiNP5a13Ylw3foUnfQvWdzU2NaXWgGCJWA/pub?gid=546426841&single=true&output=csv';
-    const REFRESH_INTERVAL_MS = 60000; // Auto-sync every 60 seconds
+    const REFRESH_INTERVAL_MS = 60000; 
 
     let roomData = {};
     const totalRoomsCount = document.querySelectorAll('.room-block[data-room]').length;
 
-    // Scroll Detection for Compact Header (Mobile Only)
+    // Optimized Scroll Detection for Safari (Header Morphing)
+    let ticking = false;
     window.addEventListener('scroll', () => {
-      const header = document.getElementById('mainHeader');
-      if (window.scrollY > 40) {
-        header.classList.add('compact');
-      } else {
-        header.classList.remove('compact');
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const header = document.getElementById('mainHeader');
+          if (window.scrollY > 40) header.classList.add('compact');
+          else header.classList.remove('compact');
+          ticking = false;
+        });
+        ticking = true;
       }
-    });
+    }, { passive: true });
 
-    // View Switcher (3D vs 2D)
     function setView(mode) {
       const viewport = document.getElementById('viewport');
       const buttons = document.querySelectorAll('.controls .btn');
-      
       buttons.forEach(btn => btn.classList.remove('active'));
-      
       if (mode === '2d') {
         viewport.classList.add('flat');
         buttons[1].classList.add('active');
@@ -615,25 +637,19 @@
       }
     }
 
-    // Fetch and parse live spreadsheet CSV
     function loadGoogleSheetData() {
       const statusBadge = document.getElementById('sync-status');
-      
       Papa.parse(SHEET_CSV_URL, {
         download: true,
         header: false,
         skipEmptyLines: true,
         complete: function(results) {
           parseRows(results.data);
-          
-          // Update Status UI
           statusBadge.classList.add('synced');
-          const now = new Date();
-          const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          const timeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
           statusBadge.querySelector('span').textContent = `Live Synced at ${timeString}`;
         },
-        error: function(err) {
-          console.error("CSV Fetch Error: ", err);
+        error: function() {
           statusBadge.classList.remove('synced');
           statusBadge.querySelector('span').textContent = '⚠️ Offline - Retrying...';
         }
@@ -653,9 +669,7 @@
           const remarks = row[4] ? row[4].trim() : '';
 
           if (/^\d{3}$/.test(roomNo)) {
-            if (!roomData[roomNo]) {
-              roomData[roomNo] = { type: roomType, remarks: remarks, occupants: [] };
-            }
+            if (!roomData[roomNo]) roomData[roomNo] = { type: roomType, remarks: remarks, occupants: [] };
             if (name) {
               roomData[roomNo].occupants.push({ name, gender });
               stats.pax++;
@@ -668,14 +682,12 @@
         }
       });
 
-      // Render Data to Map
       document.querySelectorAll('.room-block[data-room]').forEach(block => {
         const roomNo = block.getAttribute('data-room');
         const topFace = block.querySelector('.face-top');
         const data = roomData[roomNo];
 
         if (data) {
-          // Dynamic Colors
           if (data.type) {
             const t = data.type.toLowerCase();
             if (t.includes('twin')) block.setAttribute('data-room-type', 'twin');
@@ -683,8 +695,6 @@
             else if (t.includes('triple')) block.setAttribute('data-room-type', 'triple');
             else if (t.includes('family')) block.setAttribute('data-room-type', 'family');
           }
-
-          // Occupancy Indicators & Stats
           if (data.occupants.length > 0) {
             stats.occupiedRooms++;
             if (topFace) topFace.style.borderTop = "4px solid var(--accent-green)";
@@ -696,18 +706,15 @@
         }
       });
       
-      // Update Dashboard Stats
       document.getElementById('stat-pax').textContent = stats.pax;
       document.getElementById('stat-boys').textContent = stats.boys;
       document.getElementById('stat-girls').textContent = stats.girls;
       document.getElementById('stat-vacant').textContent = (totalRoomsCount - stats.occupiedRooms);
 
-      // Re-apply active filters seamlessly
       const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
       applySearchAndFilter(document.getElementById('searchInput').value, activeFilter);
     }
 
-    // Search and Filter Logic
     function applySearchAndFilter(query = '', filter = 'all') {
       const viewport = document.getElementById('viewport');
       query = query.toLowerCase().trim();
@@ -723,21 +730,12 @@
 
         if (isFiltering) {
           let textMatch = true;
-          if (query.length > 0) {
-            textMatch = data && data.occupants && data.occupants.some(o => o.name.toLowerCase().includes(query));
-          }
-
+          if (query.length > 0) textMatch = data && data.occupants && data.occupants.some(o => o.name.toLowerCase().includes(query));
           let filterMatch = true;
-          if (filter === 'vacant') {
-            filterMatch = !data || !data.occupants || data.occupants.length === 0;
-          } else if (filter === 'vip') {
-            filterMatch = data && data.remarks && data.remarks.toLowerCase().includes('vip');
-          } else if (filter === 'boys') {
-            filterMatch = data && data.occupants && data.occupants.some(o => o.gender.toLowerCase().includes('boy') || o.gender.toLowerCase().includes('male'));
-          } else if (filter === 'girls') {
-            filterMatch = data && data.occupants && data.occupants.some(o => o.gender.toLowerCase().includes('girl') || o.gender.toLowerCase().includes('female'));
-          }
-
+          if (filter === 'vacant') filterMatch = !data || !data.occupants || data.occupants.length === 0;
+          else if (filter === 'vip') filterMatch = data && data.remarks && data.remarks.toLowerCase().includes('vip');
+          else if (filter === 'boys') filterMatch = data && data.occupants && data.occupants.some(o => o.gender.toLowerCase().includes('boy') || o.gender.toLowerCase().includes('male'));
+          else if (filter === 'girls') filterMatch = data && data.occupants && data.occupants.some(o => o.gender.toLowerCase().includes('girl') || o.gender.toLowerCase().includes('female'));
           match = textMatch && filterMatch;
           
           if (match) block.classList.add('highlight');
@@ -748,26 +746,28 @@
       });
     }
 
-    // UI Tools Event Listeners
-    const searchInput = document.getElementById('searchInput');
-    const filterBtns = document.querySelectorAll('.filter-btn');
-
-    searchInput.addEventListener('input', (e) => {
-      const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
-      applySearchAndFilter(e.target.value, activeFilter);
+    // UI Tools
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      applySearchAndFilter(e.target.value, document.querySelector('.filter-btn.active').getAttribute('data-filter'));
     });
 
-    filterBtns.forEach(btn => {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        filterBtns.forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        applySearchAndFilter(searchInput.value, btn.getAttribute('data-filter'));
+        applySearchAndFilter(document.getElementById('searchInput').value, btn.getAttribute('data-filter'));
       });
     });
 
-    // Tooltip & Click-to-Copy Engine
-    const tooltip = document.getElementById('tooltip');
-    
+    // ----------------------------------------------------------------
+    // INFO CARD ENGINE (Desktop Tooltip vs Mobile Bottom Sheet)
+    // ----------------------------------------------------------------
+    const infoCard = document.getElementById('infoCard');
+    const infoCardContent = document.getElementById('infoCardContent');
+    const mobileCopyBtn = document.getElementById('mobileCopyBtn');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    let currentActiveRoomNo = null;
+
     function showToast(message) {
       const toast = document.getElementById('toast');
       toast.textContent = message;
@@ -775,13 +775,41 @@
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    function triggerCopy(block) {
-      if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return;
+    function populateInfoCard(roomNo) {
+      const data = roomData[roomNo];
+      if (data) {
+        infoCardContent.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong style="font-size:1.2rem; color:var(--accent-blue);">Room ${roomNo}</strong>
+            <span style="font-size:0.75rem; background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:8px; color:#e5e5ea; font-weight:600;">${data.type || 'Room'}</span>
+          </div>
+          <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Occupants</div>
+            ${data.occupants.length > 0 
+              ? data.occupants.map(occ => `
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-weight:500; font-size:1rem;">${occ.name}</span>
+                    <span style="font-size:0.75rem; color:${(occ.gender.toLowerCase().includes('boy') || occ.gender.toLowerCase().includes('male')) ? 'var(--twin-room)' : 'var(--family-room)'}; font-weight:600;">${occ.gender}</span>
+                  </div>
+                `).join('')
+              : '<div style="color:var(--text-secondary); font-size:0.9rem; font-style:italic;">No occupants assigned</div>'
+            }
+          </div>
+          ${data.remarks ? `<div style="margin-top:10px; background:rgba(255, 59, 48, 0.2); color:#ff453a; font-size:0.8rem; font-weight:600; padding:6px 10px; border-radius:8px; display:inline-block; border:1px solid rgba(255,59,48,0.3);">${data.remarks}</div>` : ''}
+          <div class="click-hint">Click or press Enter to copy</div>
+        `;
+      } else {
+        infoCardContent.innerHTML = `
+          <strong style="font-size:1.2rem; color:var(--text-primary);">Room ${roomNo}</strong>
+          <div style="color:var(--text-secondary); font-size:0.9rem; margin-top:8px;">Vacant / Unassigned</div>
+          <div class="click-hint">Click or press Enter to copy</div>
+        `;
+      }
+    }
 
-      const roomNo = block.getAttribute('data-room');
+    function copyToClipboard(roomNo) {
       const data = roomData[roomNo];
       let textToCopy = `Room ${roomNo}\n`;
-      
       if (data && data.occupants && data.occupants.length > 0) {
         textToCopy += `Type: ${data.type || 'Room'}\nOccupants:\n`;
         data.occupants.forEach(o => { textToCopy += `- ${o.name} (${o.gender})\n`; });
@@ -789,69 +817,73 @@
       } else {
         textToCopy += `Status: Vacant`;
       }
-
       navigator.clipboard.writeText(textToCopy).then(() => {
-        showToast(`Room ${roomNo} details copied!`);
-      }).catch(err => console.error("Copy failed: ", err));
+        showToast(`Room ${roomNo} copied!`);
+        closeMobileSheet();
+      });
     }
 
+    // Bottom Sheet Controls (Mobile)
+    function openMobileSheet(roomNo) {
+      if(window.innerWidth > 768) return; // Only trigger on mobile
+      currentActiveRoomNo = roomNo;
+      populateInfoCard(roomNo);
+      mobileOverlay.classList.add('active');
+      infoCard.classList.add('sheet-open');
+    }
+
+    function closeMobileSheet() {
+      mobileOverlay.classList.remove('active');
+      infoCard.classList.remove('sheet-open');
+    }
+
+    mobileOverlay.addEventListener('click', closeMobileSheet);
+    
+    mobileCopyBtn.addEventListener('click', () => {
+      if(currentActiveRoomNo) copyToClipboard(currentActiveRoomNo);
+    });
+
+    // Room Block Listeners
     document.querySelectorAll('.room-block[data-room]').forEach(block => {
-      // Mouse Hover
+      
+      // Desktop Hover
       block.addEventListener('mousemove', (e) => {
+        if(window.innerWidth <= 768) return; // Disable hover logic on mobile
         if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return; 
 
-        const roomNo = block.getAttribute('data-room');
-        const data = roomData[roomNo];
-
-        if (data) {
-          tooltip.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-              <strong style="font-size:1.1rem; color:var(--accent-blue);">Room ${roomNo}</strong>
-              <span style="font-size:0.7rem; background:rgba(255,255,255,0.15); padding:3px 8px; border-radius:6px; color:#e5e5ea; font-weight:600;">${data.type || 'Room'}</span>
-            </div>
-            <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:8px;">
-              <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">Occupants</div>
-              ${data.occupants.length > 0 
-                ? data.occupants.map(occ => `
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                      <span style="font-weight:500; font-size:0.9rem;">${occ.name}</span>
-                      <span style="font-size:0.7rem; color:${(occ.gender.toLowerCase().includes('boy') || occ.gender.toLowerCase().includes('male')) ? 'var(--twin-room)' : 'var(--family-room)'}; font-weight:600;">${occ.gender}</span>
-                    </div>
-                  `).join('')
-                : '<div style="color:var(--text-secondary); font-size:0.85rem; font-style:italic;">No occupants assigned</div>'
-              }
-            </div>
-            ${data.remarks ? `<div style="margin-top:8px; background:rgba(255, 59, 48, 0.2); color:#ff453a; font-size:0.75rem; font-weight:600; padding:4px 8px; border-radius:6px; display:inline-block; border:1px solid rgba(255,59,48,0.3);">${data.remarks}</div>` : ''}
-            <div class="click-hint">Click or press Enter to copy details</div>
-          `;
-        } else {
-          tooltip.innerHTML = `
-            <strong style="font-size:1.1rem; color:var(--text-primary);">Room ${roomNo}</strong>
-            <div style="color:var(--text-secondary); font-size:0.85rem; margin-top:6px;">Vacant / Unassigned</div>
-            <div class="click-hint">Click or press Enter to copy details</div>
-          `;
-        }
-
-        tooltip.style.display = 'block';
-        tooltip.style.left = (e.clientX + 20) + 'px';
-        tooltip.style.top = (e.clientY + 20) + 'px';
+        populateInfoCard(block.getAttribute('data-room'));
+        infoCard.style.display = 'block';
+        infoCard.style.left = (e.clientX + 20) + 'px';
+        infoCard.style.top = (e.clientY + 20) + 'px';
       });
 
-      block.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+      block.addEventListener('mouseleave', () => {
+        if(window.innerWidth > 768) infoCard.style.display = 'none';
+      });
 
-      // Mouse Click
-      block.addEventListener('click', () => triggerCopy(block));
+      // Unified Click (Copy on Desktop, Open Sheet on Mobile)
+      block.addEventListener('click', () => {
+        if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return;
+        
+        const roomNo = block.getAttribute('data-room');
+        if (window.innerWidth <= 768) {
+          openMobileSheet(roomNo);
+        } else {
+          copyToClipboard(roomNo);
+        }
+      });
 
-      // Keyboard Accessibility (Enter key to copy)
+      // Keyboard (Enter to Copy/Open)
       block.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          triggerCopy(block);
+          const roomNo = block.getAttribute('data-room');
+          if (window.innerWidth <= 768) openMobileSheet(roomNo);
+          else copyToClipboard(roomNo);
         }
       });
     });
 
-    // Execute initial load and start background interval
     loadGoogleSheetData();
     setInterval(loadGoogleSheetData, REFRESH_INTERVAL_MS);
 
