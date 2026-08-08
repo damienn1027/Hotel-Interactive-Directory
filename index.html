@@ -15,7 +15,7 @@
       --border: #334155;
       --text: #f8fafc;
       
-      /* Color palettes for room categories */
+      /* Color palettes for room categories from PDF */
       --twin-room: #38bdf8;       /* Blue */
       --double-room: #facc15;     /* Yellow */
       --triple-room: #4ade80;     /* Green */
@@ -37,7 +37,7 @@
 
     header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       z-index: 10;
     }
 
@@ -60,6 +60,7 @@
       display: flex;
       gap: 12px;
       justify-content: center;
+      margin-bottom: 20px;
     }
 
     .btn {
@@ -79,6 +80,35 @@
       box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
     }
 
+    /* Legend Styles */
+    .legend-container {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      background: rgba(30, 41, 59, 0.5);
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .legend-box {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+    }
+
     /* 3D Perspective Canvas */
     .viewport {
       perspective: 1200px;
@@ -87,7 +117,7 @@
       display: flex;
       flex-direction: column;
       gap: 50px;
-      padding: 40px 20px;
+      padding: 20px;
     }
 
     .floor-container {
@@ -216,9 +246,23 @@
   <header>
     <h1>Youth Policy Lab - YMCA Hostel Directory</h1>
     <div id="sync-status" class="status-badge">Connecting to Live Google Sheet...</div>
+    
     <div class="controls">
       <button class="btn active" onclick="setView('3d')">3D Isometric View</button>
       <button class="btn" onclick="setView('2d')">2D Flat View</button>
+    </div>
+
+    <!-- Room Color Legend -->
+    <div class="legend-container">
+      <div class="legend-item">
+        <div class="legend-box" style="background-color: var(--twin-room);"></div> Twin Room
+      </div>
+      <div class="legend-item">
+        <div class="legend-box" style="background-color: var(--double-room);"></div> Double Room
+      </div>
+      <div class="legend-item">
+        <div class="legend-box" style="background-color: var(--triple-room);"></div> Triple Room
+      </div>
     </div>
   </header>
 
@@ -341,7 +385,7 @@
 
       Papa.parse(SHEET_CSV_URL, {
         download: true,
-        header: true,
+        header: false, // Turned OFF because headers are on Row 5
         skipEmptyLines: true,
         complete: function(results) {
           parseRows(results.data);
@@ -358,37 +402,44 @@
       });
     }
 
-    // Process raw rows and map names/gender/remarks to room numbers
+    // Process raw rows exactly matching your Google Sheet layout
     function parseRows(rows) {
       roomData = {};
 
       rows.forEach(row => {
-        // Flexible column matching across variations
-        const roomNo = (row['Room Number'] || row['Room No'] || row['Room']) ? (row['Room Number'] || row['Room No'] || row['Room']).toString().trim() : null;
-        const name = (row['Name'] || row['Full Name']) ? (row['Name'] || row['Full Name']).trim() : '';
-        const gender = (row['Girl/Boy'] || row['Gender'] || row['Sex']) ? (row['Girl/Boy'] || row['Gender'] || row['Sex']).trim() : '';
-        const roomType = (row['Room Type'] || row['Type']) ? (row['Room Type'] || row['Type']).trim() : '';
-        const remarks = (row['Remarks'] || row['Remark'] || row['Notes']) ? (row['Remarks'] || row['Remark'] || row['Notes']).trim() : '';
+        // Ensure the row has enough columns to contain data
+        if (row.length >= 4) {
+          // Map to your specific columns: A=0, B=1, C=2, D=3, E=4
+          const name = row[0] ? row[0].trim() : '';
+          const gender = row[1] ? row[1].trim() : '';
+          const roomType = row[2] ? row[2].trim() : '';
+          const roomNo = row[3] ? row[3].toString().trim() : '';
+          const remarks = row[4] ? row[4].trim() : '';
 
-        if (roomNo) {
-          if (!roomData[roomNo]) {
-            roomData[roomNo] = {
-              type: roomType,
-              remarks: remarks,
-              occupants: []
-            };
-          }
+          // ONLY process if Room Number is exactly 3 digits (e.g., '202', '315')
+          // This automatically skips your title text on Rows 1-5
+          if (/^\d{3}$/.test(roomNo)) {
+            
+            if (!roomData[roomNo]) {
+              roomData[roomNo] = {
+                type: roomType,
+                remarks: remarks,
+                occupants: []
+              };
+            }
 
-          if (name) {
-            roomData[roomNo].occupants.push({ name, gender });
-          }
+            // Only add the occupant if there is a name
+            if (name) {
+              roomData[roomNo].occupants.push({ name, gender });
+            }
 
-          if (remarks && !roomData[roomNo].remarks) {
-            roomData[roomNo].remarks = remarks;
-          }
-
-          if (roomType && !roomData[roomNo].type) {
-            roomData[roomNo].type = roomType;
+            // Capture Remarks and Room Type if missing from earlier rows
+            if (remarks && !roomData[roomNo].remarks) {
+              roomData[roomNo].remarks = remarks;
+            }
+            if (roomType && !roomData[roomNo].type) {
+              roomData[roomNo].type = roomType;
+            }
           }
         }
       });
@@ -397,6 +448,7 @@
       document.querySelectorAll('.room-block[data-room]').forEach(block => {
         const roomNo = block.getAttribute('data-room');
         const topFace = block.querySelector('.face-top');
+        
         if (roomData[roomNo] && roomData[roomNo].occupants.length > 0) {
           if (topFace) topFace.style.borderTop = "4px solid #10b981";
         } else {
