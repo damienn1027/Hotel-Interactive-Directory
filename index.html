@@ -56,9 +56,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
-    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; transition: all 0.3s ease; }
     
     .status-badge {
       display: flex;
@@ -87,6 +88,7 @@
       max-width: 900px;
       flex-wrap: wrap;
       justify-content: center;
+      transition: all 0.3s ease;
     }
 
     .stat-card {
@@ -98,10 +100,11 @@
       flex-direction: column;
       align-items: center;
       min-width: 120px;
+      transition: all 0.3s ease;
     }
 
-    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
-    .stat-label { font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); transition: all 0.3s ease; }
+    .stat-label { font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; }
 
     /* Interactive Tools: Search & Filters */
     .tools-container {
@@ -111,6 +114,7 @@
       flex-direction: column;
       gap: 16px;
       align-items: center;
+      transition: all 0.3s ease;
     }
 
     #searchInput {
@@ -122,7 +126,7 @@
       background: rgba(255,255,255,0.05);
       color: var(--text-primary);
       font-size: 1rem;
-      transition: all 0.2s;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
     #searchInput:focus {
@@ -143,6 +147,7 @@
       gap: 2px;
       flex-wrap: wrap;
       justify-content: center;
+      transition: all 0.3s ease;
     }
     
     .filter-btn, .btn {
@@ -335,27 +340,111 @@
     }
     #toast.show { transform: translate(-50%, 0); opacity: 1; }
 
-    /* Mobile Responsiveness (Auto-2D) */
+    /* ========================================= */
+    /* Mobile Responsiveness & Dynamic Header UI */
+    /* ========================================= */
     @media (max-width: 768px) {
-      header { padding: 16px; }
-      h1 { font-size: 1.4rem; text-align: center; }
+      /* Base Mobile Adjustments */
+      header { padding: 16px 12px 12px 12px; }
+      h1 { font-size: 1.4rem; text-align: center; margin-bottom: 4px; }
+      .status-badge { margin-bottom: 12px; }
+      
+      .legend-container, .controls { display: none; }
+      
       .viewport { padding: 10px; gap: 30px; perspective: none; }
       .floor-container { 
-        transform: none !important; /* Force 2D */
+        transform: none !important; 
         padding: 20px 10px; 
         border-radius: 16px;
-        overflow-x: auto; /* Allow horizontal scroll if needed */
+        overflow-x: auto; 
       }
-      .controls { display: none; } /* Hide 3D/2D toggle on mobile */
       .room-block:hover { transform: none; z-index: 1; }
-      .room-row { min-width: 600px; } /* Prevent room boxes from squishing too small */
-    }
+      .room-row { min-width: 600px; } 
 
+      /* Make Stats a horizontal swipeable row initially */
+      .stats-container { 
+        flex-wrap: nowrap; 
+        overflow-x: auto; 
+        justify-content: flex-start; 
+        padding-bottom: 8px; 
+        -webkit-overflow-scrolling: touch; 
+        margin-bottom: 12px;
+      }
+      .stat-card { min-width: 105px; padding: 8px 12px; }
+      .stat-value { font-size: 1.2rem; }
+      .stat-label { font-size: 0.65rem; }
+
+      /* ------------------------------------- */
+      /* THE COMPACT "SCROLLED" STATE (MOBILE) */
+      /* ------------------------------------- */
+      header.compact {
+        padding: 10px 12px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      /* Hide unneeded elements to save space */
+      header.compact h1,
+      header.compact .status-badge,
+      header.compact .filter-group {
+        display: none; 
+      }
+
+      /* Shrink the stats container into tiny pills on the left */
+      header.compact .stats-container {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        flex: 1;
+        order: 1;
+      }
+      header.compact .stat-card {
+        min-width: auto;
+        padding: 6px 10px;
+        flex-direction: row; /* Horizontal layout for stats */
+        gap: 6px;
+      }
+      header.compact .stat-value { font-size: 1rem; }
+      header.compact .stat-label { font-size: 0.6rem; }
+
+      /* Morph Search Bar into a Magnifying Glass Icon on the right */
+      header.compact .tools-container {
+        width: auto;
+        margin-bottom: 0;
+        order: 2;
+        margin-left: 8px;
+      }
+      header.compact #searchInput {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        padding: 0;
+        color: transparent; /* Hides text */
+        background-color: var(--surface-color);
+        /* Inject a clean SVG Search Icon via CSS */
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%2386868b' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        cursor: pointer;
+        border: none;
+      }
+
+      /* Expand Search Bar back out when tapped! */
+      header.compact #searchInput:focus,
+      header.compact #searchInput:not(:placeholder-shown) {
+        width: 180px;
+        color: var(--text-primary);
+        background-image: none; /* Hide icon when typing */
+        background-color: rgba(255,255,255,0.1);
+        padding: 10px 16px;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <header>
+  <header id="mainHeader">
     <h1>YMCA Hostel Directory</h1>
     <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting to Live Google Sheet...</span></div>
     
@@ -494,6 +583,16 @@
 
     let roomData = {};
     const totalRoomsCount = document.querySelectorAll('.room-block[data-room]').length;
+
+    // Scroll Detection for Compact Header (Mobile Only)
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('mainHeader');
+      if (window.scrollY > 40) {
+        header.classList.add('compact');
+      } else {
+        header.classList.remove('compact');
+      }
+    });
 
     // View Switcher (3D vs 2D)
     function setView(mode) {
@@ -745,8 +844,6 @@
           triggerCopy(block);
         }
       });
-      
-      // Accessibility focus/blur tooltips handling could be added here if desired for screen readers.
     });
 
     // Execute initial load and start background interval
