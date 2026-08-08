@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Youth Policy Lab - YMCA Hostel Directory</title>
+  
+  <!-- PapaParse for direct Google Sheets CSV integration -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
   <style>
     :root {
       --bg: #0f172a;
@@ -37,14 +41,25 @@
       z-index: 10;
     }
 
-    h1 { font-size: 1.8rem; margin-bottom: 8px; font-weight: 700; color: #f1f5f9; }
+    h1 { font-size: 1.8rem; margin-bottom: 6px; font-weight: 700; color: #f1f5f9; }
     
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #334155;
+      color: #94a3b8;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+    }
+
     /* View Controls */
     .controls {
       display: flex;
       gap: 12px;
       justify-content: center;
-      margin-top: 10px;
     }
 
     .btn {
@@ -178,7 +193,7 @@
     .type-corridor .face-front { background-color: var(--corridor); height: 2px; }
     .type-corridor:hover { transform: none; }
 
-    /* Tooltip */
+    /* Tooltip Card */
     #tooltip {
       position: fixed;
       display: none;
@@ -192,17 +207,15 @@
       z-index: 1000;
       box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
       border: 1px solid rgba(255,255,255,0.15);
-      min-width: 180px;
+      min-width: 210px;
     }
-
-    .tooltip-title { font-size: 1rem; font-weight: 700; color: #38bdf8; margin-bottom: 4px; }
-    .tooltip-subtitle { font-size: 0.75rem; color: #94a3b8; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Hostel 3D Interactive Floor Plan</h1>
+    <h1>Youth Policy Lab - YMCA Hostel Directory</h1>
+    <div id="sync-status" class="status-badge">Connecting to Live Google Sheet...</div>
     <div class="controls">
       <button class="btn active" onclick="setView('3d')">3D Isometric View</button>
       <button class="btn" onclick="setView('2d')">2D Flat View</button>
@@ -301,6 +314,11 @@
   <div id="tooltip"></div>
 
   <script>
+    // Live Google Sheets CSV URL
+    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRMmnBQIEjwVoJhvD9l8LelAodWCfdSg8v3z8dNcBt7PkMiNP5a13Ylw3foUnfQvWdzU2NaXWgGCJWA/pub?gid=546426841&single=true&output=csv';
+
+    let roomData = {};
+
     // View Switcher (3D vs 2D)
     function setView(mode) {
       const viewport = document.getElementById('viewport');
@@ -317,17 +335,111 @@
       }
     }
 
-    // Hover Tooltip tracking
+    // Fetch and parse live spreadsheet CSV
+    function loadGoogleSheetData() {
+      const statusBadge = document.getElementById('sync-status');
+
+      Papa.parse(SHEET_CSV_URL, {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          parseRows(results.data);
+          statusBadge.textContent = '🟢 Live Synced with Google Sheets';
+          statusBadge.style.background = '#065f46';
+          statusBadge.style.color = '#a7f3d0';
+        },
+        error: function(err) {
+          console.error("CSV Fetch Error: ", err);
+          statusBadge.textContent = '🔴 Failed to Sync Sheet';
+          statusBadge.style.background = '#991b1b';
+          statusBadge.style.color = '#fecaca';
+        }
+      });
+    }
+
+    // Process raw rows and map names/gender/remarks to room numbers
+    function parseRows(rows) {
+      roomData = {};
+
+      rows.forEach(row => {
+        // Flexible column matching across variations
+        const roomNo = (row['Room Number'] || row['Room No'] || row['Room']) ? (row['Room Number'] || row['Room No'] || row['Room']).toString().trim() : null;
+        const name = (row['Name'] || row['Full Name']) ? (row['Name'] || row['Full Name']).trim() : '';
+        const gender = (row['Girl/Boy'] || row['Gender'] || row['Sex']) ? (row['Girl/Boy'] || row['Gender'] || row['Sex']).trim() : '';
+        const roomType = (row['Room Type'] || row['Type']) ? (row['Room Type'] || row['Type']).trim() : '';
+        const remarks = (row['Remarks'] || row['Remark'] || row['Notes']) ? (row['Remarks'] || row['Remark'] || row['Notes']).trim() : '';
+
+        if (roomNo) {
+          if (!roomData[roomNo]) {
+            roomData[roomNo] = {
+              type: roomType,
+              remarks: remarks,
+              occupants: []
+            };
+          }
+
+          if (name) {
+            roomData[roomNo].occupants.push({ name, gender });
+          }
+
+          if (remarks && !roomData[roomNo].remarks) {
+            roomData[roomNo].remarks = remarks;
+          }
+
+          if (roomType && !roomData[roomNo].type) {
+            roomData[roomNo].type = roomType;
+          }
+        }
+      });
+
+      // Highlight occupied room blocks with green top border accents
+      document.querySelectorAll('.room-block[data-room]').forEach(block => {
+        const roomNo = block.getAttribute('data-room');
+        const topFace = block.querySelector('.face-top');
+        if (roomData[roomNo] && roomData[roomNo].occupants.length > 0) {
+          if (topFace) topFace.style.borderTop = "4px solid #10b981";
+        } else {
+          if (topFace) topFace.style.borderTop = "none";
+        }
+      });
+    }
+
+    // Dynamic Hover Tooltip Tracker
     const tooltip = document.getElementById('tooltip');
+
     document.querySelectorAll('.room-block[data-room]').forEach(block => {
       block.addEventListener('mousemove', (e) => {
         const roomNo = block.getAttribute('data-room');
-        
-        tooltip.innerHTML = `
-          <div class="tooltip-title">Room ${roomNo}</div>
-          <div class="tooltip-subtitle">Hovered in 3D canvas</div>
-        `;
-        
+        const data = roomData[roomNo];
+
+        if (data) {
+          tooltip.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <strong style="font-size:1rem; color:#38bdf8;">Room ${roomNo}</strong>
+              <span style="font-size:0.7rem; background:rgba(255,255,255,0.15); padding:2px 6px; border-radius:4px; color:#cbd5e1;">${data.type || 'Room'}</span>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.15); padding-top:6px; margin-top:4px;">
+              <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">Occupants:</div>
+              ${data.occupants.length > 0 
+                ? data.occupants.map(occ => `
+                    <div style="display:flex; justify-content:space-between; gap:12px; font-weight:600; color:#f8fafc; font-size:0.85rem; margin-bottom:2px;">
+                      <span>• ${occ.name}</span>
+                      <span style="font-size:0.7rem; color:${(occ.gender.toLowerCase().includes('boy') || occ.gender.toLowerCase().includes('male')) ? '#60a5fa' : '#f472b6'};">(${occ.gender})</span>
+                    </div>
+                  `).join('')
+                : '<div style="color:#94a3b8; font-size:0.8rem;">No occupants assigned</div>'
+              }
+            </div>
+            ${data.remarks ? `<div style="margin-top:6px; background:#ef4444; color:white; font-size:0.7rem; font-weight:700; padding:2px 6px; border-radius:4px; display:inline-block;">${data.remarks}</div>` : ''}
+          `;
+        } else {
+          tooltip.innerHTML = `
+            <strong style="font-size:1rem; color:#f8fafc;">Room ${roomNo}</strong>
+            <div style="color:#94a3b8; font-size:0.8rem; margin-top:4px;">Vacant / Unassigned</div>
+          `;
+        }
+
         tooltip.style.display = 'block';
         tooltip.style.left = (e.clientX + 16) + 'px';
         tooltip.style.top = (e.clientY + 16) + 'px';
@@ -337,6 +449,9 @@
         tooltip.style.display = 'none';
       });
     });
+
+    // Execute sheet sync on load
+    loadGoogleSheetData();
   </script>
 </body>
 </html>
