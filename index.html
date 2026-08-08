@@ -3,25 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Youth Policy Lab - YMCA Hostel Directory</title>
+  <title>YMCA Hostel Directory</title>
+  
+  <!-- iOS Native Web App Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Hostel Dir">
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <style>
+    /* ========================================= */
+    /* APPLE SYSTEM THEMES (LIGHT & DARK)        */
+    /* ========================================= */
     :root {
-      --bg-color: #000000;
-      --surface-color: #1c1c1e;
-      --surface-secondary: #2c2c2e;
-      --text-primary: #f5f5f7;
-      --text-secondary: #86868b;
-      --accent-blue: #0a84ff;
-      --accent-green: #30d158;
+      /* Default Light Mode (Silver/Frost) */
+      --bg-color: #F5F5F7;
+      --surface-color: #FFFFFF;
+      --surface-secondary: #E5E5EA;
+      --text-primary: #1C1C1E;
+      --text-secondary: #8E8E93;
+      --glass-bg: rgba(255, 255, 255, 0.75);
+      --glass-border: rgba(0, 0, 0, 0.1);
       
-      --twin-room: #32ade6; 
-      --double-room: #ffd60a; 
-      --triple-room: #30d158; 
-      --family-room: #bf5af2; 
-      --corridor: #2c2c2e; 
+      /* Apple Data Visualization Colors */
+      --twin-room: #5E5CE6;       /* System Indigo */
+      --double-room: #FF9F0A;     /* System Sunset Orange */
+      --triple-room: #00C7BE;     /* System Mint Teal */
+      --family-room: #FF375F;     /* System Rose/Pink */
+      --corridor: #D1D1D6;        /* Light Gray */
+      --accent-green: #34C759;
+      --accent-blue: #007AFF;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        /* Midnight Dark Mode */
+        --bg-color: #0A0A0C;
+        --surface-color: #1C1C1E;
+        --surface-secondary: #2C2C2E;
+        --text-primary: #F5F5F7;
+        --text-secondary: #8E8E93;
+        --glass-bg: rgba(28, 28, 30, 0.65);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        
+        --corridor: #2C2C2E;
+        --accent-green: #30D158;
+        --accent-blue: #0A84FF;
+      }
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -31,79 +60,67 @@
       color: var(--text-primary); 
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif;
       -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      padding: 0 0 60px 0;
-      overflow-x: hidden;
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
+      padding: 0 0 60px 0; overflow-x: hidden;
     }
 
     /* ------------------------------------- */
-    /* TRUE APPLE FROSTED GLASS HEADER       */
+    /* NATIVE iOS GLASS HEADER               */
     /* ------------------------------------- */
     header {
-      position: sticky;
-      top: 0;
-      width: 100%;
-      /* Opacity dropped to 0.5 to let the blur show through */
-      background: rgba(20, 20, 20, 0.55);
-      /* Saturate added for the Apple glass 'pop' */
-      backdrop-filter: blur(25px) saturate(180%);
-      -webkit-backdrop-filter: blur(25px) saturate(180%);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      position: sticky; top: 0; width: 100%; z-index: 100;
+      background: var(--glass-bg);
+      backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      border-bottom: 1px solid var(--glass-border);
       padding: 24px 24px 16px 24px;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      display: flex; flex-direction: column; align-items: center;
+      transform: translate3d(0, 0, 0); /* Safari Anti-Flicker Hardware Acceleration */
+      transition: padding 0.4s ease;
     }
 
-    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; transition: all 0.3s ease; }
+    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
     
     .status-badge {
-      display: flex; align-items: center; gap: 6px;
-      padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
-      background: rgba(255, 255, 255, 0.1); color: var(--text-secondary); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; 
+      font-size: 0.75rem; font-weight: 600; background: var(--surface-secondary); 
+      color: var(--text-secondary); margin-bottom: 20px;
     }
     .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-secondary); }
     .status-badge.synced .status-dot { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
     .status-badge.synced { color: var(--text-primary); }
 
-    .stats-container {
-      display: flex; gap: 16px; margin-bottom: 24px; width: 100%; max-width: 900px;
-      flex-wrap: wrap; justify-content: center; transition: all 0.3s ease;
-    }
+    .stats-container { display: flex; gap: 16px; margin-bottom: 24px; width: 100%; max-width: 900px; flex-wrap: wrap; justify-content: center; }
     .stat-card {
-      background: rgba(28, 28, 30, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 16px; padding: 12px 20px; display: flex; flex-direction: column; align-items: center; min-width: 120px;
+      background: var(--surface-color); border: 1px solid var(--glass-border); border-radius: 16px; 
+      padding: 12px 20px; display: flex; flex-direction: column; align-items: center; min-width: 120px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
     }
     .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
-    .stat-label { font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-label { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
 
     .tools-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 16px; align-items: center; }
 
     #searchInput {
       width: 100%; max-width: 480px; padding: 12px 20px; border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--text-primary); font-size: 1rem;
+      border: 1px solid var(--glass-border); background: var(--surface-secondary); 
+      color: var(--text-primary); font-size: 1rem; transition: all 0.2s;
+      -webkit-appearance: none; /* Removes Safari default styling */
     }
-    #searchInput:focus { outline: none; border-color: var(--accent-blue); background: rgba(255,255,255,0.1); box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.2); }
-    #searchInput::placeholder { color: #636366; }
+    #searchInput:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15); }
+    #searchInput::placeholder { color: var(--text-secondary); }
 
     .filter-group, .controls {
-      display: flex; background: rgba(28, 28, 30, 0.8); padding: 4px; border-radius: 10px; gap: 2px; flex-wrap: wrap; justify-content: center;
+      display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 10px; gap: 2px; flex-wrap: wrap; justify-content: center;
     }
     .filter-btn, .btn {
       background: transparent; color: var(--text-primary); border: none; padding: 6px 16px;
       border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 500; transition: all 0.2s ease;
     }
-    .filter-btn.active, .btn.active { background: #636366; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); font-weight: 600; }
+    .filter-btn.active, .btn.active { background: var(--surface-color); color: var(--text-primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-weight: 600; }
 
     .legend-container { display: flex; gap: 20px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
     .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-secondary); font-weight: 500; }
-    .legend-box { width: 12px; height: 12px; border-radius: 3px; }
+    .legend-box { width: 12px; height: 12px; border-radius: 4px; }
 
     /* ------------------------------------- */
     /* 3D DESKTOP CANVAS                     */
@@ -111,47 +128,41 @@
     .viewport { perspective: 1400px; width: 100%; max-width: 1250px; display: flex; flex-direction: column; gap: 60px; padding: 40px 20px; }
     
     .floor-container {
-      background: rgba(28, 28, 30, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 40px;
+      background: var(--surface-color); border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px;
       transform-style: preserve-3d; transform: rotateX(45deg) rotateZ(-5deg) translateZ(0);
       transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.08);
     }
-    .viewport.flat .floor-container { transform: rotateX(0deg) rotateZ(0deg) translateZ(0); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); }
+    .viewport.flat .floor-container { transform: rotateX(0deg) rotateZ(0deg) translateZ(0); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05); }
 
     .floor-title { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 24px; transform: translateZ(10px); }
-    .wing-title { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin: 16px 0 8px 0; transform: translateZ(10px); }
+    .wing-title { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin: 16px 0 8px 0; letter-spacing: 1px; transform: translateZ(10px); }
 
     .room-row { display: flex; gap: 6px; margin-bottom: 8px; transform-style: preserve-3d; }
 
     .room-block {
       flex: 1; min-width: 52px; height: 60px; position: relative;
-      transform-style: preserve-3d; transition: transform 0.3s ease, filter 0.3s ease;
+      transform-style: preserve-3d; transition: transform 0.3s ease, opacity 0.3s ease;
       cursor: pointer; -webkit-backface-visibility: hidden; backface-visibility: hidden;
     }
-    .room-block:focus { outline: none; }
-    .room-block:focus .face-top { box-shadow: 0 0 0 3px var(--accent-blue), inset 0 0 0 1px #ffffff !important; }
 
     .room-block .face-top {
       position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 0.85rem; color: #000000; border-radius: 6px;
-      transform: translateZ(16px); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4); transition: all 0.3s ease;
+      font-weight: 700; font-size: 0.85rem; color: #FFFFFF; border-radius: 6px;
+      transform: translateZ(16px); transition: all 0.3s ease; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
     .room-block .face-front {
       position: absolute; width: 100%; height: 16px; bottom: 0; transform-origin: bottom;
-      transform: rotateX(-90deg); filter: brightness(0.6); border-radius: 0 0 6px 6px; transition: all 0.3s ease;
+      transform: rotateX(-90deg); filter: brightness(0.6); border-radius: 0 0 6px 6px;
     }
 
     .room-block:hover { transform: translateZ(16px) scale(1.03); z-index: 50; }
-    .room-block:hover .face-top { box-shadow: 0 0 25px rgba(255, 255, 255, 0.4), inset 0 0 0 2px #ffffff; }
 
     /* Dimming logic for Search & Filters */
-    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-top {
-      background-color: var(--surface-secondary) !important; color: #636366 !important;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05) !important; border-top: none !important;
-    }
+    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-top { background-color: var(--surface-secondary) !important; color: var(--text-secondary) !important; border-top: none !important; text-shadow: none; }
     .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-front { background-color: var(--surface-color) !important; }
     .viewport.filtered .room-block:not(.highlight) { pointer-events: none; transform: translateZ(0) scale(0.98) !important; }
-    .room-block.highlight .face-top { box-shadow: 0 0 30px var(--accent-blue), inset 0 0 0 2px #ffffff !important; }
+    .room-block.highlight .face-top { box-shadow: 0 0 0 4px var(--accent-blue) !important; }
 
     /* Data-Attribute Room Colors */
     .room-block[data-room-type="twin"] .face-top, .room-block[data-room-type="twin"] .face-front { background-color: var(--twin-room); }
@@ -159,44 +170,42 @@
     .room-block[data-room-type="triple"] .face-top, .room-block[data-room-type="triple"] .face-front { background-color: var(--triple-room); }
     .room-block[data-room-type="family"] .face-top, .room-block[data-room-type="family"] .face-front { background-color: var(--family-room); }
     .room-block[data-room-type="corridor"] { cursor: default; }
-    .room-block[data-room-type="corridor"] .face-top { background-color: var(--corridor); color: #86868b; transform: translateZ(2px); }
-    .room-block[data-room-type="corridor"] .face-front { background-color: #1c1c1e; height: 2px; }
+    .room-block[data-room-type="corridor"] .face-top { background-color: var(--corridor); color: var(--text-secondary); text-shadow: none; transform: translateZ(2px); }
+    .room-block[data-room-type="corridor"] .face-front { background-color: var(--surface-secondary); height: 2px; }
 
     /* ------------------------------------- */
     /* DESKTOP INFO CARD (HOVER)             */
     /* ------------------------------------- */
     #infoCard {
-      position: fixed; display: none;
-      background: rgba(28, 28, 30, 0.65);
-      backdrop-filter: blur(30px) saturate(200%);
-      -webkit-backdrop-filter: blur(30px) saturate(200%);
-      color: var(--text-primary); padding: 16px; border-radius: 14px; pointer-events: none; z-index: 1000;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1); min-width: 230px; border: 1px solid rgba(255,255,255,0.1);
+      position: fixed; display: none; background: var(--glass-bg);
+      backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      color: var(--text-primary); padding: 16px; border-radius: 16px; pointer-events: none; z-index: 1000;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2); min-width: 240px; border: 1px solid var(--glass-border);
+      transform: translate3d(0,0,0);
     }
     .click-hint { font-size: 0.7rem; color: var(--text-secondary); margin-top: 10px; text-align: center; }
 
     #toast {
-      position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 100px);
-      background: rgba(48, 209, 88, 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      color: white; padding: 12px 24px; border-radius: 30px; font-weight: 600; font-size: 0.9rem;
-      opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000;
+      position: fixed; bottom: 30px; left: 50%; transform: translate3d(-50%, 100px, 0);
+      background: var(--accent-green); color: white; padding: 12px 24px; border-radius: 30px; font-weight: 600; font-size: 0.9rem;
+      opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000; box-shadow: 0 8px 16px rgba(48, 209, 88, 0.3);
     }
-    #toast.show { transform: translate(-50%, 0); opacity: 1; }
+    #toast.show { transform: translate3d(-50%, 0, 0); opacity: 1; }
 
     #mobileOverlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-      z-index: 900; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      z-index: 900; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; transform: translate3d(0,0,0);
     }
     #mobileOverlay.active { opacity: 1; pointer-events: auto; }
 
     /* ========================================= */
-    /* iOS SAFARI NUCLEAR OPTION (ANTI-FLICKER)  */
+    /* iOS SAFARI MOBILE REDESIGN                */
     /* ========================================= */
     @media (max-width: 768px) {
       body { padding-bottom: 20px; }
       
-      header { padding: 16px 12px 12px 12px; }
+      header { padding: 40px 12px 12px 12px; } /* Extra top padding to clear iOS notch */
       h1 { font-size: 1.4rem; text-align: center; margin-bottom: 4px; }
       .status-badge { margin-bottom: 12px; }
       .legend-container, .controls { display: none; }
@@ -206,10 +215,10 @@
         padding-bottom: 8px; margin-bottom: 12px; -webkit-overflow-scrolling: touch; scrollbar-width: none;
       }
       .stats-container::-webkit-scrollbar { display: none; }
-      .stat-card { min-width: 100px; padding: 10px; border-radius: 14px; background: rgba(44, 44, 46, 0.6); }
+      .stat-card { min-width: 100px; padding: 10px; border-radius: 14px; }
 
       /* Compact Scrolled Header State */
-      header.compact { padding: 10px 12px; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+      header.compact { padding: 40px 12px 10px 12px; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; }
       header.compact h1, header.compact .status-badge, header.compact .filter-group { display: none; }
       header.compact .stats-container { margin-bottom: 0; padding-bottom: 0; flex: 1; order: 1; }
       header.compact .stat-card { min-width: auto; padding: 6px 10px; flex-direction: row; gap: 6px; }
@@ -218,18 +227,15 @@
       header.compact .tools-container { width: auto; margin-bottom: 0; order: 2; margin-left: 8px; }
       
       header.compact #searchInput {
-        width: 40px; height: 40px; border-radius: 20px; padding: 0; color: transparent;
-        background-color: var(--surface-secondary);
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%2386868b' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+        width: 40px; height: 40px; border-radius: 20px; padding: 0; color: transparent; background-color: var(--surface-secondary);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%238E8E93' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
         background-repeat: no-repeat; background-position: center; border: none;
       }
       header.compact #searchInput:focus, header.compact #searchInput:not(:placeholder-shown) {
-        width: 180px; color: var(--text-primary); background-image: none; background-color: rgba(255,255,255,0.1); padding: 10px 16px;
+        width: 180px; color: var(--text-primary); background-image: none; background-color: var(--surface-color); padding: 10px 16px;
       }
 
-      /* --------------------------------------------- */
-      /* KILL ALL 3D RENDERING TO FIX SAFARI FLICKER   */
-      /* --------------------------------------------- */
+      /* STRICT SAFARI ANTI-FLICKER: Nuke 3D entirely on Mobile */
       .viewport { perspective: none !important; -webkit-perspective: none !important; padding: 10px; gap: 30px; }
       .floor-container { 
         transform-style: flat !important; -webkit-transform-style: flat !important;
@@ -242,43 +248,45 @@
         height: 65px; border-radius: 12px; 
         transform-style: flat !important; -webkit-transform-style: flat !important;
         transform: none !important; -webkit-transform: none !important;
-        transition: none !important; /* Disabling transition stops Safari repaint loops on scroll */
+        transition: none !important; 
       }
-      .room-block .face-front { display: none !important; } /* Destroy 3D faces */
+      .room-block .face-front { display: none !important; } 
       .room-block .face-top { 
         transform: none !important; -webkit-transform: none !important;
         border-radius: 12px; font-size: 1rem;
-        box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.2) !important;
-        transition: background-color 0.2s ease !important; /* Only allow color changes */
+        transition: background-color 0.2s ease !important; 
       }
       .room-block:hover { transform: none !important; }
-      .room-block:active .face-top { transform: scale(0.92) !important; transition: transform 0.1s !important; } /* Tap feedback */
+      .room-block:active .face-top { transform: scale(0.92) !important; transition: transform 0.1s !important; } 
 
-      /* ------------------------------------- */
-      /* APPLE MAPS BOTTOM SHEET TOOLTIP       */
-      /* ------------------------------------- */
+      /* Apple Maps Bottom Sheet Tooltip */
       #infoCard {
         position: fixed !important; display: block !important; left: 0 !important; top: auto !important; bottom: 0 !important;
         width: 100%; margin: 0; border-radius: 32px 32px 0 0; padding: 12px 24px 40px 24px;
-        background: rgba(28, 28, 30, 0.75);
-        backdrop-filter: blur(30px) saturate(200%); -webkit-backdrop-filter: blur(30px) saturate(200%);
-        border: 1px solid rgba(255,255,255,0.08); border-bottom: none; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-        transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+        background: var(--glass-bg);
+        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        border: 1px solid var(--glass-border); border-bottom: none; box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+        transform: translate3d(0, 100%, 0); transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
         z-index: 1000; pointer-events: auto;
       }
-      #infoCard.sheet-open { transform: translateY(0); }
+      #infoCard.sheet-open { transform: translate3d(0, 0, 0); }
       .click-hint { display: none; }
       #infoCard::before {
-        content: ''; display: block; width: 40px; height: 5px; background: rgba(255,255,255,0.3);
-        border-radius: 10px; margin: 0 auto 16px auto;
+        content: ''; display: block; width: 40px; height: 5px; background: var(--text-secondary);
+        border-radius: 10px; margin: 0 auto 16px auto; opacity: 0.5;
       }
-      .mobile-copy-btn {
-        display: block !important; width: 100%; background: var(--accent-blue); color: white;
-        text-align: center; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 1rem; margin-top: 20px; border: none;
+      
+      .mobile-actions { display: flex; gap: 10px; margin-top: 20px; }
+      .mobile-btn {
+        flex: 1; text-align: center; padding: 14px; border-radius: 14px; font-weight: 600; font-size: 1rem; border: none;
       }
-      .mobile-copy-btn:active { background: #0071e3; }
+      .btn-copy { background: var(--accent-blue); color: white; }
+      .btn-copy:active { background: #005bb5; }
+      .btn-edit { background: var(--surface-secondary); color: var(--text-primary); }
     }
-    .mobile-copy-btn { display: none; }
+    
+    .mobile-actions { display: none; }
+    @media (max-width: 768px) { .mobile-actions { display: flex; } }
 
   </style>
 </head>
@@ -313,10 +321,10 @@
     </div>
     
     <div class="legend-container">
-      <div class="legend-item"><div class="legend-box" style="background-color: var(--twin-room);"></div> Twin Room</div>
-      <div class="legend-item"><div class="legend-box" style="background-color: var(--double-room);"></div> Double Room</div>
-      <div class="legend-item"><div class="legend-box" style="background-color: var(--triple-room);"></div> Triple Room</div>
-      <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family Room</div>
+      <div class="legend-item"><div class="legend-box" style="background-color: var(--twin-room);"></div> Twin</div>
+      <div class="legend-item"><div class="legend-box" style="background-color: var(--double-room);"></div> Double</div>
+      <div class="legend-item"><div class="legend-box" style="background-color: var(--triple-room);"></div> Triple</div>
+      <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family</div>
     </div>
   </header>
 
@@ -328,36 +336,35 @@
       <div class="wing-title">Wing C</div>
       <div class="room-row">
         <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 312" data-room="312" data-room-type="double"><div class="face-top">312</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 311" data-room="311" data-room-type="twin"><div class="face-top">311</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 310" data-room="310" data-room-type="double"><div class="face-top">310</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 309" data-room="309" data-room-type="twin"><div class="face-top">309</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 307" data-room="307" data-room-type="twin"><div class="face-top">307</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 305" data-room="305" data-room-type="twin"><div class="face-top">305</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 304" data-room="304" data-room-type="double"><div class="face-top">304</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 303" data-room="303" data-room-type="twin"><div class="face-top">303</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 302" data-room="302" data-room-type="double"><div class="face-top">302</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 301" data-room="301" data-room-type="twin"><div class="face-top">301</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="312" data-room-type="double"><div class="face-top">312</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="311" data-room-type="twin"><div class="face-top">311</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="310" data-room-type="double"><div class="face-top">310</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="309" data-room-type="twin"><div class="face-top">309</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="307" data-room-type="twin"><div class="face-top">307</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="305" data-room-type="twin"><div class="face-top">305</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="304" data-room-type="double"><div class="face-top">304</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="303" data-room-type="twin"><div class="face-top">303</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="302" data-room-type="double"><div class="face-top">302</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="301" data-room-type="twin"><div class="face-top">301</div><div class="face-front"></div></div>
         <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
 
       <div class="wing-title">Wing D</div>
       <div class="room-row">
         <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 329" data-room="329" data-room-type="twin"><div class="face-top">329</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 328" data-room="328" data-room-type="double"><div class="face-top">328</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 327" data-room="327" data-room-type="twin"><div class="face-top">327</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 325" data-room="325" data-room-type="twin"><div class="face-top">325</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 323" data-room="323" data-room-type="twin"><div class="face-top">323</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 321" data-room="321" data-room-type="twin"><div class="face-top">321</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 320" data-room="320" data-room-type="double"><div class="face-top">320</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 319" data-room="319" data-room-type="twin"><div class="face-top">319</div><div class="face-front"></div></div>
-        
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 318" data-room="318" data-room-type="triple"><div class="face-top">318</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 317" data-room="317" data-room-type="triple"><div class="face-top">317</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 316" data-room="316" data-room-type="triple"><div class="face-top">316</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 315" data-room="315" data-room-type="triple"><div class="face-top">315</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 314" data-room="314" data-room-type="triple"><div class="face-top">314</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="329" data-room-type="twin"><div class="face-top">329</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="328" data-room-type="double"><div class="face-top">328</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="327" data-room-type="twin"><div class="face-top">327</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="325" data-room-type="twin"><div class="face-top">325</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="323" data-room-type="twin"><div class="face-top">323</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="321" data-room-type="twin"><div class="face-top">321</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="320" data-room-type="double"><div class="face-top">320</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="319" data-room-type="twin"><div class="face-top">319</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="318" data-room-type="triple"><div class="face-top">318</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="317" data-room-type="triple"><div class="face-top">317</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="316" data-room-type="triple"><div class="face-top">316</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="315" data-room-type="triple"><div class="face-top">315</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="314" data-room-type="triple"><div class="face-top">314</div><div class="face-front"></div></div>
         <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
     </div>
@@ -368,40 +375,40 @@
       <div class="wing-title">Wing A</div>
       <div class="room-row">
         <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 212" data-room="212" data-room-type="double"><div class="face-top">212</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 211" data-room="211" data-room-type="twin"><div class="face-top">211</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 210" data-room="210" data-room-type="double"><div class="face-top">210</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 209" data-room="209" data-room-type="twin"><div class="face-top">209</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 208" data-room="208" data-room-type="twin"><div class="face-top">208</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 207" data-room="207" data-room-type="twin"><div class="face-top">207</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 206" data-room="206" data-room-type="twin"><div class="face-top">206</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 205" data-room="205" data-room-type="double"><div class="face-top">205</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 204" data-room="204" data-room-type="twin"><div class="face-top">204</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 203" data-room="203" data-room-type="double"><div class="face-top">203</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 202" data-room="202" data-room-type="double"><div class="face-top">202</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 201" data-room="201" data-room-type="twin"><div class="face-top">201</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="212" data-room-type="double"><div class="face-top">212</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="211" data-room-type="twin"><div class="face-top">211</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="210" data-room-type="double"><div class="face-top">210</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="209" data-room-type="twin"><div class="face-top">209</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="208" data-room-type="twin"><div class="face-top">208</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="207" data-room-type="twin"><div class="face-top">207</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="206" data-room-type="twin"><div class="face-top">206</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="205" data-room-type="double"><div class="face-top">205</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="204" data-room-type="twin"><div class="face-top">204</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="203" data-room-type="double"><div class="face-top">203</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="202" data-room-type="double"><div class="face-top">202</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="201" data-room-type="twin"><div class="face-top">201</div><div class="face-front"></div></div>
         <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
 
       <div class="wing-title">Wing B</div>
       <div class="room-row">
         <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 229" data-room="229" data-room-type="twin"><div class="face-top">229</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 228" data-room="228" data-room-type="double"><div class="face-top">228</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 227" data-room="227" data-room-type="twin"><div class="face-top">227</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 226" data-room="226" data-room-type="twin"><div class="face-top">226</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 225" data-room="225" data-room-type="twin"><div class="face-top">225</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 224" data-room="224" data-room-type="twin"><div class="face-top">224</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 223" data-room="223" data-room-type="twin"><div class="face-top">223</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 222" data-room="222" data-room-type="twin"><div class="face-top">222</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 221" data-room="221" data-room-type="twin"><div class="face-top">221</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 220" data-room="220" data-room-type="double"><div class="face-top">220</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 219" data-room="219" data-room-type="twin"><div class="face-top">219</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 218" data-room="218" data-room-type="twin"><div class="face-top">218</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 217" data-room="217" data-room-type="twin"><div class="face-top">217</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 216" data-room="216" data-room-type="twin"><div class="face-top">216</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 215" data-room="215" data-room-type="twin"><div class="face-top">215</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" aria-label="Room 214" data-room="214" data-room-type="twin"><div class="face-top">214</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="229" data-room-type="twin"><div class="face-top">229</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="228" data-room-type="double"><div class="face-top">228</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="227" data-room-type="twin"><div class="face-top">227</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="226" data-room-type="twin"><div class="face-top">226</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="225" data-room-type="twin"><div class="face-top">225</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="224" data-room-type="twin"><div class="face-top">224</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="223" data-room-type="twin"><div class="face-top">223</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="222" data-room-type="twin"><div class="face-top">222</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="221" data-room-type="twin"><div class="face-top">221</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="220" data-room-type="double"><div class="face-top">220</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="219" data-room-type="twin"><div class="face-top">219</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="218" data-room-type="twin"><div class="face-top">218</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="217" data-room-type="twin"><div class="face-top">217</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="216" data-room-type="twin"><div class="face-top">216</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="215" data-room-type="twin"><div class="face-top">215</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" data-room="214" data-room-type="twin"><div class="face-top">214</div><div class="face-front"></div></div>
         <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
     </div>
@@ -409,7 +416,10 @@
 
   <div id="infoCard">
     <div id="infoCardContent"></div>
-    <button class="mobile-copy-btn" id="mobileCopyBtn">Copy Room Details</button>
+    <div class="mobile-actions">
+      <button class="mobile-btn btn-edit" id="mobileEditBtn">Edit Info</button>
+      <button class="mobile-btn btn-copy" id="mobileCopyBtn">Copy</button>
+    </div>
   </div>
   
   <div id="toast">Copied to clipboard!</div>
@@ -421,7 +431,7 @@
     let roomData = {};
     const totalRoomsCount = document.querySelectorAll('.room-block[data-room]').length;
 
-    // Optimized Scroll Detection
+    // Optimized Safari Scroll Detection
     let ticking = false;
     window.addEventListener('scroll', () => {
       if (!ticking) {
@@ -455,19 +465,32 @@
         header: false,
         skipEmptyLines: true,
         complete: function(results) {
+          // Save to Offline Cache
+          localStorage.setItem('ymca_offline_data', JSON.stringify(results.data));
+          
           parseRows(results.data);
           statusBadge.classList.add('synced');
           const timeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
           statusBadge.querySelector('span').textContent = `Live Synced at ${timeString}`;
         },
         error: function() {
+          // Attempt Offline Fallback
+          const offlineData = localStorage.getItem('ymca_offline_data');
           statusBadge.classList.remove('synced');
-          statusBadge.querySelector('span').textContent = '⚠️ Offline - Retrying...';
+          if(offlineData) {
+            parseRows(JSON.parse(offlineData));
+            statusBadge.querySelector('span').textContent = '⚠️ Offline (Showing Cached Data)';
+          } else {
+            statusBadge.querySelector('span').textContent = '⚠️ Offline - No Data Cached';
+          }
         }
       });
     }
 
     function parseRows(rows) {
+      // Check for Admin Override Data
+      const localOverrides = JSON.parse(localStorage.getItem('ymca_admin_overrides') || '{}');
+      
       roomData = {};
       let stats = { pax: 0, boys: 0, girls: 0, occupiedRooms: 0 };
 
@@ -483,15 +506,31 @@
             if (!roomData[roomNo]) roomData[roomNo] = { type: roomType, remarks: remarks, occupants: [] };
             if (name) {
               roomData[roomNo].occupants.push({ name, gender });
-              stats.pax++;
-              if (gender.toLowerCase().includes('boy') || gender.toLowerCase().includes('male')) stats.boys++;
-              if (gender.toLowerCase().includes('girl') || gender.toLowerCase().includes('female')) stats.girls++;
             }
             if (remarks && !roomData[roomNo].remarks) roomData[roomNo].remarks = remarks;
             if (roomType && !roomData[roomNo].type) roomData[roomNo].type = roomType;
           }
         }
       });
+
+      // Apply local Admin overrides
+      for (const [roomNo, override] of Object.entries(localOverrides)) {
+         if(!roomData[roomNo]) roomData[roomNo] = { type: 'Room', remarks: '', occupants: [] };
+         if(override.remarks !== undefined) roomData[roomNo].remarks = override.remarks;
+      }
+
+      // Calculate final stats
+      for (const roomNo in roomData) {
+        const data = roomData[roomNo];
+        if (data.occupants.length > 0) {
+           stats.occupiedRooms++;
+           data.occupants.forEach(o => {
+             stats.pax++;
+             if (o.gender.toLowerCase().includes('boy') || o.gender.toLowerCase().includes('male')) stats.boys++;
+             if (o.gender.toLowerCase().includes('girl') || o.gender.toLowerCase().includes('female')) stats.girls++;
+           });
+        }
+      }
 
       document.querySelectorAll('.room-block[data-room]').forEach(block => {
         const roomNo = block.getAttribute('data-room');
@@ -507,7 +546,6 @@
             else if (t.includes('family')) block.setAttribute('data-room-type', 'family');
           }
           if (data.occupants.length > 0) {
-            stats.occupiedRooms++;
             if (topFace) topFace.style.borderTop = "4px solid var(--accent-green)";
           } else {
             if (topFace) topFace.style.borderTop = "none";
@@ -575,6 +613,7 @@
     const infoCard = document.getElementById('infoCard');
     const infoCardContent = document.getElementById('infoCardContent');
     const mobileCopyBtn = document.getElementById('mobileCopyBtn');
+    const mobileEditBtn = document.getElementById('mobileEditBtn');
     const mobileOverlay = document.getElementById('mobileOverlay');
     let currentActiveRoomNo = null;
 
@@ -589,23 +628,23 @@
       const data = roomData[roomNo];
       if (data) {
         infoCardContent.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <strong style="font-size:1.4rem; color:var(--text-primary);">Room ${roomNo}</strong>
-            <span style="font-size:0.75rem; background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:8px; color:#e5e5ea; font-weight:600;">${data.type || 'Room'}</span>
+            <span style="font-size:0.75rem; background:var(--surface-secondary); padding:4px 10px; border-radius:8px; color:var(--text-secondary); font-weight:600;">${data.type || 'Room'}</span>
           </div>
-          <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:14px;">
+          <div style="border-top:1px solid var(--glass-border); padding-top:14px;">
             <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">Occupants</div>
             ${data.occupants.length > 0 
               ? data.occupants.map(occ => `
                   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <span style="font-weight:600; font-size:1.1rem;">${occ.name}</span>
-                    <span style="font-size:0.8rem; color:${(occ.gender.toLowerCase().includes('boy') || occ.gender.toLowerCase().includes('male')) ? 'var(--twin-room)' : 'var(--family-room)'}; font-weight:600;">${occ.gender}</span>
+                    <span style="font-size:0.75rem; color:${(occ.gender.toLowerCase().includes('boy') || occ.gender.toLowerCase().includes('male')) ? 'var(--twin-room)' : 'var(--family-room)'}; font-weight:700;">${occ.gender}</span>
                   </div>
                 `).join('')
               : '<div style="color:var(--text-secondary); font-size:1rem; font-style:italic;">No occupants assigned</div>'
             }
           </div>
-          ${data.remarks ? `<div style="margin-top:14px; background:rgba(255, 59, 48, 0.2); color:#ff453a; font-size:0.9rem; font-weight:600; padding:8px 12px; border-radius:8px; display:inline-block; border:1px solid rgba(255,59,48,0.3);">${data.remarks}</div>` : ''}
+          ${data.remarks ? `<div style="margin-top:14px; background:rgba(255, 59, 48, 0.15); color:#FF375F; font-size:0.9rem; font-weight:600; padding:8px 12px; border-radius:8px; display:inline-block; border:1px solid rgba(255,59,48,0.2);">${data.remarks}</div>` : ''}
           <div class="click-hint">Click or press Enter to copy</div>
         `;
       } else {
@@ -632,6 +671,22 @@
         closeMobileSheet();
       });
     }
+    
+    // Quick Admin Edit Mode
+    function triggerAdminEdit(roomNo) {
+      const currentRemarks = roomData[roomNo] ? roomData[roomNo].remarks : '';
+      const newRemarks = prompt(`Admin Swap: Enter new remarks for Room ${roomNo} (e.g. VIP, Locked). This saves locally.`, currentRemarks);
+      if (newRemarks !== null) {
+        const localOverrides = JSON.parse(localStorage.getItem('ymca_admin_overrides') || '{}');
+        localOverrides[roomNo] = { remarks: newRemarks };
+        localStorage.setItem('ymca_admin_overrides', JSON.stringify(localOverrides));
+        
+        // Refresh UI
+        loadGoogleSheetData(); 
+        closeMobileSheet();
+        showToast(`Room ${roomNo} updated locally.`);
+      }
+    }
 
     function openMobileSheet(roomNo) {
       if(window.innerWidth > 768) return; 
@@ -648,9 +703,8 @@
 
     mobileOverlay.addEventListener('click', closeMobileSheet);
     
-    mobileCopyBtn.addEventListener('click', () => {
-      if(currentActiveRoomNo) copyToClipboard(currentActiveRoomNo);
-    });
+    mobileCopyBtn.addEventListener('click', () => { if(currentActiveRoomNo) copyToClipboard(currentActiveRoomNo); });
+    mobileEditBtn.addEventListener('click', () => { if(currentActiveRoomNo) triggerAdminEdit(currentActiveRoomNo); });
 
     document.querySelectorAll('.room-block[data-room]').forEach(block => {
       block.addEventListener('mousemove', (e) => {
