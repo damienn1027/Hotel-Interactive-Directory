@@ -76,15 +76,17 @@
     }
 
     /* ========================================= */
-    /* 1. MAIN HEADER (Logo & Countdown)         */
+    /* 1. MAIN HEADER (Logo, Countdown, Theme)   */
     /* ========================================= */
     .main-header {
-      width: 100%; padding: 30px 40px; display: flex; flex-direction: column;
+      width: 100%; padding: 30px 20px 20px 20px; display: flex; flex-direction: column;
       align-items: center; gap: 16px; max-width: 1250px; position: relative;
     }
 
     .brand-section { display: flex; align-items: center; justify-content: center; width: 100%; position: relative; }
     .brand-logo { height: 60px; width: auto; object-fit: contain; transition: opacity 0.2s ease; }
+    
+    /* Fallback Text if Image Fails */
     h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-primary); }
     .brand-hl-1 { color: var(--brand-blue); } .brand-hl-2 { color: var(--brand-green); } .brand-hl-3 { color: var(--brand-orange); }
 
@@ -97,7 +99,7 @@
 
     .countdown-pill {
       background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 30px;
-      padding: 8px 24px; font-size: 0.9rem; font-weight: 600; color: var(--text-secondary);
+      padding: 8px 24px; font-size: 0.95rem; font-weight: 600; color: var(--text-secondary);
       box-shadow: var(--shadow-soft); display: flex; align-items: center; gap: 8px; letter-spacing: 0.5px;
     }
     .countdown-pill span { color: var(--brand-blue); font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -130,6 +132,7 @@
     }
 
     .dir-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .dir-row.bottom-row { justify-content: flex-start; gap: 30px; border-top: 1px solid var(--border-color); padding-top: 16px; }
 
     #searchInput {
       flex: 1; min-width: 250px; padding: 10px 16px; border-radius: 10px; border: 2px solid var(--surface-secondary);
@@ -162,7 +165,7 @@
     .stat-value { font-size: 1rem; color: var(--text-primary); }
     #stat-pax { color: var(--brand-blue); } #stat-boys { color: var(--brand-green); } #stat-girls { color: var(--brand-orange); }
 
-    .legend-container { display: flex; gap: 14px; flex-wrap: wrap; }
+    .legend-container { display: flex; gap: 14px; flex-wrap: wrap; margin-left: auto; }
     .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-primary); font-weight: 600; }
     .legend-box { width: 14px; height: 14px; border-radius: 4px; }
 
@@ -212,7 +215,7 @@
     .room-block[data-room-type="corridor"]:hover { transform: none; }
 
     /* ============================== */
-    /* TAB 2: TIMELINE UI             */
+    /* 4. TIMELINE UI                 */
     /* ============================== */
     .timeline-wrapper { width: 100%; max-width: 700px; padding: 40px 20px; display: flex; flex-direction: column; gap: 16px; }
     .timeline-date-header { font-size: 1.4rem; font-weight: 700; color: var(--brand-orange); margin-top: 24px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 2px dashed var(--border-color); display: inline-block; }
@@ -224,7 +227,7 @@
     .timeline-venue { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); display: flex; align-items: flex-start; gap: 6px; }
 
     /* ============================== */
-    /* TAB 3: HANDBOOK CANVA EMBED    */
+    /* 5. HANDBOOK CANVA EMBED        */
     /* ============================== */
     .handbook-wrapper { width: 100%; max-width: 800px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
     .canva-embed-container {
@@ -251,30 +254,34 @@
     /* MOBILE RESPONSIVE ADAPTATIONS  */
     /* ============================== */
     @media (max-width: 1024px) {
-      .dir-row { flex-direction: column; align-items: stretch; }
+      .dir-row { flex-direction: column; align-items: stretch; gap: 16px; }
+      .dir-row.bottom-row { justify-content: center; }
+      .legend-container { margin-left: 0; justify-content: center; width: 100%; }
       .viewport { padding: 20px 10px; perspective: none; }
       .floor-container { transform: none !important; padding: 20px 15px; border-radius: 16px; overflow-x: auto; }
       .room-block:hover { transform: none; z-index: 1; }
       .room-row { min-width: 600px; }
-      .theme-toggle { position: relative; }
     }
 
     @media (max-width: 768px) {
       .main-header { padding: 20px 16px; }
-      .brand-section { flex-direction: column; gap: 10px; }
-      .theme-toggle { position: absolute; top: 0; right: 0; width: 36px; height: 36px; font-size: 1rem; }
+      .theme-toggle { position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; font-size: 1rem; }
       .brand-logo { height: 50px; }
       h1 { font-size: 1.4rem; text-align: center; }
+      .countdown-pill { font-size: 0.8rem; padding: 6px 16px; }
       
       .sticky-toolbar { padding: 10px 12px; }
       .tab-nav { width: 100%; }
       .tab-nav button { flex: 1; text-align: center; padding: 8px 4px; font-size: 0.85rem; }
       
       .directory-dashboard { margin: 16px 12px 0 12px; width: calc(100% - 24px); padding: 16px; gap: 16px; }
-      .filter-group, .controls, .legend-container { display: none !important; } /* Hide complex tools on phone */
+      .filter-group, .controls { display: none !important; } /* Hide complex tools on phone */
       
-      .stats-container { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+      .stats-container { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 4px; width: 100%; }
       .stat-pill { min-width: max-content; }
+      
+      #searchInput { width: 100%; min-width: unset; }
+      #searchInput::-webkit-input-placeholder { color: var(--text-secondary); opacity: 1; }
       
       .handbook-wrapper, .timeline-wrapper { padding: 16px 12px; }
       .canva-embed-container { max-width: 100%; }
@@ -284,7 +291,7 @@
 <body>
 
   <!-- HEADER -->
-  <header class="main-header">
+  <header class="main-header" id="mainHeader">
     <div class="brand-section">
       <img src="logo-light.png" alt="Youth Policy Lab Logo" class="brand-logo" id="brandLogo" onerror="this.style.display='none'; document.getElementById('fallbackTitle').style.display='block';">
       <h1 id="fallbackTitle" style="display:none;"><span class="brand-hl-1">Youth</span> <span class="brand-hl-2">Policy</span> <span class="brand-hl-3">Lab</span></h1>
@@ -310,7 +317,7 @@
     
     <!-- Directory Tools Dashboard -->
     <div class="directory-dashboard">
-      <div class="dir-row">
+      <div class="dir-row top-row">
         <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
         <div class="filter-group">
           <button class="filter-btn active" data-filter="all">All</button>
@@ -325,7 +332,7 @@
         </div>
       </div>
       
-      <div class="dir-row">
+      <div class="dir-row bottom-row">
         <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting...</span></div>
         <div class="stats-container">
           <div class="stat-pill">Participants <span class="stat-value" id="stat-pax">-</span></div>
@@ -429,7 +436,7 @@
     </div>
   </div>
 
-  <!-- TAB 2: EVENT TIMELINE -->
+  <!-- TAB 2: EVENT TIMELINE (SMART CSV PARSE) -->
   <div class="tab-content" id="tab-timeline">
     <div class="timeline-wrapper" id="timeline-container">
       <div style="text-align: center; color: var(--text-secondary); padding: 40px; font-weight: 500;">
@@ -438,7 +445,7 @@
     </div>
   </div>
 
-  <!-- TAB 3: EVENT HANDBOOK -->
+  <!-- TAB 3: EVENT HANDBOOK (SMART CANVA EMBED) -->
   <div class="tab-content" id="tab-handbook">
     <div class="handbook-wrapper">
       <div class="canva-embed-container">
@@ -482,7 +489,7 @@
       }
     });
 
-    // --- 2. Countdown Logic ---
+    // --- 2. Safe Countdown Timer Logic ---
     const commencementDate = new Date("August 14, 2026 09:15:00").getTime();
     const countdownEl = document.getElementById('countdown');
 
@@ -499,15 +506,10 @@
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000I can see in "Screenshot 2026-08-09 at 4.46.22 PM.jpg" that your web application is hanging on both the "Loading countdown..." and "Connecting..." status indicators. 
+      const seconds = Math.floorI completely understand your frustration. It is incredibly annoying when an interface renders but flat-out refuses to bind or display the actual data, especially when it feels like crucial logic is just vanishing with every revision. 
 
-However, it looks like you forgot to paste the code into your prompt! I cannot inspect the current code for flaws or write a refreshed version without seeing it.
+I am more than happy to scrap what you have and start fresh with a clean, robust rewrite that ensures your data actually connects and reflects properly. 
 
-Based purely on the visual evidence of the page being stuck in these initial states, here are the most likely technical culprits:
+However, you didn't include the code in your message! 
 
-*   **Uncaught JavaScript Error:** A syntax, reference, or type error in your script has likely halted execution entirely. When a script crashes, it prevents any subsequent code—like updating the DOM to remove loading states—from running.
-*   **Hanging Network Request (`fetch`):** The app appears to be trying to load participant or directory data. If the `fetch` request to your backend or JSON file fails, times out, or returns a format your code doesn't expect (and there isn't a proper `.catch()` block to handle the error), the "Connecting..." state will never resolve.
-*   **WebSocket/Live Database Issue:** If "Connecting..." refers to a live connection (like Firebase, Supabase, or a custom WebSocket), it may be failing to establish the initial handshake, leaving the UI trapped in the pending state.
-*   **Missing Target Date for Countdown:** The countdown timer might be relying on data from the stalled network request to know what date it is counting down to. If the data never arrives, the timer cannot initialize.
-
-Could you please paste the relevant HTML and JavaScript—specifically the functions handling your data fetching, connection status, and countdown logic—along with any red error messages showing up in your browser's Developer Console?
+Could you paste the current code (or the last version that at least had the right structure), along with a quick note on what language or framework you are using and what the data is supposed to look like?
