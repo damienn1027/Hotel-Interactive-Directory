@@ -8,7 +8,7 @@
   <!-- PapaParse for direct Google Sheets CSV integration -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   
-  <!-- Official Brand Fonts -->
+  <!-- Official Brand Fonts: Poppins (English) & Noto Sans SC (Chinese fallback for Source Han Sans) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -78,50 +78,39 @@
     }
 
     /* ========================================= */
-    /* 1. MAIN HEADER (Scrolls naturally)        */
+    /* 1. MAIN HEADER (Scrolls out of the way)   */
     /* ========================================= */
     .main-header {
       width: 100%;
-      padding: 40px 20px 20px 20px;
+      padding: 30px 40px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      position: relative;
+      gap: 20px;
+      max-width: 1250px;
     }
 
     .brand-section {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 12px;
-      text-align: center;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      position: relative;
     }
 
+    /* Logo Styling */
     .brand-logo {
-      height: 70px;
+      height: 60px;
       width: auto;
       object-fit: contain;
       transition: opacity 0.2s ease;
     }
 
-    h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-primary); margin-bottom: -5px; }
+    h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-primary); }
     .brand-hl-1 { color: var(--brand-blue); }
     .brand-hl-2 { color: var(--brand-green); }
     .brand-hl-3 { color: var(--brand-orange); }
-
-    /* Event Countdown Timer */
-    .countdown-timer {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-      background: var(--surface-color);
-      border: 1px solid var(--border-color);
-      padding: 6px 18px;
-      border-radius: 20px;
-      box-shadow: var(--shadow-soft);
-      letter-spacing: 0.5px;
-    }
-    .countdown-timer strong { color: var(--brand-blue); font-weight: 700; font-variant-numeric: tabular-nums; }
 
     /* Dark Mode Toggle Button */
     .theme-toggle {
@@ -136,80 +125,20 @@
       font-size: 1.2rem;
       cursor: pointer;
       position: absolute;
-      top: 20px;
-      right: 20px;
+      right: 0;
       transition: all 0.2s ease;
       box-shadow: var(--shadow-soft);
     }
     .theme-toggle:hover { transform: scale(1.1); }
 
-    /* ========================================= */
-    /* 2. STICKY TOOLBAR (Only Tabs)             */
-    /* ========================================= */
-    .sticky-toolbar {
-      position: sticky;
-      top: 0;
-      width: 100%;
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border-color);
-      padding: 12px 20px;
-      z-index: 100;
+    .header-info-row {
       display: flex;
-      justify-content: center;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .tab-nav { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 10px; gap: 4px; border: 1px solid var(--border-color); }
-    .tab-nav button {
-      background: transparent; color: var(--text-secondary); border: none; padding: 8px 24px;
-      border-radius: 6px; font-size: 0.9rem; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.2s ease;
-    }
-    .tab-nav button.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-
-    /* Tab Content Wrappers */
-    .tab-content { display: none; width: 100%; justify-content: center; }
-    .tab-content.active { display: flex; flex-direction: column; align-items: center; }
-
-    /* ========================================= */
-    /* TAB 1: DIRECTORY DASHBOARD & MAP          */
-    /* ========================================= */
-    .viewport { perspective: 1400px; width: 100%; max-width: 1250px; display: flex; flex-direction: column; gap: 40px; padding: 30px 20px; }
-    
-    /* Directory specific tools container */
-    .directory-dashboard {
-      background: var(--surface-color);
-      border: 2px solid var(--border-color);
-      border-radius: 16px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      box-shadow: var(--shadow-soft);
+      justify-content: space-between;
+      align-items: center;
       width: 100%;
+      flex-wrap: wrap;
+      gap: 20px;
     }
-
-    .dir-dash-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-    .dir-dash-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); }
-
-    #searchInput {
-      width: 100%; max-width: 380px; padding: 10px 16px; border-radius: 10px; border: 2px solid var(--surface-secondary);
-      background: var(--surface-color); color: var(--text-primary); font-size: 0.9rem; font-family: 'Poppins', sans-serif;
-      font-weight: 500; transition: all 0.2s;
-    }
-    #searchInput:focus { outline: none; border-color: var(--brand-blue); box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15); }
-    #searchInput::placeholder { color: #adb5bd; font-weight: 400; }
-
-    .filter-group, .controls { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 8px; gap: 4px; border: 1px solid var(--border-color); flex-wrap: wrap; }
-    .filter-btn, .btn {
-      background: transparent; color: var(--text-secondary); border: none; padding: 6px 14px;
-      border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif; transition: all 0.2s ease;
-    }
-    .filter-btn:hover, .btn:hover { background: rgba(120,120,120,0.1); color: var(--text-primary); }
-    .filter-btn.active, .btn.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-
-    .right-toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 
     .status-badge {
       display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
@@ -221,29 +150,85 @@
     .status-badge.synced .status-dot { background: var(--brand-green); box-shadow: 0 0 8px rgba(0, 200, 83, 0.4); }
     .status-badge.synced { color: var(--text-primary); }
 
-    .stats-container { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .stats-container { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
     .stat-card {
-      background: var(--surface-secondary); border-radius: 8px;
-      padding: 6px 12px; display: flex; align-items: baseline; gap: 6px; min-width: max-content;
+      background: var(--surface-color); border: 2px solid var(--border-color); border-radius: 12px;
+      padding: 10px 16px; display: flex; flex-direction: column; align-items: center; min-width: 90px;
     }
-    .stat-value { font-size: 1.1rem; font-weight: 700; }
+    .stat-value { font-size: 1.4rem; font-weight: 700; }
     #stat-pax { color: var(--brand-blue); }
     #stat-boys { color: var(--brand-green); }
     #stat-girls { color: var(--brand-orange); }
     #stat-vacant { color: var(--text-primary); }
-    .stat-label { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; }
+    .stat-label { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-top: 2px; }
 
-    .legend-container { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .legend-container { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
     .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-primary); font-weight: 600; }
     .legend-box { width: 14px; height: 14px; border-radius: 4px; }
 
-    /* Map Elements */
+    /* ========================================= */
+    /* 2. STICKY TOOLBAR (Stays at the top)      */
+    /* ========================================= */
+    .sticky-toolbar {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 40px;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .tab-nav { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 10px; gap: 4px; border: 1px solid var(--border-color); }
+    .tab-nav button {
+      background: transparent; color: var(--text-secondary); border: none; padding: 8px 16px;
+      border-radius: 6px; font-size: 0.9rem; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.2s ease;
+    }
+    .tab-nav button.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+    .toolbar-right { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    
+    .dir-tools.hidden { display: none !important; }
+
+    #searchInput {
+      width: 250px; padding: 8px 16px; border-radius: 8px; border: 2px solid var(--surface-secondary);
+      background: var(--surface-color); color: var(--text-primary); font-size: 0.9rem; font-family: 'Poppins', sans-serif;
+      font-weight: 500; transition: all 0.2s;
+    }
+    #searchInput:focus { outline: none; border-color: var(--brand-blue); box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15); }
+    #searchInput::placeholder { color: var(--text-secondary); font-weight: 400; }
+
+    .filter-group, .controls { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 8px; gap: 4px; border: 1px solid var(--border-color); }
+    .filter-btn, .btn {
+      background: transparent; color: var(--text-secondary); border: none; padding: 6px 12px;
+      border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif; transition: all 0.2s ease;
+    }
+    .filter-btn:hover, .btn:hover { background: rgba(120,120,120,0.1); color: var(--text-primary); }
+    .filter-btn.active, .btn.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+    /* Tab Content Wrappers */
+    .tab-content { display: none; width: 100%; justify-content: center; }
+    .tab-content.active { display: flex; }
+
+    /* ============================== */
+    /* TAB 1: 3D PERSPECTIVE CANVAS   */
+    /* ============================== */
+    .viewport { perspective: 1400px; width: 100%; max-width: 1250px; display: flex; flex-direction: column; gap: 60px; padding: 40px 20px; }
     .floor-container {
       background: var(--surface-color); border: 2px solid var(--border-color); border-radius: 24px; padding: 40px;
       transform-style: preserve-3d; transform: rotateX(45deg) rotateZ(-5deg) translateZ(0);
       transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: var(--shadow-soft);
     }
+
     .viewport.flat .floor-container { transform: rotateX(0deg) rotateZ(0deg) translateZ(0); }
+
     .floor-title { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 24px; transform: translateZ(10px); display: inline-block; padding-bottom: 4px; border-bottom: 4px solid var(--brand-orange); }
     .wing-title { font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); margin: 16px 0 8px 0; text-transform: uppercase; letter-spacing: 1px; transform: translateZ(10px); }
     .room-row { display: flex; gap: 8px; margin-bottom: 10px; transform-style: preserve-3d; }
@@ -251,9 +236,19 @@
     .room-block { flex: 1; min-width: 52px; height: 60px; position: relative; transform-style: preserve-3d; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease, opacity 0.3s ease; cursor: pointer; }
     .room-block:focus { outline: none; }
     .room-block:focus .face-top { box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.4), inset 0 0 0 2px #ffffff !important; }
-    .room-block .face-top { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: #000; border-radius: 6px; transform: translateZ(16px); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3); transition: all 0.3s ease; }
+
+    .room-block .face-top {
+      position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: #000; border-radius: 6px;
+      transform: translateZ(16px); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3); transition: all 0.3s ease;
+    }
+    
+    /* Contrast fix for dark mode family room text */
     body.dark-mode .room-block .face-top { color: #fff; box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.3); }
-    .room-block .face-front { position: absolute; width: 100%; height: 16px; bottom: 0; transform-origin: bottom; transform: rotateX(-90deg); filter: brightness(0.8); border-radius: 0 0 6px 6px; transition: all 0.3s ease; }
+
+    .room-block .face-front {
+      position: absolute; width: 100%; height: 16px; bottom: 0; transform-origin: bottom; transform: rotateX(-90deg); filter: brightness(0.8); border-radius: 0 0 6px 6px; transition: all 0.3s ease;
+    }
+
     .room-block:hover { transform: translateZ(16px) scale(1.05); z-index: 50; }
     .room-block:hover .face-top { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 0 0 2px #ffffff; }
 
@@ -266,6 +261,7 @@
     .room-block[data-room-type="double"] .face-top, .room-block[data-room-type="double"] .face-front { background-color: var(--double-room); }
     .room-block[data-room-type="triple"] .face-top, .room-block[data-room-type="triple"] .face-front { background-color: var(--triple-room); }
     .room-block[data-room-type="family"] .face-top, .room-block[data-room-type="family"] .face-front { background-color: var(--family-room); color: white; }
+    
     .room-block[data-room-type="corridor"] { cursor: default; }
     .room-block[data-room-type="corridor"] .face-top { background-color: var(--corridor); color: var(--text-secondary); transform: translateZ(2px); }
     .room-block[data-room-type="corridor"] .face-front { background-color: var(--border-color); height: 2px; }
@@ -311,36 +307,39 @@
     /* MOBILE RESPONSIVE ADAPTATIONS  */
     /* ============================== */
     @media (max-width: 1024px) {
-      .dir-dash-top, .dir-dash-bottom { justify-content: center; }
+      .sticky-toolbar { flex-direction: column; padding: 12px 20px; gap: 12px; }
+      .toolbar-right { width: 100%; justify-content: center; }
       #searchInput { max-width: 100%; flex: 1; }
       .viewport { padding: 20px 10px; perspective: none; }
       .floor-container { transform: none !important; padding: 20px 15px; border-radius: 16px; overflow-x: auto; }
       .room-block:hover { transform: none; z-index: 1; }
       .room-row { min-width: 600px; }
+      .theme-toggle { position: relative; }
     }
 
     @media (max-width: 768px) {
-      .main-header { padding: 20px 16px 10px 16px; }
-      .theme-toggle { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; font-size: 1rem; }
+      .main-header { padding: 20px 16px; }
+      .brand-section { flex-direction: column; gap: 10px; }
+      .theme-toggle { position: absolute; top: 0; right: 0; width: 36px; height: 36px; font-size: 1rem; }
       .brand-logo { height: 50px; }
       h1 { font-size: 1.4rem; text-align: center; }
+      
+      .header-info-row { flex-direction: column; gap: 16px; }
+      .stats-container { width: 100%; flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+      .stat-card { min-width: 100px; padding: 8px 12px; }
+      .legend-container { display: none; }
       
       .sticky-toolbar { padding: 10px 12px; }
       .tab-nav { width: 100%; display: flex; }
       .tab-nav button { flex: 1; text-align: center; padding: 8px 4px; font-size: 0.8rem; }
       
-      .directory-dashboard { padding: 16px 12px; border-radius: 12px; gap: 12px; }
-      .dir-dash-top { flex-direction: column; align-items: stretch; gap: 12px; }
-      .right-toolbar { flex-direction: column; align-items: stretch; width: 100%; }
-      .filter-group { overflow-x: auto; flex-wrap: nowrap; width: 100%; padding-bottom: 4px; justify-content: flex-start; -webkit-overflow-scrolling: touch; }
-      .controls { display: none; } /* Hide 3D toggles on mobile */
+      .filter-group, .controls { display: none !important; } 
       
-      .dir-dash-bottom { flex-direction: column; align-items: center; gap: 12px; }
-      .stats-container { width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; justify-content: flex-start; -webkit-overflow-scrolling: touch; }
-      .stat-card { min-width: 90px; }
-      .legend-container { display: none; } /* Hide legend on mobile to save space */
-      
+      /* Mobile Search Bar Setup */
       #searchInput { width: 100%; }
+      
+      /* Target Safari specifically to fix placeholder color bleed */
+      #searchInput::-webkit-input-placeholder { color: var(--text-secondary); opacity: 1; }
       
       .handbook-wrapper, .timeline-wrapper { padding: 16px 12px; }
       .canva-embed-container { max-width: 100%; }
@@ -349,69 +348,65 @@
 </head>
 <body>
 
-  <!-- SCROLLING HEADER (Scrolls away naturally) -->
+  <!-- SCROLLING HEADER (Branding & Stats) -->
   <header class="main-header">
-    <button id="themeToggle" class="theme-toggle" aria-label="Toggle Dark Mode">🌙</button>
     <div class="brand-section">
       <!-- Ensure you export your files as transparent PNGs named logo-light.png and logo-dark.png! -->
       <img src="logo-light.png" alt="Youth Policy Lab Logo" class="brand-logo" id="brandLogo" onerror="this.style.display='none'; document.getElementById('fallbackTitle').style.display='block';">
+      
       <!-- Text Fallback -->
       <h1 id="fallbackTitle" style="display:none;"><span class="brand-hl-1">Youth</span> <span class="brand-hl-2">Policy</span> <span class="brand-hl-3">Lab</span></h1>
       
-      <!-- Event Countdown -->
-      <div id="countdown-timer" class="countdown-timer">Loading countdown...</div>
+      <!-- Dark/Light Theme Toggle -->
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle Dark Mode">🌙</button>
+    </div>
+    
+    <div class="header-info-row dir-tools" id="dirToolsHeader">
+      <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting...</span></div>
+      
+      <div class="stats-container">
+        <div class="stat-card"><span class="stat-value" id="stat-pax">-</span><span class="stat-label">Participants</span></div>
+        <div class="stat-card"><span class="stat-value" id="stat-boys">-</span><span class="stat-label">Boys</span></div>
+        <div class="stat-card"><span class="stat-value" id="stat-girls">-</span><span class="stat-label">Girls</span></div>
+        <div class="stat-card"><span class="stat-value" id="stat-vacant">-</span><span class="stat-label">Vacant</span></div>
+      </div>
+      
+      <div class="legend-container">
+        <div class="legend-item"><div class="legend-box" style="background-color: var(--twin-room);"></div> Twin</div>
+        <div class="legend-item"><div class="legend-box" style="background-color: var(--double-room);"></div> Double</div>
+        <div class="legend-item"><div class="legend-box" style="background-color: var(--triple-room);"></div> Triple</div>
+        <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family</div>
+      </div>
     </div>
   </header>
 
-  <!-- STICKY NAV TOOLBAR (Only tabs, stays at the top) -->
+  <!-- STICKY NAV TOOLBAR (Follows you down the page) -->
   <nav class="sticky-toolbar">
     <div class="tab-nav">
       <button class="active" onclick="switchTab('directory')">Directory</button>
       <button onclick="switchTab('timeline')">Timeline</button>
       <button onclick="switchTab('handbook')">Handbook</button>
     </div>
+
+    <div class="toolbar-right dir-tools" id="dirToolsNav">
+      <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
+      <div class="filter-group">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="vacant">Vacant</button>
+        <button class="filter-btn" data-filter="vip">VIPs</button>
+        <button class="filter-btn" data-filter="boys">Boys</button>
+        <button class="filter-btn" data-filter="girls">Girls</button>
+      </div>
+      <div class="controls">
+        <button class="btn active" onclick="setView('3d')">3D</button>
+        <button class="btn" onclick="setView('2d')">Flat</button>
+      </div>
+    </div>
   </nav>
 
   <!-- TAB 1: DIRECTORY MAP -->
   <div class="tab-content active" id="tab-directory">
     <div class="viewport" id="viewport">
-      
-      <!-- ALL DIRECTORY TOOLS NOW LIVE INSIDE THE TAB -->
-      <div class="directory-dashboard">
-        <div class="dir-dash-top">
-          <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
-          <div class="right-toolbar">
-            <div class="filter-group">
-              <button class="filter-btn active" data-filter="all">All</button>
-              <button class="filter-btn" data-filter="vacant">Vacant</button>
-              <button class="filter-btn" data-filter="vip">VIPs</button>
-              <button class="filter-btn" data-filter="boys">Boys</button>
-              <button class="filter-btn" data-filter="girls">Girls</button>
-            </div>
-            <div class="controls">
-              <button class="btn active" onclick="setView('3d')">3D</button>
-              <button class="btn" onclick="setView('2d')">Flat</button>
-            </div>
-          </div>
-        </div>
-        
-        <div class="dir-dash-bottom">
-          <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting...</span></div>
-          <div class="stats-container">
-            <div class="stat-card"><span class="stat-value" id="stat-pax">-</span><span class="stat-label">Participants</span></div>
-            <div class="stat-card"><span class="stat-value" id="stat-boys">-</span><span class="stat-label">Boys</span></div>
-            <div class="stat-card"><span class="stat-value" id="stat-girls">-</span><span class="stat-label">Girls</span></div>
-            <div class="stat-card"><span class="stat-value" id="stat-vacant">-</span><span class="stat-label">Vacant</span></div>
-          </div>
-          <div class="legend-container">
-            <div class="legend-item"><div class="legend-box" style="background-color: var(--twin-room);"></div> Twin</div>
-            <div class="legend-item"><div class="legend-box" style="background-color: var(--double-room);"></div> Double</div>
-            <div class="legend-item"><div class="legend-box" style="background-color: var(--triple-room);"></div> Triple</div>
-            <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family</div>
-          </div>
-        </div>
-      </div>
-
       <!-- LEVEL 3 -->
       <div class="floor-container">
         <div class="floor-title">Level 3</div>
@@ -497,7 +492,7 @@
     </div>
   </div>
 
-  <!-- TAB 2: EVENT TIMELINE -->
+  <!-- TAB 2: EVENT TIMELINE (SMART CSV PARSE) -->
   <div class="tab-content" id="tab-timeline">
     <div class="timeline-wrapper" id="timeline-container">
       <div style="text-align: center; color: var(--text-secondary); padding: 40px; font-weight: 500;">
@@ -506,7 +501,7 @@
     </div>
   </div>
 
-  <!-- TAB 3: EVENT HANDBOOK -->
+  <!-- TAB 3: EVENT HANDBOOK (SMART CANVA EMBED) -->
   <div class="tab-content" id="tab-handbook">
     <div class="handbook-wrapper">
       <div class="canva-embed-container">
@@ -523,121 +518,354 @@
   <div id="toast">Copied to clipboard!</div>
 
   <script>
-    // --- Event Countdown Logic ---
-    function updateCountdown() {
-      // Set to 14 August 2026, 09:15:00 Malaysia Time (+08:00)
-      const targetDate = new Date('2026-08-14T09:15:00+08:00').getTime();
-      const now = new Date().getTime();
-      const distance = targetDate - now;
-      const timerEl = document.getElementById('countdown-timer');
+    // --- Theme Management Logic ---
+    const themeToggle = document.getElementById('themeToggle');
+    const brandLogo = document.getElementById('brandLogo');
+    const currentTheme = localStorage.getItem('theme');
+    
+    // Check saved preference or default to light
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      themeToggle.textContent = '☀️';
+      brandLogo.src = 'logo-dark.png'; // Load white-text logo
+    } else {
+      themeToggle.textContent = '🌙';
+      brandLogo.src = 'logo-light.png'; // Load black-text logo
+    }
 
-      if (distance < 0) {
-        timerEl.innerHTML = "Event Commenced!";
-        return;
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+        themeToggle.textContent = '☀️';
+        brandLogo.src = 'logo-dark.png'; // Switch to white-text logo
+      } else {
+        localStorage.setItem('theme', 'light');
+        themeToggle.textContent = '🌙';
+        brandLogo.src = 'logo-light.png'; // Switch to black-text logo
+      }
+    });
+
+    // Live Google Sheets CSV URLs
+    const DIR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRMmnBQIEjwVoJhvD9l8LelAodWCfdSg8v3z8dNcBt7PkMiNP5a13Ylw3foUnfQvWdzU2NaXWgGCJWA/pub?gid=546426841&single=true&output=csv';
+    const TIMELINE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGCH-pDLeS0Rc56C_TABl3uCTWyj8DSnEaxFEJi-l0b1C4eJE_ExobLPzpiHuu3-VMDyzxYXh4KUbA/pub?gid=1028971239&single=true&output=csv';
+    const REFRESH_INTERVAL_MS = 60000;
+
+    let roomData = {};
+    const totalRoomsCount = document.querySelectorAll('.room-block[data-room]').length;
+
+    // --- Tab Switching Logic ---
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      document.querySelectorAll('.tab-nav button').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`.tab-nav button[onclick="switchTab('${tabId}')"]`).classList.add('active');
+
+      const leftTools = document.getElementById('dirToolsHeader');
+      const rightTools = document.getElementById('dirToolsNav');
+      
+      if (tabId === 'directory') {
+        leftTools.classList.remove('hidden');
+        rightTools.classList.remove('hidden');
+      } else {
+        leftTools.classList.add('hidden');
+        rightTools.classList.add('hidden');
+      }
+    }
+
+    // --- Mobile Scroll with Safari Bounce Protection ---
+    let lastScrollY = 0;
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+      // Protect against iOS Safari rubber-band boundaries triggering loops
+      if (window.scrollY < 0 || window.scrollY > document.documentElement.scrollHeight - window.innerHeight) {
+        return; 
+      }
+      
+      lastScrollY = window.scrollY;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          // If we scroll down past 40px, the header should have naturally scrolled out of view.
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    // --- Map Logic ---
+    function setView(mode) {
+      const viewport = document.getElementById('viewport');
+      const buttons = document.querySelectorAll('.controls .btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      if (mode === '2d') {
+        viewport.classList.add('flat');
+        buttons[1].classList.add('active');
+      } else {
+        viewport.classList.remove('flat');
+        buttons[0].classList.add('active');
+      }
+    }
+
+    // --- Sync Directory Logic ---
+    function loadDirectoryData() {
+      const statusBadge = document.getElementById('sync-status');
+      Papa.parse(DIR_CSV_URL, {
+        download: true, header: false, skipEmptyLines: true,
+        complete: function(results) {
+          parseDirRows(results.data);
+          statusBadge.classList.add('synced');
+          const now = new Date();
+          statusBadge.querySelector('span').textContent = `Synced at ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+        },
+        error: function() {
+          statusBadge.classList.remove('synced');
+          statusBadge.querySelector('span').textContent = '⚠️ Offline';
+        }
+      });
+    }
+
+    function parseDirRows(rows) {
+      roomData = {};
+      let stats = { pax: 0, boys: 0, girls: 0, occupiedRooms: 0 };
+
+      rows.forEach(row => {
+        if (row.length >= 4) {
+          const name = row[0] ? row[0].trim() : '';
+          const gender = row[1] ? row[1].trim() : '';
+          const roomType = row[2] ? row[2].trim() : '';
+          const roomNo = row[3] ? row[3].toString().trim() : '';
+          const remarks = row[4] ? row[4].trim() : '';
+
+          if (/^\d{3}$/.test(roomNo)) {
+            if (!roomData[roomNo]) roomData[roomNo] = { type: roomType, remarks: remarks, occupants: [] };
+            if (name) {
+              roomData[roomNo].occupants.push({ name, gender });
+              stats.pax++;
+              if (gender.toLowerCase().includes('boy') || gender.toLowerCase().includes('male')) stats.boys++;
+              if (gender.toLowerCase().includes('girl') || gender.toLowerCase().includes('female')) stats.girls++;
+            }
+            if (remarks && !roomData[roomNo].remarks) roomData[roomNo].remarks = remarks;
+            if (roomType && !roomData[roomNo].type) roomData[roomNo].type = roomType;
+          }
+        }
+      });
+
+      document.querySelectorAll('.room-block[data-room]').forEach(block => {
+        const roomNo = block.getAttribute('data-room');
+        const topFace = block.querySelector('.face-top');
+        const data = roomData[roomNo];
+
+        if (data) {
+          if (data.type) {
+            const t = data.type.toLowerCase();
+            if (t.includes('twin')) block.setAttribute('data-room-type', 'twin');
+            else if (t.includes('double')) block.setAttribute('data-room-type', 'double');
+            else if (t.includes('triple')) block.setAttribute('data-room-type', 'triple');
+            else if (t.includes('family')) block.setAttribute('data-room-type', 'family');
+          }
+          if (data.occupants.length > 0) {
+            stats.occupiedRooms++;
+            // Draw attention to occupied rooms
+            if (topFace) topFace.style.borderTop = "4px solid var(--text-primary)";
+          } else {
+            if (topFace) topFace.style.borderTop = "none";
+          }
+        } else {
+           if (topFace) topFace.style.borderTop = "none";
+        }
+      });
+      
+      document.getElementById('stat-pax').textContent = stats.pax;
+      document.getElementById('stat-boys').textContent = stats.boys;
+      document.getElementById('stat-girls').textContent = stats.girls;
+      document.getElementById('stat-vacant').textContent = (totalRoomsCount - stats.occupiedRooms);
+
+      const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+      applySearchAndFilter(document.getElementById('searchInput').value, activeFilter);
+    }
+
+    // --- Sync Timeline Logic ---
+    function loadTimelineData() {
+      Papa.parse(TIMELINE_CSV_URL, {
+        download: true, header: false, skipEmptyLines: true,
+        complete: function(results) { renderTimeline(results.data); },
+        error: function(err) {
+          document.getElementById('timeline-container').innerHTML = '<div style="text-align:center; color:var(--brand-orange); font-weight:600;">Failed to load timeline data. Check CSV link.</div>';
+        }
+      });
+    }
+
+    function renderTimeline(rows) {
+      const container = document.getElementById('timeline-container');
+      let html = '';
+
+      rows.forEach(row => {
+        const cleanRow = row.map(cell => cell ? cell.trim() : '');
+        const nonEmptyCells = cleanRow.filter(cell => cell !== '');
+        
+        if (nonEmptyCells.length === 0) return;
+
+        const rowStr = cleanRow.join(' ').toLowerCase();
+        if (rowStr.includes('time') && (rowStr.includes('activity') || rowStr.includes('event'))) return;
+
+        if (nonEmptyCells.length === 1) {
+          html += `<div class="timeline-date-header">${nonEmptyCells[0]}</div>`;
+        } else {
+          let time = cleanRow[0] || '';
+          let activity = cleanRow[1] || '';
+          let venue = cleanRow[2] || '';
+          let remarks = cleanRow[3] || '';
+
+          if (!time && !activity && nonEmptyCells.length >= 2) {
+             time = nonEmptyCells[0]; activity = nonEmptyCells[1]; venue = nonEmptyCells[2] || ''; remarks = nonEmptyCells[3] || '';
+          }
+
+          if (!activity && !time) return;
+
+          html += `
+            <div class="timeline-item">
+              <div class="timeline-time">${time}</div>
+              <div class="timeline-content">
+                <div class="timeline-title">${activity}</div>
+                ${venue ? `<div class="timeline-venue">📍 ${venue}</div>` : ''}
+                ${remarks ? `<div class="timeline-venue" style="color:var(--brand-blue)">🗣 ${remarks}</div>` : ''}
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      container.innerHTML = html || '<div style="text-align:center; color:var(--text-secondary); font-weight:500;">Timeline data is empty.</div>';
+    }
+
+    // --- Interactivity & Tooltips ---
+    function applySearchAndFilter(query = '', filter = 'all') {
+      const viewport = document.getElementById('viewport');
+      query = query.toLowerCase().trim();
+      const isFiltering = query.length > 0 || filter !== 'all';
+      
+      if (isFiltering) viewport.classList.add('filtered');
+      else viewport.classList.remove('filtered');
+
+      document.querySelectorAll('.room-block[data-room]').forEach(block => {
+        const roomNo = block.getAttribute('data-room');
+        const data = roomData[roomNo];
+        let match = false;
+
+        if (isFiltering) {
+          let textMatch = true;
+          if (query.length > 0) textMatch = data && data.occupants && data.occupants.some(o => o.name.toLowerCase().includes(query));
+
+          let filterMatch = true;
+          if (filter === 'vacant') filterMatch = !data || !data.occupants || data.occupants.length === 0;
+          else if (filter === 'vip') filterMatch = data && data.remarks && data.remarks.toLowerCase().includes('vip');
+          else if (filter === 'boys') filterMatch = data && data.occupants && data.occupants.some(o => o.gender.toLowerCase().includes('boy') || o.gender.toLowerCase().includes('male'));
+          else if (filter === 'girls') filterMatch = data && data.occupants && data.occupants.some(o => o.gender.toLowerCase().includes('girl') || o.gender.toLowerCase().includes('female'));
+
+          match = textMatch && filterMatch;
+          
+          if (match) block.classList.add('highlight');
+          else block.classList.remove('highlight');
+        } else {
+          block.classList.remove('highlight');
+        }
+      });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      applySearchAndFilter(e.target.value, document.querySelector('.filter-btn.active').getAttribute('data-filter'));
+    });
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applySearchAndFilter(document.getElementById('searchInput').value, btn.getAttribute('data-filter'));
+      });
+    });
+
+    const tooltip = document.getElementById('tooltip');
+    
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function triggerCopy(block) {
+      if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return;
+
+      const roomNo = block.getAttribute('data-room');
+      const data = roomData[roomNo];
+      let textToCopy = `Room ${roomNo}\n`;
+      
+      if (data && data.occupants && data.occupants.length > 0) {
+        textToCopy += `Type: ${data.type || 'Room'}\nOccupants:\n`;
+        data.occupants.forEach(o => { textToCopy += `- ${o.name} (${o.gender})\n`; });
+        if (data.remarks) textToCopy += `Remarks: ${data.remarks}`;
+      } else {
+        textToCopy += `Status: Vacant`;
       }
 
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));Here is the updated layout structure incorporating your requests. The countdown timer has been added directly under the logo, and the directory filters (sync, participants, boy, girls, vacant, room legends) are now grouped immediately below the search bar. 
+      navigator.clipboard.writeText(textToCopy).then(() => showToast(`Room ${roomNo} details copied!`)).catch(err => console.error(err));
+    }
 
-### HTML, CSS, and JavaScript Implementation
+    document.querySelectorAll('.room-block[data-room]').forEach(block => {
+      block.addEventListener('mousemove', (e) => {
+        if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return; 
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Directory</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f9;
+        const roomNo = block.getAttribute('data-room');
+        const data = roomData[roomNo];
+
+        if (data) {
+          tooltip.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <strong style="font-size:1.1rem; color:var(--brand-black); font-weight:700;">Room ${roomNo}</strong>
+              <span style="font-size:0.7rem; background:var(--surface-secondary); padding:3px 8px; border-radius:6px; color:var(--text-secondary); font-weight:600;">${data.type || 'Room'}</span>
+            </div>
+            <div style="border-top:1px solid rgba(0,0,0,0.05); padding-top:8px;">
+              <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Occupants</div>
+              ${data.occupants.length > 0 
+                ? data.occupants.map(occ => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                      <span style="font-weight:600; font-size:0.9rem; color:var(--brand-black);">${occ.name}</span>
+                      <span style="font-size:0.7rem; color:${(occ.gender.toLowerCase().includes('boy') || occ.gender.toLowerCase().includes('male')) ? 'var(--brand-blue)' : 'var(--brand-orange)'}; font-weight:700;">${occ.gender}</span>
+                    </div>
+                  `).join('')
+                : '<div style="color:var(--text-secondary); font-size:0.85rem; font-style:italic; font-weight:500;">No occupants assigned</div>'
+              }
+            </div>
+            ${data.remarks ? `<div style="margin-top:8px; background:rgba(255, 87, 34, 0.1); color:var(--brand-orange); font-size:0.75rem; font-weight:600; padding:4px 8px; border-radius:6px; display:inline-block; border:1px solid rgba(255, 87, 34, 0.2);">${data.remarks}</div>` : ''}
+            <div class="click-hint">Click or press Enter to copy</div>
+          `;
+        } else {
+          tooltip.innerHTML = `
+            <strong style="font-size:1.1rem; color:var(--brand-black); font-weight:700;">Room ${roomNo}</strong>
+            <div style="color:var(--text-secondary); font-size:0.85rem; margin-top:6px; font-weight:500;">Vacant / Unassigned</div>
+            <div class="click-hint">Click or press Enter to copy</div>
+          `;
         }
 
-        /* Header containing Logo and Timer */
-        .header-section {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        tooltip.style.display = 'block';
+        tooltip.style.left = (e.clientX + 20) + 'px';
+        tooltip.style.top = (e.clientY + 20) + 'px';
+      });
 
-        .logo {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-        }
+      block.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+      block.addEventListener('click', () => triggerCopy(block));
+      block.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); triggerCopy(block); }
+      });
+    });
 
-        .countdown-timer {
-            font-size: 1.2em;
-            color: #d9534f;
-            font-weight: bold;
-            padding: 10px;
-            background-color: #fff;
-            border-radius: 5px;
-            display: inline-block;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        /* Main Directory Section */
-        .directory-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        /* Search Bar */
-        .search-bar {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-        }
-
-        /* Directory Legends/Filters */
-        .directory-legends {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .legend-item {
-            background-color: #e9ecef;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .legend-item:hover {
-            background-color: #d1d4d7;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Logo and Countdown -->
-    <div class="header-section">
-        <div class="logo">Event Logo</div>
-        <div class="countdown-timer" id="timer">Loading countdown...</div>
-    </div>
-
-    <!-- Directory & Search -->
-    <div class="directory-container">
-        
-        <!-- Search Bar -->
-        <input type="text" class="search-bar" placeholder="Search directory...">
-        
-        <!-- Directory Legends (Under Search Bar) -->
-        <div class="directory-
+    loadDirectoryData();
+    loadTimelineData();
+    setInterval(() => {
+      loadDirectoryData();
+      loadTimelineData();
+    }, REFRESH_INTERVAL_MS);
+  </script>
+</body>
+</html>
