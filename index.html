@@ -148,18 +148,6 @@
     .status-badge.synced .status-dot { background: var(--brand-green); box-shadow: 0 0 8px rgba(0, 200, 83, 0.4); }
     .status-badge.synced { color: var(--text-primary); }
 
-    .stats-container { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-    .stat-card {
-      background: var(--surface-color); border: 2px solid var(--border-color); border-radius: 12px;
-      padding: 10px 16px; display: flex; flex-direction: column; align-items: center; min-width: 90px;
-    }
-    .stat-value { font-size: 1.4rem; font-weight: 700; }
-    #stat-pax { color: var(--brand-blue); }
-    #stat-boys { color: var(--brand-green); }
-    #stat-girls { color: var(--brand-orange); }
-    #stat-vacant { color: var(--text-primary); }
-    .stat-label { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-top: 2px; }
-
     .legend-container { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
     .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-primary); font-weight: 600; }
     .legend-box { width: 14px; height: 14px; border-radius: 4px; }
@@ -437,8 +425,6 @@
       .countdown-date { font-size: 0.65rem; }
       
       .header-info-row { flex-direction: column; gap: 16px; }
-      .stats-container { width: 100%; flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
-      .stat-card { min-width: 100px; padding: 8px 12px; }
       .legend-container { display: none; }
       
       .sticky-toolbar { padding: 10px 12px; }
@@ -490,13 +476,6 @@
         <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family</div>
       </div>
     </div>
-    
-    <div class="stats-container dir-tools" id="statsRow">
-      <div class="stat-card"><span class="stat-value" id="stat-pax">-</span><span class="stat-label">Participants</span></div>
-      <div class="stat-card"><span class="stat-value" id="stat-boys">-</span><span class="stat-label">Boys</span></div>
-      <div class="stat-card"><span class="stat-value" id="stat-girls">-</span><span class="stat-label">Girls</span></div>
-      <div class="stat-card"><span class="stat-value" id="stat-vacant">-</span><span class="stat-label">Vacant</span></div>
-    </div>
   </header>
 
   <!-- STICKY NAV TOOLBAR -->
@@ -505,8 +484,8 @@
       <button class="active" onclick="switchTab('directory')">Directory</button>
       <button onclick="switchTab('timeline')">Timeline</button>
       <button onclick="switchTab('handbook')">Handbook</button>
-      <button onclick="switchTab('packing')">🎒 Packing List</button>
-      <button onclick="switchTab('rules')">📜 Camp Rules / 营规</button>
+      <button onclick="switchTab('packing')">Packing List</button>
+      <button onclick="switchTab('rules')">Camp Rules</button>
     </div>
 
     <!-- Directory Tools -->
@@ -743,7 +722,7 @@
     </div>
   </div>
 
-  <!-- TAB 5: CAMP RULES (NEW TAB) -->
+  <!-- TAB 5: CAMP RULES -->
   <div class="tab-content" id="tab-rules">
     <div class="rules-wrapper">
       
@@ -986,20 +965,17 @@
 
       const leftTools = document.getElementById('dirToolsHeader');
       const rightTools = document.getElementById('dirToolsNav');
-      const statsRow = document.getElementById('statsRow');
       const packingTools = document.getElementById('packingToolsNav');
       const rulesTools = document.getElementById('rulesToolsNav');
       
       leftTools.classList.add('hidden');
       rightTools.classList.add('hidden');
-      statsRow.classList.add('hidden');
       packingTools.classList.add('hidden');
       rulesTools.classList.add('hidden');
 
       if (tabId === 'directory') {
         leftTools.classList.remove('hidden');
         rightTools.classList.remove('hidden');
-        statsRow.classList.remove('hidden');
       } else if (tabId === 'packing') {
         packingTools.classList.remove('hidden');
       } else if (tabId === 'rules') {
@@ -1059,7 +1035,6 @@
 
     function parseDirRows(rows) {
       roomData = {};
-      let stats = { pax: 0, boys: 0, girls: 0, occupiedRooms: 0 };
 
       rows.forEach(row => {
         if (row.length >= 4) {
@@ -1073,10 +1048,6 @@
             if (!roomData[roomNo]) roomData[roomNo] = { type: roomType, remarks: remarks, occupants: [] };
             if (name) {
               roomData[roomNo].occupants.push({ name, gender });
-              stats.pax++;
-              const gLower = gender.toLowerCase();
-              if (gLower.includes('boy') || gLower.includes('male') || gLower.includes('男') || gLower === 'm') stats.boys++;
-              if (gLower.includes('girl') || gLower.includes('female') || gLower.includes('女') || gLower === 'f') stats.girls++;
             }
             if (remarks && !roomData[roomNo].remarks) roomData[roomNo].remarks = remarks;
             if (roomType && !roomData[roomNo].type) roomData[roomNo].type = roomType;
@@ -1098,7 +1069,6 @@
             else if (t.includes('family')) block.setAttribute('data-room-type', 'family');
           }
           if (data.occupants.length > 0) {
-            stats.occupiedRooms++;
             if (topFace) topFace.style.borderTop = "4px solid var(--text-primary)";
           } else {
             if (topFace) topFace.style.borderTop = "none";
@@ -1107,11 +1077,6 @@
            if (topFace) topFace.style.borderTop = "none";
         }
       });
-      
-      document.getElementById('stat-pax').textContent = stats.pax;
-      document.getElementById('stat-boys').textContent = stats.boys;
-      document.getElementById('stat-girls').textContent = stats.girls;
-      document.getElementById('stat-vacant').textContent = (totalRoomsCount - stats.occupiedRooms);
 
       const activeFilterBtn = document.querySelector('#dirToolsNav .filter-btn.active');
       const activeFilter = activeFilterBtn ? activeFilterBtn.getAttribute('data-filter') : 'all';
@@ -1273,7 +1238,7 @@
         if (data) {
           tooltip.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-              <strong style="font-size:1.1rem; color:var(--brand-black); font-weight:700;">Room ${roomNo}</strong>
+              <strong style="font-size:1.1rem; color:var(--text-primary); font-weight:700;">Room ${roomNo}</strong>
               <span style="font-size:0.7rem; background:var(--surface-secondary); padding:3px 8px; border-radius:6px; color:var(--text-secondary); font-weight:600;">${data.type || 'Room'}</span>
             </div>
             <div style="border-top:1px solid rgba(0,0,0,0.05); padding-top:8px;">
@@ -1284,7 +1249,7 @@
                     const isBoy = gLower.includes('boy') || gLower.includes('male') || gLower.includes('男') || gLower === 'm';
                     return `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                      <span style="font-weight:600; font-size:0.9rem; color:var(--brand-black);">${occ.name}</span>
+                      <span style="font-weight:600; font-size:0.9rem; color:var(--text-primary);">${occ.name}</span>
                       <span style="font-size:0.7rem; color:${isBoy ? 'var(--brand-blue)' : 'var(--brand-orange)'}; font-weight:700;">${occ.gender}</span>
                     </div>
                   `}).join('')
@@ -1296,7 +1261,7 @@
           `;
         } else {
           tooltip.innerHTML = `
-            <strong style="font-size:1.1rem; color:var(--brand-black); font-weight:700;">Room ${roomNo}</strong>
+            <strong style="font-size:1.1rem; color:var(--text-primary); font-weight:700;">Room ${roomNo}</strong>
             <div style="color:var(--text-secondary); font-size:0.85rem; margin-top:6px; font-weight:500;">Vacant / Unassigned</div>
             <div class="click-hint">Click or press Enter to copy</div>
           `;
