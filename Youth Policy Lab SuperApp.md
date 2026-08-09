@@ -1,0 +1,723 @@
+# Youth Policy Lab SuperApp
+
+A lightweight, mobile-friendly web application developed for **Youth Policy Lab** to centralise event information, accommodation, schedules, participant management, packing guidance, and camp rules in one accessible interface.
+
+The SuperApp is designed as a **static web application**, meaning it does not require a traditional backend server or database to run. Live participant and itinerary information can be supplied through published Google Sheets CSV endpoints.
+
+---
+
+## ✨ Features
+
+### 🏨 Accommodation Directory
+- Interactive hostel room directory
+- 3D and flat/2D viewing modes
+- Room occupancy indicators
+- Participant search
+- Filters for:
+  - Vacant rooms
+  - VIPs
+  - Boys
+  - Girls
+- Live synchronisation with Google Sheets
+- Automatic refresh of directory data
+
+The directory reads participant information from a published Google Sheets CSV and maps occupants to the corresponding rooms.
+
+### 📅 Event Timeline
+- Live event itinerary
+- Automatically loaded from Google Sheets
+- Supports scheduled updates without modifying the application itself
+- Automatic refresh every 60 seconds
+
+The application retrieves the timeline from a published CSV endpoint and renders it dynamically.
+
+### 📖 Digital Handbook
+- Embedded Canva handbook
+- Responsive presentation
+- Opens the full handbook through Canva when required
+
+### 🎒 Packing List
+- Interactive checklist
+- Packing progress indicator
+- English / Simplified Chinese language support
+- Print / PDF functionality
+- Reset functionality
+- Information on accommodation, meals, transport, health and safety
+
+### 📜 Camp Rules
+- Interactive rules and regulations
+- English / Simplified Chinese language support
+- Expand/collapse sections
+- Zero-tolerance rules
+- Digital camper pledge
+- Pledge state stored locally in the browser
+
+### 🌙 Dark Mode
+- Light and dark themes
+- User preference stored using browser `localStorage`
+- Separate light and dark Youth Policy Lab logos
+
+### 📱 Responsive Design
+The application is designed for:
+- Desktop
+- Tablets
+- Mobile phones
+
+---
+
+# 🛠️ Technology Stack
+
+The SuperApp intentionally uses a simple frontend architecture.
+
+| Technology | Purpose |
+|---|---|
+| HTML5 | Application structure |
+| CSS3 | Styling, responsive layout and animations |
+| JavaScript | Application logic and interactivity |
+| PapaParse | Reading Google Sheets CSV data |
+| Google Sheets | Live participant and itinerary data |
+| Google Fonts | Poppins and Noto Sans SC |
+| Canva | Digital handbook |
+| Browser `localStorage` | Theme, language and pledge preferences |
+
+The application currently loads **PapaParse 5.4.1** directly from CDN and uses Google Fonts for Poppins and Noto Sans SC.
+
+---
+
+# 📦 Packages & Dependencies
+
+## Runtime Dependencies
+
+There is currently **no npm installation required**.
+
+The application uses browser-based CDN dependencies.
+
+### PapaParse
+
+PapaParse is used to parse CSV data retrieved from Google Sheets.
+
+Current version:
+
+```text
+PapaParse 5.4.1
+```
+
+Loaded through:
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+```
+
+The application uses `Papa.parse()` to download and process the participant directory and event timeline CSV files. 
+### Google Fonts
+
+The application uses:
+
+- Poppins
+- Noto Sans SC
+
+These are loaded remotely from Google Fonts.
+
+### Canva
+
+The event handbook is embedded using a Canva iframe.
+
+---
+
+# 📁 Project Structure
+
+A recommended repository structure is:
+
+```text
+youth-policy-lab-superapp/
+│
+├── index.html
+│
+├── logo-light.png
+├── logo-dark.png
+│
+├── README.md
+├── LICENSE
+│
+└── .gitignore
+```
+
+### `index.html`
+
+The main application.
+
+The current application contains the HTML, CSS and JavaScript in a single file.
+
+### `logo-light.png`
+
+Logo displayed when the application is using light mode.
+
+### `logo-dark.png`
+
+Logo displayed when the application is using dark mode.
+
+The application automatically switches between the two logo files according to the selected theme.
+
+---
+
+# 🚀 Installation
+
+## Option 1: Run Locally
+
+No build process is required.
+
+Clone the repository:
+
+```bash
+git clone https://github.com/YOUR-ORGANISATION/youth-policy-lab-superapp.git
+cd youth-policy-lab-superapp
+```
+
+Then open:
+
+```text
+index.html
+```
+
+in a modern web browser.
+
+For best results, use a local HTTP server rather than opening the file directly.
+
+### Python
+
+```bash
+python3 -m http.server 8000
+```
+
+Then visit:
+
+```text
+http://localhost:8000
+```
+
+---
+
+# 🌐 Deployment
+
+Because the application is a static website, it can be deployed using services such as:
+
+- GitHub Pages
+- Netlify
+- Vercel
+- Cloudflare Pages
+- Any conventional web server
+
+No Node.js backend or database is required.
+
+---
+
+# 🔧 Configuration
+
+Several parts of the application are configured directly inside `index.html`.
+
+## Event Countdown
+
+The event start time is currently defined in JavaScript:
+
+```javascript
+const EVENT_START = new Date('2026-08-14T09:00:00+08:00');
+```
+
+Change this value when deploying the application for another event.
+
+The current application is configured for **14 August 2026, 9:00 AM MYT**.
+
+---
+
+## Google Sheets Integration
+
+Two Google Sheets CSV endpoints are currently used:
+
+```javascript
+const DIR_CSV_URL = 'YOUR_DIRECTORY_CSV_URL';
+const TIMELINE_CSV_URL = 'YOUR_TIMELINE_CSV_URL';
+```
+
+The live application currently uses separate CSV sources for:
+
+1. Participant / room directory
+2. Event timeline
+
+The refresh interval is:
+
+```javascript
+const REFRESH_INTERVAL_MS = 60000;
+```
+
+which corresponds to **60 seconds**.
+
+### Updating the Directory
+
+The Google Sheet should contain data compatible with the application's expected structure:
+
+```text
+Name | Gender | Room Type | Room Number | Remarks
+```
+
+Example:
+
+```text
+John Tan | Male | Twin | 301 | VIP
+Jane Lim | Female | Double | 302 |
+```
+
+The application reads these fields and associates participants with rooms.
+
+### Publishing a Google Sheet
+
+1. Open the Google Sheet.
+2. Select **File → Share → Publish to web**.
+3. Select the relevant worksheet.
+4. Publish it as CSV.
+5. Copy the generated CSV URL.
+6. Replace the corresponding URL in `index.html`.
+
+> **Security warning:** Do not place passwords, API keys, private credentials or other secrets in the Google Sheet or frontend code.
+
+Because the CSV is publicly accessible when published to the web, only information appropriate for public exposure should be included.
+
+---
+
+# 🧩 Adding or Updating Packages
+
+## Current architecture
+
+The project does **not** currently use:
+
+```text
+package.json
+npm
+node_modules
+webpack
+Vite
+React
+Vue
+```
+
+There is therefore no need to run:
+
+```bash
+npm install
+```
+
+Humanity has been spared from `node_modules` for at least one project.
+
+## If a future dependency is required
+
+For a small dependency, a CDN import may be appropriate:
+
+```html
+<script src="https://cdn.example.com/package/version/package.min.js"></script>
+```
+
+For larger development requirements, the project can be migrated to npm.
+
+Example:
+
+```bash
+npm init -y
+npm install package-name
+```
+
+Development dependencies can be added with:
+
+```bash
+npm install --save-dev package-name
+```
+
+Before adding a dependency, consider:
+
+- License compatibility
+- Package maintenance
+- Security
+- Bundle size
+- Browser compatibility
+- Whether the dependency is actually necessary
+
+---
+
+# 🔐 Licensing
+
+## Recommended License
+
+The source code of the Youth Policy Lab SuperApp may be distributed under the **MIT License**, unless Youth Policy Lab or the copyright holder specifies otherwise.
+
+Create a file named:
+
+```text
+LICENSE
+```
+
+and place the MIT License text inside it.
+
+The copyright notice should identify the actual copyright holder, for example:
+
+```text
+Copyright (c) 2026 Youth Policy Lab
+```
+
+### Important
+
+The MIT License applies to the **project source code**, not automatically to every external asset or service used by the application.
+
+In particular, check the licensing or usage rights for:
+
+- Youth Policy Lab logos
+- Photographs
+- Canva designs
+- Written handbook content
+- Google Sheets data
+- Fonts
+- Third-party JavaScript libraries
+
+The Canva handbook is an externally hosted resource embedded by the application, rather than being part of the HTML source itself.
+
+---
+
+# 📄 Third-Party Licenses
+
+Third-party dependencies should be acknowledged where appropriate.
+
+## PapaParse
+
+PapaParse is distributed under its own open-source license.
+
+The application currently consumes PapaParse through cdnjs.
+
+## Google Fonts
+
+The application uses:
+
+- Poppins
+- Noto Sans SC
+
+Refer to the respective font licenses before redistributing font files locally.
+
+## Canva
+
+The handbook is hosted by Canva and embedded through Canva's provided embed mechanism.
+
+The Canva content should not be treated as being licensed under the project's MIT License.
+
+---
+
+# 📦 Releases
+
+Releases should use **Git tags** and GitHub Releases.
+
+Recommended versioning:
+
+```text
+v1.0.0
+v1.0.1
+v1.1.0
+v2.0.0
+```
+
+Follow semantic versioning:
+
+```text
+MAJOR.MINOR.PATCH
+```
+
+### MAJOR
+
+Breaking changes.
+
+Example:
+
+```text
+v2.0.0
+```
+
+A major redesign or incompatible change to the Google Sheets data structure.
+
+### MINOR
+
+New functionality without breaking existing functionality.
+
+Example:
+
+```text
+v1.1.0
+```
+
+Adding a new module such as an emergency contacts page.
+
+### PATCH
+
+Bug fixes or minor corrections.
+
+Example:
+
+```text
+v1.0.1
+```
+
+Fixing a mobile layout issue or correcting a typo.
+
+---
+
+# 🏷️ Creating a Release
+
+First commit your changes:
+
+```bash
+git add .
+git commit -m "Release v1.0.0"
+```
+
+Create a tag:
+
+```bash
+git tag -a v1.0.0 -m "Youth Policy Lab SuperApp v1.0.0"
+```
+
+Push the tag:
+
+```bash
+git push origin v1.0.0
+```
+
+Then create a GitHub Release from the tag.
+
+---
+
+# 📝 Example Release Notes
+
+```markdown
+# Youth Policy Lab SuperApp v1.0.0
+
+## Initial Release
+
+### Features
+- Interactive hostel room directory
+- Live Google Sheets participant synchronisation
+- Event timeline
+- Digital Canva handbook
+- Interactive packing checklist
+- English / Chinese language support
+- Camp rules and digital pledge
+- Dark mode
+- Responsive mobile interface
+
+### Data Sources
+- Google Sheets CSV
+- Canva handbook
+
+### Known Limitations
+- Requires internet access for live data
+- Google Sheets must remain publicly published as CSV
+- Canva handbook requires access to Canva
+- Participant data should not contain confidential information
+```
+
+---
+
+# 🔄 Recommended Development Workflow
+
+```text
+1. Create a feature branch
+        ↓
+2. Make changes to index.html
+        ↓
+3. Test on desktop
+        ↓
+4. Test on mobile
+        ↓
+5. Verify Google Sheets synchronisation
+        ↓
+6. Check Canva handbook
+        ↓
+7. Commit changes
+        ↓
+8. Merge into main
+        ↓
+9. Create version tag
+        ↓
+10. Publish GitHub Release
+        ↓
+11. Deploy updated website
+```
+
+Recommended branches:
+
+```text
+main
+develop
+feature/room-directory
+feature/timeline
+feature/packing-list
+fix/mobile-layout
+```
+
+---
+
+# 🧪 Testing Checklist
+
+Before releasing a new version:
+
+### Directory
+
+- [ ] Room numbers display correctly
+- [ ] Participant search works
+- [ ] Gender filters work
+- [ ] VIP filter works
+- [ ] Vacant-room filter works
+- [ ] Google Sheets synchronisation works
+- [ ] Offline/error state displays correctly
+
+### Timeline
+
+- [ ] Timeline loads
+- [ ] Dates and times display correctly
+- [ ] Google Sheets data is current
+- [ ] CSV errors are handled
+
+### Handbook
+
+- [ ] Canva embed loads
+- [ ] Handbook opens correctly
+- [ ] Mobile display works
+
+### Packing List
+
+- [ ] Checkboxes work
+- [ ] Progress counter updates
+- [ ] Language switch works
+- [ ] Reset works
+- [ ] Print/PDF works
+
+### Camp Rules
+
+- [ ] Accordion sections open and close
+- [ ] Language switch works
+- [ ] Digital pledge works
+- [ ] Pledge state persists correctly
+
+### General
+
+- [ ] Light mode works
+- [ ] Dark mode works
+- [ ] Logos load
+- [ ] Mobile layout works
+- [ ] Desktop layout works
+- [ ] No browser console errors
+
+---
+
+# 🔒 Privacy & Data Protection
+
+The SuperApp may display participant information retrieved from Google Sheets.
+
+Administrators should therefore ensure that:
+
+1. Only necessary information is published.
+2. Sensitive personal information is excluded.
+3. The Google Sheet is accessible only to the intended audience where possible.
+4. Publicly accessible CSV URLs are treated as public information.
+5. Participant data is removed or archived after the event where appropriate.
+
+The frontend itself should **never contain passwords, API keys, private tokens or other secrets**.
+
+---
+
+# 🛠️ Maintenance
+
+For future Youth Policy Lab events, the following items should normally be updated:
+
+```text
+Event date/time
+Google Sheets URLs
+Participant data
+Room assignments
+Timeline
+Canva handbook
+Packing list
+Camp rules
+Brand assets
+Version number
+```
+
+The application's live data polling is already separated from the UI, making it possible to update participant and timeline information without rewriting the interface.
+
+---
+
+# 📜 Changelog
+
+Maintain a `CHANGELOG.md` file for significant changes.
+
+Example:
+
+```markdown
+# Changelog
+
+## [1.1.0] - 2026-08-10
+
+### Added
+- Additional camp information
+- Improved mobile navigation
+
+### Changed
+- Updated event timeline
+
+### Fixed
+- Mobile room directory scrolling
+
+## [1.0.0] - 2026-08-01
+
+### Added
+- Initial Youth Policy Lab SuperApp release
+```
+
+---
+
+# 👥 Ownership & Contributions
+
+The Youth Policy Lab SuperApp is maintained for the Youth Policy Lab programme.
+
+Contributors should:
+
+- Keep participant information confidential where applicable.
+- Avoid committing credentials or secrets.
+- Test changes before deployment.
+- Document significant changes.
+- Follow the project's release and versioning conventions.
+
+---
+
+# 📞 Support
+
+For technical issues, check:
+
+1. Browser console errors
+2. Google Sheets CSV availability
+3. Canva embed availability
+4. Network connectivity
+5. Correct file paths for logos
+6. Browser compatibility
+
+For data-related issues, verify the source Google Sheet before modifying application code.
+
+---
+
+## 📌 Project Status
+
+**Current status:** Active development / event deployment
+
+**Application type:** Static Web Application
+
+**Primary file:** `index.html`
+
+**Data source:** Google Sheets CSV
+
+**Handbook:** Canva
+
+**Deployment:** Static hosting
+
+**Recommended release format:** Semantic Versioning (`vMAJOR.MINOR.PATCH`)
