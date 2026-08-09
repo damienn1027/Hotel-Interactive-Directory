@@ -99,7 +99,6 @@
       position: relative;
     }
 
-    /* Logo Styling */
     .brand-logo {
       height: 60px;
       width: auto;
@@ -112,7 +111,6 @@
     .brand-hl-2 { color: var(--brand-green); }
     .brand-hl-3 { color: var(--brand-orange); }
 
-    /* Dark Mode Toggle Button */
     .theme-toggle {
       background: var(--surface-color);
       border: 1px solid var(--border-color);
@@ -178,7 +176,7 @@
     .countdown-date { font-size: 0.7rem; font-weight: 500; color: var(--text-secondary); }
 
     /* ========================================= */
-    /* 2. STICKY TOOLBAR (Stays at the top)      */
+    /* 2. STICKY TOOLBAR                         */
     /* ========================================= */
     .sticky-toolbar {
       position: sticky;
@@ -205,8 +203,7 @@
     .tab-nav button.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
     .toolbar-right { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-    
-    .dir-tools.hidden, .packing-tools.hidden { display: none !important; }
+    .dir-tools.hidden, .packing-tools.hidden, .rules-tools.hidden { display: none !important; }
 
     #searchInput {
       width: 250px; padding: 8px 16px; border-radius: 8px; border: 2px solid var(--surface-secondary);
@@ -254,7 +251,6 @@
       transform: translateZ(16px); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3); transition: all 0.3s ease;
     }
     
-    /* Contrast fix for dark mode family room text */
     body.dark-mode .room-block .face-top { color: #fff; box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.3); }
 
     .room-block .face-front {
@@ -304,231 +300,102 @@
     /* ============================== */
     /* TAB 4: PACKING LIST STYLES     */
     /* ============================== */
-    .packing-wrapper {
+    .packing-wrapper { width: 100%; max-width: 1100px; padding: 30px 20px; display: flex; flex-direction: column; gap: 24px; }
+    .packing-hero { background: var(--surface-color); border: 2px solid var(--border-color); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-soft); display: flex; flex-direction: column; gap: 16px; }
+    .progress-container { display: flex; flex-direction: column; gap: 8px; }
+    .progress-header { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 0.95rem; }
+    .progress-bar-bg { width: 100%; height: 12px; background: var(--surface-secondary); border-radius: 6px; overflow: hidden; border: 1px solid var(--border-color); }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--brand-blue), var(--brand-green)); border-radius: 6px; transition: width 0.3s ease; }
+    .packing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    .packing-card { background: var(--surface-color); border: 2px solid var(--border-color); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-soft); display: flex; flex-direction: column; gap: 16px; }
+    .packing-card h3 { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 10px; color: var(--text-primary); border-bottom: 2px dashed var(--border-color); padding-bottom: 12px; }
+    .checklist-group { display: flex; flex-direction: column; gap: 12px; }
+    .check-item { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; user-select: none; padding: 6px 8px; border-radius: 8px; transition: background 0.2s ease; }
+    .check-item:hover { background: var(--surface-secondary); }
+    .check-item input[type="checkbox"] { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; border: 2px solid var(--text-secondary); border-radius: 6px; margin-top: 2px; outline: none; cursor: pointer; display: grid; place-content: center; transition: all 0.2s ease; flex-shrink: 0; }
+    .check-item input[type="checkbox"]:checked { background-color: var(--brand-green); border-color: var(--brand-green); }
+    .check-item input[type="checkbox"]:checked::before { content: "✓"; color: white; font-size: 13px; font-weight: 700; }
+    .check-item-text { display: flex; flex-direction: column; gap: 2px; }
+    .item-title { font-weight: 600; font-size: 0.95rem; color: var(--text-primary); transition: color 0.2s, text-decoration 0.2s; }
+    .check-item input[type="checkbox"]:checked ~ .check-item-text .item-title { text-decoration: line-through; color: var(--text-secondary); }
+    .item-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.3; }
+
+    .alert-banner { background: rgba(255, 87, 34, 0.08); border: 2px solid var(--brand-orange); border-radius: 16px; padding: 18px 24px; display: flex; flex-direction: column; gap: 12px; }
+    .alert-banner h4 { color: var(--brand-orange); font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+    .prohibited-tag { background: var(--surface-color); border: 1px solid rgba(255, 87, 34, 0.3); color: var(--brand-orange); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .info-card { background: var(--surface-color); border: 2px solid var(--border-color); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+    .info-card h4 { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+    .info-card ul { list-style-position: inside; font-size: 0.85rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 4px; }
+
+    /* ============================== */
+    /* TAB 5: CAMP RULES UI STYLES    */
+    /* ============================== */
+    .rules-wrapper {
       width: 100%;
-      max-width: 1100px;
+      max-width: 1050px;
       padding: 30px 20px;
       display: flex;
       flex-direction: column;
       gap: 24px;
     }
 
-    .packing-hero {
+    .rules-spirit-card {
+      background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(0, 200, 83, 0.1));
+      border: 2px solid var(--brand-blue);
+      border-radius: 20px;
+      padding: 28px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .spirit-title { font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--brand-blue); }
+    .spirit-pillars { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 6px 0; }
+    .spirit-pillar { background: var(--surface-color); padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 1rem; border: 1px solid var(--border-color); color: var(--text-primary); }
+    .spirit-quote { font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); font-style: italic; }
+
+    .rules-accordion { display: flex; flex-direction: column; gap: 16px; }
+    .rule-card { background: var(--surface-color); border: 2px solid var(--border-color); border-radius: 18px; overflow: hidden; transition: border-color 0.2s ease, box-shadow 0.2s ease; box-shadow: var(--shadow-soft); }
+    .rule-card:hover { border-color: var(--brand-blue); }
+
+    .rule-header { padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; font-weight: 700; font-size: 1.05rem; }
+    .rule-header-title { display: flex; align-items: center; gap: 12px; }
+    .rule-icon { font-size: 1.3rem; }
+    .rule-arrow { font-size: 0.9rem; color: var(--text-secondary); transition: transform 0.3s ease; }
+    .rule-card.active .rule-arrow { transform: rotate(180deg); }
+
+    .rule-body { display: none; padding: 0 24px 20px 24px; border-top: 1px dashed var(--border-color); flex-direction: column; gap: 12px; margin-top: 8px; padding-top: 16px; }
+    .rule-card.active .rule-body { display: flex; }
+
+    .rule-item { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary); }
+    .rule-item strong { color: var(--text-primary); font-weight: 600; }
+
+    .pledge-card {
       background: var(--surface-color);
-      border: 2px solid var(--border-color);
+      border: 2px solid var(--brand-green);
       border-radius: 20px;
       padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
       box-shadow: var(--shadow-soft);
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
     }
 
-    .progress-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+    .pledge-card h3 { color: var(--brand-green); font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .pledge-box { background: var(--surface-secondary); padding: 16px; border-radius: 12px; font-size: 0.88rem; line-height: 1.6; color: var(--text-primary); border-left: 4px solid var(--brand-green); }
 
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
-
-    .progress-bar-bg {
-      width: 100%;
-      height: 12px;
-      background: var(--surface-secondary);
-      border-radius: 6px;
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--brand-blue), var(--brand-green));
-      border-radius: 6px;
-      transition: width 0.3s ease;
-    }
-
-    .packing-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
-    }
-
-    .packing-card {
-      background: var(--surface-color);
-      border: 2px solid var(--border-color);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: var(--shadow-soft);
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .packing-card h3 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text-primary);
-      border-bottom: 2px dashed var(--border-color);
-      padding-bottom: 12px;
-    }
-
-    .checklist-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .check-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      cursor: pointer;
-      user-select: none;
-      padding: 6px 8px;
-      border-radius: 8px;
-      transition: background 0.2s ease;
-    }
-
-    .check-item:hover {
-      background: var(--surface-secondary);
-    }
-
-    .check-item input[type="checkbox"] {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 20px;
-      height: 20px;
-      border: 2px solid var(--text-secondary);
-      border-radius: 6px;
-      margin-top: 2px;
-      outline: none;
-      cursor: pointer;
-      display: grid;
-      place-content: center;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-    }
-
-    .check-item input[type="checkbox"]:checked {
-      background-color: var(--brand-green);
-      border-color: var(--brand-green);
-    }
-
-    .check-item input[type="checkbox"]:checked::before {
-      content: "✓";
-      color: white;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .check-item-text {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .item-title {
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--text-primary);
-      transition: color 0.2s, text-decoration 0.2s;
-    }
-
-    .check-item input[type="checkbox"]:checked ~ .check-item-text .item-title {
-      text-decoration: line-through;
-      color: var(--text-secondary);
-    }
-
-    .item-desc {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      line-height: 1.3;
-    }
-
-    .alert-banner {
-      background: rgba(255, 87, 34, 0.08);
-      border: 2px solid var(--brand-orange);
-      border-radius: 16px;
-      padding: 18px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .alert-banner h4 {
-      color: var(--brand-orange);
-      font-weight: 700;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tag-cloud {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .prohibited-tag {
-      background: var(--surface-color);
-      border: 1px solid rgba(255, 87, 34, 0.3);
-      color: var(--brand-orange);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-    }
-
-    .info-card {
-      background: var(--surface-color);
-      border: 2px solid var(--border-color);
-      border-radius: 16px;
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .info-card h4 {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
-    .info-card ul {
-      list-style-position: inside;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    /* Print styles for Packing List */
     @media print {
       body * { visibility: hidden; }
-      #tab-packing, #tab-packing * { visibility: visible; }
-      #tab-packing { position: absolute; left: 0; top: 0; width: 100%; }
+      #tab-packing, #tab-packing *, #tab-rules, #tab-rules * { visibility: visible; }
+      #tab-packing, #tab-rules { position: absolute; left: 0; top: 0; width: 100%; }
       .sticky-toolbar, .main-header, .theme-toggle { display: none !important; }
-      .packing-card, .packing-hero, .alert-banner, .info-card { break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; }
+      .packing-card, .rules-card, .pledge-card { break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; }
+      .rule-body { display: flex !important; }
     }
 
     /* TOOLTIPS & TOASTS */
@@ -545,9 +412,7 @@
     }
     #toast.show { transform: translate(-50%, 0); opacity: 1; }
 
-    /* ============================== */
-    /* MOBILE RESPONSIVE ADAPTATIONS  */
-    /* ============================== */
+    /* MOBILE RESPONSIVE ADAPTATIONS */
     @media (max-width: 1024px) {
       .sticky-toolbar { flex-direction: column; padding: 12px 20px; gap: 12px; }
       .toolbar-right { width: 100%; justify-content: center; }
@@ -578,48 +443,30 @@
       
       .sticky-toolbar { padding: 10px 12px; }
       .tab-nav { width: 100%; display: flex; }
-      .tab-nav button { flex: 1; text-align: center; padding: 8px 4px; font-size: 0.8rem; }
+      .tab-nav button { flex: 1; text-align: center; padding: 8px 4px; font-size: 0.78rem; }
       
-      /* Display horizontally scrollable filters on mobile */
-      .filter-group { 
-        display: flex !important; 
-        overflow-x: auto; 
-        max-width: 100%;
-        width: 100%;
-        -webkit-overflow-scrolling: touch;
-        padding: 4px;
-        gap: 6px;
-      }
+      .filter-group { display: flex !important; overflow-x: auto; max-width: 100%; width: 100%; -webkit-overflow-scrolling: touch; padding: 4px; gap: 6px; }
       .filter-btn { flex-shrink: 0; padding: 6px 12px; font-size: 0.8rem; }
       .controls { display: none !important; } 
-      
-      /* Mobile Search Bar Setup */
       #searchInput { width: 100%; }
-      
-      /* Target Safari specifically to fix placeholder color bleed */
       #searchInput::-webkit-input-placeholder { color: var(--text-secondary); opacity: 1; }
       
-      .handbook-wrapper, .timeline-wrapper, .packing-wrapper { padding: 16px 12px; }
+      .handbook-wrapper, .timeline-wrapper, .packing-wrapper, .rules-wrapper { padding: 16px 12px; }
       .canva-embed-container { max-width: 100%; }
     }
   </style>
 </head>
 <body>
 
-  <!-- SCROLLING HEADER (Branding & Stats) -->
+  <!-- SCROLLING HEADER -->
   <header class="main-header">
     <div class="brand-section">
-      <!-- Ensure you export your files as transparent PNGs named logo-light.png and logo-dark.png! -->
       <img src="logo-light.png" alt="Youth Policy Lab Logo" class="brand-logo" id="brandLogo" onerror="this.style.display='none'; document.getElementById('fallbackTitle').style.display='block';">
-      
-      <!-- Text Fallback -->
       <h1 id="fallbackTitle" style="display:none;"><span class="brand-hl-1">Youth</span> <span class="brand-hl-2">Policy</span> <span class="brand-hl-3">Lab</span></h1>
-      
-      <!-- Dark/Light Theme Toggle -->
       <button id="themeToggle" class="theme-toggle" aria-label="Toggle Dark Mode">🌙</button>
     </div>
 
-    <!-- Countdown Timer: counts down to event start -->
+    <!-- Countdown Timer -->
     <div class="countdown-section" id="countdownSection">
       <div class="countdown-label" id="countdownLabel">Event Starts In</div>
       <div class="countdown-timer" id="countdownTimer">
@@ -636,7 +483,6 @@
     
     <div class="header-info-row dir-tools" id="dirToolsHeader">
       <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting...</span></div>
-      
       <div class="legend-container">
         <div class="legend-item"><div class="legend-box" style="background-color: var(--twin-room);"></div> Twin</div>
         <div class="legend-item"><div class="legend-box" style="background-color: var(--double-room);"></div> Double</div>
@@ -644,7 +490,7 @@
         <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family</div>
       </div>
     </div>
-    <!-- Participant stats: moved below the sync status / legend row -->
+    
     <div class="stats-container dir-tools" id="statsRow">
       <div class="stat-card"><span class="stat-value" id="stat-pax">-</span><span class="stat-label">Participants</span></div>
       <div class="stat-card"><span class="stat-value" id="stat-boys">-</span><span class="stat-label">Boys</span></div>
@@ -653,15 +499,17 @@
     </div>
   </header>
 
-  <!-- STICKY NAV TOOLBAR (Follows you down the page) -->
+  <!-- STICKY NAV TOOLBAR -->
   <nav class="sticky-toolbar">
     <div class="tab-nav">
       <button class="active" onclick="switchTab('directory')">Directory</button>
       <button onclick="switchTab('timeline')">Timeline</button>
       <button onclick="switchTab('handbook')">Handbook</button>
-      <button onclick="switchTab('packing')">🎒 Packing List / 装备清单</button>
+      <button onclick="switchTab('packing')">🎒 Packing List</button>
+      <button onclick="switchTab('rules')">📜 Camp Rules / 营规</button>
     </div>
 
+    <!-- Directory Tools -->
     <div class="toolbar-right dir-tools" id="dirToolsNav">
       <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
       <div class="filter-group">
@@ -677,6 +525,7 @@
       </div>
     </div>
 
+    <!-- Packing List Tools -->
     <div class="toolbar-right packing-tools hidden" id="packingToolsNav">
       <div class="filter-group">
         <button class="filter-btn active" id="lang-en" onclick="setPackingLang('en')">English</button>
@@ -684,6 +533,16 @@
       </div>
       <button class="btn" onclick="window.print()">🖨️ Print / PDF</button>
       <button class="btn" onclick="resetPackingList()" style="color: var(--brand-orange)">🔄 Reset</button>
+    </div>
+
+    <!-- Rules Tools -->
+    <div class="toolbar-right rules-tools hidden" id="rulesToolsNav">
+      <div class="filter-group">
+        <button class="filter-btn active" id="rules-lang-en" onclick="setRulesLang('en')">English</button>
+        <button class="filter-btn" id="rules-lang-zh" onclick="setRulesLang('zh')">简体中文</button>
+      </div>
+      <button class="btn" onclick="toggleAllRules(true)"> Expand All</button>
+      <button class="btn" onclick="toggleAllRules(false)"> Collapse All</button>
     </div>
   </nav>
 
@@ -775,7 +634,7 @@
     </div>
   </div>
 
-  <!-- TAB 2: EVENT TIMELINE (SMART CSV PARSE) -->
+  <!-- TAB 2: EVENT TIMELINE -->
   <div class="tab-content" id="tab-timeline">
     <div class="timeline-wrapper" id="timeline-container">
       <div style="text-align: center; color: var(--text-secondary); padding: 40px; font-weight: 500;">
@@ -784,7 +643,7 @@
     </div>
   </div>
 
-  <!-- TAB 3: EVENT HANDBOOK (SMART CANVA EMBED) -->
+  <!-- TAB 3: EVENT HANDBOOK -->
   <div class="tab-content" id="tab-handbook">
     <div class="handbook-wrapper">
       <div class="canva-embed-container">
@@ -796,11 +655,9 @@
     </div>
   </div>
 
-  <!-- TAB 4: PACKING LIST (INTERACTIVE UI) -->
+  <!-- TAB 4: PACKING LIST -->
   <div class="tab-content" id="tab-packing">
     <div class="packing-wrapper">
-      
-      <!-- Progress Bar Hero -->
       <div class="packing-hero">
         <div class="progress-container">
           <div class="progress-header">
@@ -813,124 +670,39 @@
         </div>
       </div>
 
-      <!-- Checklist Grid -->
       <div class="packing-grid">
-        
-        <!-- Card 1: Clothing -->
         <div class="packing-card">
           <h3><span class="icon">👕</span> <span id="p-c1-title">Clothing & Attire / 衣着用品</span></h3>
           <div class="checklist-group">
-            <label class="check-item">
-              <input type="checkbox" id="chk_c1">
-              <div class="check-item-text">
-                <span class="item-title" id="p-c1-1-t">Opening & Closing Ceremony Outfit</span>
-                <span class="item-desc" id="p-c1-1-d">Camp T-Shirt + Long Pants | 开幕及闭幕服装（营衣 + 长裤）</span>
-              </div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" id="chk_c2">
-              <div class="check-item-text">
-                <span class="item-title" id="p-c2-1-t">Daily Clothes (3D2N)</span>
-                <span class="item-desc" id="p-c2-1-d">Sufficient changes of clothes. Long pants MANDATORY during activities | 充足替换衣物 （活动期间必须穿长裤）</span>
-              </div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" id="chk_c3">
-              <div class="check-item-text">
-                <span class="item-title" id="p-c3-1-t">Semi-Formal Outfit (1 Set)</span>
-                <span class="item-desc" id="p-c3-1-d">Collared shirt + long pants/skirt + covered shoes (No tight clothes) | 有领衬衫+长裤/长裙+包鞋（终极回合）</span>
-              </div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" id="chk_c4">
-              <div class="check-item-text">
-                <span class="item-title" id="p-c4-1-t">Covered Shoes / Sports Shoes</span>
-                <span class="item-desc" id="p-c4-1-d">Closed-toe footwear required | 包鞋／运动鞋</span>
-              </div>
-            </label>
+            <label class="check-item"><input type="checkbox" id="chk_c1"><div class="check-item-text"><span class="item-title" id="p-c1-1-t">Opening & Closing Ceremony Outfit</span><span class="item-desc" id="p-c1-1-d">Camp T-Shirt + Long Pants | 开幕及闭幕服装（营衣 + 长裤）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_c2"><div class="check-item-text"><span class="item-title" id="p-c2-1-t">Daily Clothes (3D2N)</span><span class="item-desc" id="p-c2-1-d">Sufficient changes of clothes. Long pants MANDATORY during activities | 充足替换衣物 （活动期间必须穿长裤）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_c3"><div class="check-item-text"><span class="item-title" id="p-c3-1-t">Semi-Formal Outfit (1 Set)</span><span class="item-desc" id="p-c3-1-d">Collared shirt + long pants/skirt + covered shoes (No tight clothes) | 有领衬衫+长裤/长裙+包鞋（终极回合）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_c4"><div class="check-item-text"><span class="item-title" id="p-c4-1-t">Covered Shoes / Sports Shoes</span><span class="item-desc" id="p-c4-1-d">Closed-toe footwear required | 包鞋／运动鞋</span></div></label>
           </div>
         </div>
 
-        <!-- Card 2: Personal Essentials -->
         <div class="packing-card">
           <h3><span class="icon">🛁</span> <span id="p-c2-title">Personal Essentials / 个人用品</span></h3>
           <div class="checklist-group">
-            <label class="check-item">
-              <input type="checkbox" id="chk_p1">
-              <div class="check-item-text">
-                <span class="item-title" id="p-p1-1-t">Toiletries Kit</span>
-                <span class="item-desc" id="p-p1-1-d">Towel, toothbrush, toothpaste, body wash, hair dryer | 洗漱用品（毛巾/牙刷/牙膏/沐浴露/吹风机等）</span>
-              </div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" id="chk_p2">
-              <div class="check-item-text">
-                <span class="item-title" id="p-p2-1-t">Water Bottle</span>
-                <span class="item-desc" id="p-p2-1-d">Reusable bottle for refills | 水壶</span>
-              </div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" id="chk_p3">
-              <div class="check-item-text">
-                <span class="item-title" id="p-p3-1-t">Touch 'n Go Card (Locals Only)</span>
-                <span class="item-desc" id="p-p3-1-d">Pre-reload funds for self-funded Monorail transit | TNG卡（请提前Top-Up自费搭乘Monorail）</span>
-              </div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" id="chk_p4">
-              <div class="check-item-text">
-                <span class="item-title" id="p-p4-1-t">Pocket Cash</span>
-                <span class="item-desc" id="p-p4-1-d">Small amount of cash (~RM50 for international students) | 少许现金（外国学生需提前兑换马币）</span>
-              </div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" id="chk_p5">
-              <div class="check-item-text">
-                <span class="item-title" id="p-p5-1-t">Umbrella or Raincoat</span>
-                <span class="item-desc" id="p-p5-1-d">Weather protection | 雨伞/雨衣</span>
-              </div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" id="chk_p6">
-              <div class="check-item-text">
-                <span class="item-title" id="p-p6-1-t">Sanitary Products</span>
-                <span class="item-desc" id="p-p6-1-d">If required | 卫生棉（若需要）</span>
-              </div>
-            </label>
+            <label class="check-item"><input type="checkbox" id="chk_p1"><div class="check-item-text"><span class="item-title" id="p-p1-1-t">Toiletries Kit</span><span class="item-desc" id="p-p1-1-d">Towel, toothbrush, toothpaste, body wash, hair dryer | 洗漱用品（毛巾/牙刷/牙膏/沐浴露/吹风机等）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p2"><div class="check-item-text"><span class="item-title" id="p-p2-1-t">Water Bottle</span><span class="item-desc" id="p-p2-1-d">Reusable bottle for refills | 水壶</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p3"><div class="check-item-text"><span class="item-title" id="p-p3-1-t">Touch 'n Go Card (Locals Only)</span><span class="item-desc" id="p-p3-1-d">Pre-reload funds for self-funded Monorail transit | TNG卡（请提前Top-Up自费搭乘Monorail）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p4"><div class="check-item-text"><span class="item-title" id="p-p4-1-t">Pocket Cash</span><span class="item-desc" id="p-p4-1-d">Small amount of cash (~RM50 for international students) | 少许现金（外国学生需提前兑换马币）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p5"><div class="check-item-text"><span class="item-title" id="p-p5-1-t">Umbrella or Raincoat</span><span class="item-desc" id="p-p5-1-d">Weather protection | 雨伞/雨衣</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p6"><div class="check-item-text"><span class="item-title" id="p-p6-1-t">Sanitary Products</span><span class="item-desc" id="p-p6-1-d">If required | 卫生棉（若需要）</span></div></label>
           </div>
         </div>
 
-        <!-- Card 3: Learning & Medical Essentials -->
         <div class="packing-card">
           <h3><span class="icon">📝</span> <span id="p-c3-title">Study & Health / 学习与医药</span></h3>
           <div class="checklist-group">
-            <label class="check-item">
-              <input type="checkbox" id="chk_s1">
-              <div class="check-item-text">
-                <span class="item-title" id="p-s1-1-t">Notebook & Stationery</span>
-                <span class="item-desc" id="p-s1-1-d">Pens, notepad for policy workshops | 笔记本 + 文具（笔等）</span>
-              </div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" id="chk_s2">
-              <div class="check-item-text">
-                <span class="item-title" id="p-s2-1-t">Chargers & Power Banks</span>
-                <span class="item-desc" id="p-s2-1-d">Keep your electronics powered | 充电器与随身电源</span>
-              </div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" id="chk_m1">
-              <div class="check-item-text">
-                <span class="item-title" id="p-m1-1-t">Personal Medication</span>
-                <span class="item-desc" id="p-m1-1-d">Prepare according to personal medical needs | 个人常用药物（请按需要准备）</span>
-              </div>
-            </label>
+            <label class="check-item"><input type="checkbox" id="chk_s1"><div class="check-item-text"><span class="item-title" id="p-s1-1-t">Notebook & Stationery</span><span class="item-desc" id="p-s1-1-d">Pens, notepad for policy workshops | 笔记本 + 文具（笔等）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_s2"><div class="check-item-text"><span class="item-title" id="p-s2-1-t">Chargers & Power Banks</span><span class="item-desc" id="p-s2-1-d">Keep your electronics powered | 充电器与随身电源</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_m1"><div class="check-item-text"><span class="item-title" id="p-m1-1-t">Personal Medication</span><span class="item-desc" id="p-m1-1-d">Prepare according to personal medical needs | 个人常用药物（请按需要准备）</span></div></label>
           </div>
         </div>
-
       </div>
 
-      <!-- Prohibited Items Alert -->
       <div class="alert-banner">
         <h4 id="p-pro-title">🚫 Prohibited Items / 禁止携带物品</h4>
         <div class="tag-cloud">
@@ -942,7 +714,6 @@
         </div>
       </div>
 
-      <!-- Info Notices Grid -->
       <div class="info-grid">
         <div class="info-card">
           <h4 id="p-i1-title">🏠 Accommodation & Meals / 住宿与膳食</h4>
@@ -952,7 +723,6 @@
             <li id="p-i1-3">Strict gender-segregated rooming rules.</li>
           </ul>
         </div>
-
         <div class="info-card">
           <h4 id="p-i2-title">🚨 Transit & Public Transport / 交通指南</h4>
           <ul>
@@ -961,7 +731,6 @@
             <li id="p-i2-3"><strong>International Campers:</strong> Prepare cash for token fares.</li>
           </ul>
         </div>
-
         <div class="info-card">
           <h4 id="p-i3-title">📌 Health & Safety Reminder / 提醒事项</h4>
           <ul>
@@ -970,6 +739,166 @@
             <li id="p-i3-3">Notify organizers beforehand for dietary/health needs.</li>
           </ul>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: CAMP RULES (NEW TAB) -->
+  <div class="tab-content" id="tab-rules">
+    <div class="rules-wrapper">
+      
+      <!-- Spirit & Core Values -->
+      <div class="rules-spirit-card">
+        <div class="spirit-title" id="r-spirit-title">YOUTH LEADERSHIP SPIRIT / 青年领袖精神</div>
+        <div class="spirit-pillars">
+          <span class="spirit-pillar" id="r-sp-1">学习 · Learning</span>
+          <span class="spirit-pillar" id="r-sp-2">思辨 · Critical Thinking</span>
+          <span class="spirit-pillar" id="r-sp-3">服务 · Service</span>
+          <span class="spirit-pillar" id="r-sp-4">领导 · Leadership</span>
+        </div>
+        <div class="spirit-quote" id="r-spirit-quote">“这YOUNG说政事，青年敢发声；以行动实践责任，以担当创造未来。”</div>
+      </div>
+
+      <!-- Zero Tolerance Prohibitions Banner -->
+      <div class="alert-banner">
+        <h4 id="r-prohib-title">🚫 Section 6: Zero-Tolerance Rules / 严格禁止事项</h4>
+        <div class="tag-cloud">
+          <span class="prohibited-tag" id="r-pr-1">❌ 赌博行为 Gambling</span>
+          <span class="prohibited-tag" id="r-pr-2">❌ 暴力 / 霸凌 / 骚扰 Violence & Bullying</span>
+          <span class="prohibited-tag" id="r-pr-3">❌ 吸毒 / 违禁品 / 危险物品 Drugs & Dangerous Items</span>
+          <span class="prohibited-tag" id="r-pr-4">❌ 酗酒 / 醉酒闹事 Drunkenness</span>
+          <span class="prohibited-tag" id="r-pr-5">❌ 非指定区域吸烟 Smoking Outside Designated Areas</span>
+          <span class="prohibited-tag" id="r-pr-6">❌ 网络霸凌 / 诽谤 Slander & Cyberbullying</span>
+          <span class="prohibited-tag" id="r-pr-7">❌ 未经许可擅自离营 / 夜不归宿 Unauthorized Absence</span>
+        </div>
+      </div>
+
+      <!-- Accordion Rules List -->
+      <div class="rules-accordion">
+        
+        <!-- Rule 1 -->
+        <div class="rule-card active">
+          <div class="rule-header" onclick="toggleRuleCard(this)">
+            <div class="rule-header-title">
+              <span class="rule-icon">🤝</span>
+              <span id="r-sec1-head">1. Respect & Unity / 尊重与团结</span>
+            </div>
+            <span class="rule-arrow">▼</span>
+          </div>
+          <div class="rule-body">
+            <div class="rule-item">
+              <strong id="r-1-1-t">1.1 Mutual Respect</strong>
+              <span id="r-1-1-d">Respect every camper, committee member, mentor, and guest. Maintain courtesy, respect differing opinions, avoid abusive language or discrimination, and foster an inclusive learning environment.</span>
+            </div>
+            <div class="rule-item">
+              <strong id="r-1-2-t">1.2 Team Spirit</strong>
+              <span id="r-1-2-d">Actively participate in group activities, support each other, and complete challenges together.</span>
+            </div>
+            <div class="rule-item">
+              <strong id="r-1-3-t">1.3 Youth Leadership Image</strong>
+              <span id="r-1-3-d">Demonstrate responsibility, integrity, and discipline suitable for youth leaders.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rule 2 -->
+        <div class="rule-card">
+          <div class="rule-header" onclick="toggleRuleCard(this)">
+            <div class="rule-header-title">
+              <span class="rule-icon">⏰</span>
+              <span id="r-sec2-head">2. Discipline & Attendance / 活动纪律</span>
+            </div>
+            <span class="rule-arrow">▼</span>
+          </div>
+          <div class="rule-body">
+            <div class="rule-item">
+              <strong id="r-2-1-t">2.1 Punctuality & Roll Call</strong>
+              <span id="r-2-1-d">Attend all sessions on time. Repeated unexcused absences/tardiness will face disciplinary actions. Early departures require prior approval.</span>
+            </div>
+            <div class="rule-item">
+              <strong id="r-2-2-t">2.2 Active Participation</strong>
+              <span id="r-2-2-d">Engage fully in lectures, forums, and workshops. Do not be a passive bystander.</span>
+            </div>
+            <div class="rule-item">
+              <strong id="r-2-3-t">2.3 Follow Organizers' Directives</strong>
+              <span id="r-2-3-d">Comply with committee instructions. Report special circumstances to group leaders immediately.</span>
+            </div>
+            <div class="rule-item">
+              <strong id="r-2-4-t">2.4 Night Curfew (12:00 AM)</strong>
+              <span id="r-2-4-d">Return to accommodation before 12:00 AM and report to your team leader for mandatory headcounts.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rule 3 -->
+        <div class="rule-card">
+          <div class="rule-header" onclick="toggleRuleCard(this)">
+            <div class="rule-header-title">
+              <span class="rule-icon">🛡️</span>
+              <span id="r-sec3-head">3. Safety Guidelines / 安全守则</span>
+            </div>
+            <span class="rule-arrow">▼</span>
+          </div>
+          <div class="rule-body">
+            <div class="rule-item">
+              <strong id="r-3-1-t">3.1 Unauthorized Departure Prohibited</strong>
+              <span id="r-3-1-d">Do not leave the camp premises without explicit permission from organizers.</span>
+            </div>
+            <div class="rule-item">
+              <strong id="r-3-2-t">3.2 Personal Safety</strong>
+              <span id="r-3-2-d">Follow safety protocols during activities. Dangerous or illegal acts are strictly forbidden.</span>
+            </div>
+            <div class="rule-item">
+              <strong id="r-3-3-t">3.3 Personal Accountability</strong>
+              <span id="r-3-3-d">Campers are responsible for their actions. Organizers hold no liability for injuries or losses resulting from rule violations.</span>
+            </div>
+            <div class="rule-item">
+              <strong id="r-3-4-t">3.4 Buddy System</strong>
+              <span id="r-3-4-d">Travel with a partner/group at all times. Avoid isolated or unfamiliar areas alone. Notify team leaders before leaving activity zones.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rule 4 & 5 -->
+        <div class="rule-card">
+          <div class="rule-header" onclick="toggleRuleCard(this)">
+            <div class="rule-header-title">
+              <span class="rule-icon">🏡</span>
+              <span id="r-sec4-head">4 & 5. Living & Team System / 生活规范与小组制度</span>
+            </div>
+            <span class="rule-arrow">▼</span>
+          </div>
+          <div class="rule-body">
+            <div class="rule-item">
+              <strong id="r-4-1-t">4.1 Hygiene & Property Care</strong>
+              <span id="r-4-1-d">Maintain cleanliness. Property damage caused intentionally must be compensated.</span>
+            </div>
+            <div class="rule-item">
+              <strong id="r-4-2-t">4.2 Rest Period Courtesy</strong>
+              <span id="r-4-2-d">Keep noise levels low during rest hours to respect roommates and other guests.</span>
+            </div>
+            <div class="rule-item">
+              <strong id="r-5-1-t">5.1 Team Leader & Member Roles</strong>
+              <span id="r-5-1-d">Team leaders monitor member safety and check-ins; members must coordinate, maintain contact, and avoid acting independently.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Digital Pledge Box -->
+      <div class="pledge-card">
+        <h3 id="r-pledge-title">📝 Camper Pledge / 营员承诺</h3>
+        <div class="pledge-box" id="r-pledge-body">
+          I pledge to participate in "Youth Policy Lab 2026" with an active, open, and responsible mindset. I will abide by all camp rules, respect fellow campers, mentors, and staff, and strive to grow as an empowered, responsible youth leader.
+        </div>
+        <label class="check-item">
+          <input type="checkbox" id="chk_rules_pledge" onchange="togglePledge(this)">
+          <div class="check-item-text">
+            <span class="item-title" id="r-pledge-chk-title">I have read, understood, and agree to abide by all camp rules.</span>
+            <span class="item-desc" id="r-pledge-chk-desc">Clicking this acknowledges your digital pledge to the Youth Policy Lab Organizers.</span>
+          </div>
+        </label>
       </div>
 
     </div>
@@ -985,14 +914,13 @@
     const brandLogo = document.getElementById('brandLogo');
     const currentTheme = localStorage.getItem('theme');
     
-    // Check saved preference or default to light
     if (currentTheme === 'dark') {
       document.body.classList.add('dark-mode');
       themeToggle.textContent = '☀️';
-      brandLogo.src = 'logo-dark.png'; // Load white-text logo
+      brandLogo.src = 'logo-dark.png';
     } else {
       themeToggle.textContent = '🌙';
-      brandLogo.src = 'logo-light.png'; // Load black-text logo
+      brandLogo.src = 'logo-light.png';
     }
 
     themeToggle.addEventListener('click', () => {
@@ -1000,16 +928,15 @@
       if (document.body.classList.contains('dark-mode')) {
         localStorage.setItem('theme', 'dark');
         themeToggle.textContent = '☀️';
-        brandLogo.src = 'logo-dark.png'; // Switch to white-text logo
+        brandLogo.src = 'logo-dark.png';
       } else {
         localStorage.setItem('theme', 'light');
         themeToggle.textContent = '🌙';
-        brandLogo.src = 'logo-light.png'; // Switch to black-text logo
+        brandLogo.src = 'logo-light.png';
       }
     });
 
     // --- Countdown Timer Logic ---
-    // 14 Aug 2026, 9:00 AM Malaysia Time (UTC+8, no DST)
     const EVENT_START = new Date('2026-08-14T09:00:00+08:00');
     let countdownInterval = null;
 
@@ -1061,22 +988,22 @@
       const rightTools = document.getElementById('dirToolsNav');
       const statsRow = document.getElementById('statsRow');
       const packingTools = document.getElementById('packingToolsNav');
+      const rulesTools = document.getElementById('rulesToolsNav');
       
+      leftTools.classList.add('hidden');
+      rightTools.classList.add('hidden');
+      statsRow.classList.add('hidden');
+      packingTools.classList.add('hidden');
+      rulesTools.classList.add('hidden');
+
       if (tabId === 'directory') {
         leftTools.classList.remove('hidden');
         rightTools.classList.remove('hidden');
         statsRow.classList.remove('hidden');
-        packingTools.classList.add('hidden');
       } else if (tabId === 'packing') {
-        leftTools.classList.add('hidden');
-        rightTools.classList.add('hidden');
-        statsRow.classList.add('hidden');
         packingTools.classList.remove('hidden');
-      } else {
-        leftTools.classList.add('hidden');
-        rightTools.classList.add('hidden');
-        statsRow.classList.add('hidden');
-        packingTools.classList.add('hidden');
+      } else if (tabId === 'rules') {
+        rulesTools.classList.remove('hidden');
       }
     }
 
@@ -1186,7 +1113,7 @@
       document.getElementById('stat-girls').textContent = stats.girls;
       document.getElementById('stat-vacant').textContent = (totalRoomsCount - stats.occupiedRooms);
 
-      const activeFilterBtn = document.querySelector('.filter-btn.active');
+      const activeFilterBtn = document.querySelector('#dirToolsNav .filter-btn.active');
       const activeFilter = activeFilterBtn ? activeFilterBtn.getAttribute('data-filter') : 'all';
       applySearchAndFilter(document.getElementById('searchInput').value, activeFilter);
     }
@@ -1209,7 +1136,6 @@
       rows.forEach(row => {
         const cleanRow = row.map(cell => cell ? cell.trim() : '');
         const nonEmptyCells = cleanRow.filter(cell => cell !== '');
-        
         if (nonEmptyCells.length === 0) return;
 
         const rowStr = cleanRow.join(' ').toLowerCase();
@@ -1388,124 +1314,30 @@
       });
     });
 
-    // ==========================================
     // --- TAB 4: PACKING LIST LOGIC & LOCALSTORAGE ---
-    // ==========================================
     const PACKING_STORAGE_KEY = 'ypl_packing_checklist';
     const PACKING_LANG_KEY = 'ypl_packing_lang';
 
     const packingDictionary = {
       en: {
-        progTitle: "🎒 Packing Progress",
-        c1Title: "Clothing & Attire",
-        c1_1_t: "Opening & Closing Outfit",
-        c1_1_d: "Camp T-Shirt + Long Pants",
-        c2_1_t: "Daily Outfit (3D2N)",
-        c2_1_d: "Ample clothing. Long pants MANDATORY during activities.",
-        c3_1_t: "Semi-Formal Outfit (1 Set)",
-        c3_1_d: "Collared shirt + long pants/skirt + covered shoes (No tight clothes)",
-        c4_1_t: "Footwear",
-        c4_1_d: "Covered shoes / Sports shoes required",
-        
-        c2Title: "Personal Essentials",
-        p1_1_t: "Toiletries Kit",
-        p1_1_d: "Towel, toothbrush, toothpaste, body wash, hair dryer",
-        p2_1_t: "Water Bottle",
-        p2_1_d: "Reusable bottle for refills",
-        p3_1_t: "Touch 'n Go Card (Locals Only)",
-        p3_1_d: "Pre-reload funds for self-funded Monorail transit",
-        p4_1_t: "Pocket Cash",
-        p4_1_d: "Small amount (~RM50 pre-exchanged for international students)",
-        p5_1_t: "Weather Protection",
-        p5_1_d: "Umbrella or Raincoat",
-        p6_1_t: "Sanitary Products",
-        p6_1_d: "Sanitary pads (if required)",
-
-        c3Title: "Study & Health Essentials",
-        s1_1_t: "Notebook & Stationery",
-        s1_1_d: "Notebook, pens, writing materials",
-        s2_1_t: "Chargers & Tech",
-        s2_1_d: "Phone chargers and power banks",
-        m1_1_t: "Personal Medication",
-        m1_1_d: "Prepare personal medicine based on individual needs",
-
-        proTitle: "🚫 Prohibited Items",
-        p1: "❌ Alcoholic Drinks",
-        p2: "❌ Cigarettes & Vapes",
-        p3: "❌ Playing Cards & Gambling Gear",
-        p4: "❌ Dangerous Items",
-        p5: "❌ Loudspeakers & Audio Gear",
-
-        i1Title: "🏠 Accommodation & Meals",
-        i1_1: "Bedding (sheets, pillows, blanket) provided by organizers.",
-        i1_2: "3 daily meals & drinking water provided.",
-        i1_3: "Strict gender-segregated rooming rules.",
-
-        i2Title: "🚨 Transit & Public Transport",
-        i2_1: "Self-funded Monorail transit between venue & hostel.",
-        i2_2: "Malaysian Campers: Bring Touch 'n Go or MyKad.",
-        i2_3: "International Campers: Prepare cash for ticket tokens.",
-
-        i3Title: "📌 Health & Safety Reminder",
-        i3_1: "Safeguard personal valuables at all times.",
-        i3_2: "Shorts prohibited during activity sessions.",
-        i3_3: "Notify organizers beforehand for dietary/health requirements."
+        progTitle: "🎒 Packing Progress", c1Title: "Clothing & Attire", c1_1_t: "Opening & Closing Outfit", c1_1_d: "Camp T-Shirt + Long Pants",
+        c2_1_t: "Daily Outfit (3D2N)", c2_1_d: "Ample clothing. Long pants MANDATORY during activities.", c3_1_t: "Semi-Formal Outfit (1 Set)", c3_1_d: "Collared shirt + long pants/skirt + covered shoes (No tight clothes)", c4_1_t: "Footwear", c4_1_d: "Covered shoes / Sports shoes required",
+        c2Title: "Personal Essentials", p1_1_t: "Toiletries Kit", p1_1_d: "Towel, toothbrush, toothpaste, body wash, hair dryer", p2_1_t: "Water Bottle", p2_1_d: "Reusable bottle for refills", p3_1_t: "Touch 'n Go Card (Locals Only)", p3_1_d: "Pre-reload funds for self-funded Monorail transit", p4_1_t: "Pocket Cash", p4_1_d: "Small amount (~RM50 pre-exchanged for international students)", p5_1_t: "Weather Protection", p5_1_d: "Umbrella or Raincoat", p6_1_t: "Sanitary Products", p6_1_d: "Sanitary pads (if required)",
+        c3Title: "Study & Health Essentials", s1_1_t: "Notebook & Stationery", s1_1_d: "Notebook, pens, writing materials", s2_1_t: "Chargers & Tech", s2_1_d: "Phone chargers and power banks", m1_1_t: "Personal Medication", m1_1_d: "Prepare personal medicine based on individual needs",
+        proTitle: "🚫 Prohibited Items", p1: "❌ Alcoholic Drinks", p2: "❌ Cigarettes & Vapes", p3: "❌ Playing Cards & Gambling Gear", p4: "❌ Dangerous Items", p5: "❌ Loudspeakers & Audio Gear",
+        i1Title: "🏠 Accommodation & Meals", i1_1: "Bedding (sheets, pillows, blanket) provided by organizers.", i1_2: "3 daily meals & drinking water provided.", i1_3: "Strict gender-segregated rooming rules.",
+        i2Title: "🚨 Transit & Public Transport", i2_1: "Self-funded Monorail transit between venue & hostel.", i2_2: "Malaysian Campers: Bring Touch 'n Go or MyKad.", i2_3: "International Campers: Prepare cash for ticket tokens.",
+        i3Title: "📌 Health & Safety Reminder", i3_1: "Safeguard personal valuables at all times.", i3_2: "Shorts prohibited during activity sessions.", i3_3: "Notify organizers beforehand for dietary/health requirements."
       },
       zh: {
-        progTitle: "🎒 准备进度",
-        c1Title: "衣着用品",
-        c1_1_t: "开幕及闭幕服装",
-        c1_1_d: "营衣 + 长裤",
-        c2_1_t: "活动期间替换衣物 (3天2夜)",
-        c2_1_d: "确保充足衣物 （活动期间必须穿长裤）",
-        c3_1_t: "Semi Formal 服装一套",
-        c3_1_d: "有领衬衫+长裤/长裙+包鞋【终极回合】（请不要穿紧身衣物）",
-        c4_1_t: "鞋类用品",
-        c4_1_d: "包鞋／运动鞋",
-
-        c2Title: "个人用品",
-        p1_1_t: "个人洗漱用品",
-        p1_1_d: "毛巾 / 牙刷 / 牙膏 / 沐浴露 / 吹风机等",
-        p2_1_t: "水壶",
-        p2_1_d: "饮水与补充用",
-        p3_1_t: "TNG 卡 (本地学生 ONLY)",
-        p3_1_d: "自费搭乘 Monorail 往返场馆与酒店，请记得提前 TOP-UP",
-        p4_1_t: "少许现金",
-        p4_1_d: "外国学生须提前兑换马币，约 RM50",
-        p5_1_t: "防雨装备",
-        p5_1_d: "雨伞 / 雨衣",
-        p6_1_t: "卫生用品",
-        p6_1_d: "卫生棉（若需要）",
-
-        c3Title: "学习与医药",
-        s1_1_t: "文具用品",
-        s1_1_d: "笔记本 + 笔等",
-        s2_1_t: "充电设备",
-        s2_1_d: "充电器及随身电源",
-        m1_1_t: "医药用品",
-        m1_1_d: "个人常用药物（请按个人需要准备）",
-
-        proTitle: "🚫 禁止携带物品",
-        p1: "❌ 酒精饮品",
-        p2: "❌ 香烟／电子烟",
-        p3: "❌ 扑克牌及赌博用品",
-        p4: "❌ 危险物品",
-        p5: "❌ 音箱或高音量播放设备",
-
-        i1Title: "🏠 住宿与膳食",
-        i1_1: "大会提供住宿（床单、枕头及被子），营员无需自带寝具。",
-        i1_2: "大会提供三餐及饮用水。",
-        i1_3: "宿舍为男女分房，请严格遵守住宿安排。",
-
-        i2Title: "🚨 交通指南",
-        i2_1: "营员需自费搭乘公共交通往返活动场地和住宿。",
-        i2_2: "马来西亚营员：可准备 TNG 卡或 IC。",
-        i2_3: "外国营员：可准备现金购买单程票务/Tokens。",
-
-        i3Title: "📌 温馨提醒",
-        i3_1: "请妥善保管个人财物，如有遗失，大会恕不负责。",
-        i3_2: "活动期间不得穿着短裤，请携带足够长裤。",
-        i3_3: "如有特殊健康状况、药物需求或饮食禁忌，请预先通知大会。"
+        progTitle: "🎒 准备进度", c1Title: "衣着用品", c1_1_t: "开幕及闭幕服装", c1_1_d: "营衣 + 长裤",
+        c2_1_t: "活动期间替换衣物 (3天2夜)", c2_1_d: "确保充足衣物 （活动期间必须穿长裤）", c3_1_t: "Semi Formal 服装一套", c3_1_d: "有领衬衫+长裤/长裙+包鞋【终极回合】（请不要穿紧身衣物）", c4_1_t: "鞋类用品", c4_1_d: "包鞋／运动鞋",
+        c2Title: "个人用品", p1_1_t: "个人洗漱用品", p1_1_d: "毛巾 / 牙刷 / 牙膏 / 沐浴露 / 吹风机等", p2_1_t: "水壶", p2_1_d: "饮水与补充用", p3_1_t: "TNG 卡 (本地学生 ONLY)", p3_1_d: "自费搭乘 Monorail 往返场馆与酒店，请记得提前 TOP-UP", p4_1_t: "少许现金", p4_1_d: "外国学生须提前兑换马币，约 RM50", p5_1_t: "防雨装备", p5_1_d: "雨伞 / 雨衣", p6_1_t: "卫生用品", p6_1_d: "卫生棉（若需要）",
+        c3Title: "学习与医药", s1_1_t: "文具用品", s1_1_d: "笔记本 + 笔等", s2_1_t: "充电设备", s2_1_d: "充电器及随身电源", m1_1_t: "医药用品", m1_1_d: "个人常用药物（请按个人需要准备）",
+        proTitle: "🚫 禁止携带物品", p1: "❌ 酒精饮品", p2: "❌ 香烟／电子烟", p3: "❌ 扑克牌及赌博用品", p4: "❌ 危险物品", p5: "❌ 音箱或高音量播放设备",
+        i1Title: "🏠 住宿与膳食", i1_1: "大会提供住宿（床单、枕头及被子），营员无需自带寝具。", i1_2: "大会提供三餐及饮用水。", i1_3: "宿舍为男女分房，请严格遵守住宿安排。",
+        i2Title: "🚨 交通指南", i2_1: "营员需自费搭乘公共交通往返活动场地和住宿。", i2_2: "马来西亚营员：可准备 TNG 卡或 IC。", i2_3: "外国营员：可准备现金购买单程票务/Tokens。",
+        i3Title: "📌 温馨提醒", i3_1: "请妥善保管个人财物，如有遗失，大会恕不负责。", i3_2: "活动期间不得穿着短裤，请携带足够长裤。", i3_3: "如有特殊健康状况、药物需求或饮食禁忌，请预先通知大会。"
       }
     };
 
@@ -1519,11 +1351,8 @@
       document.getElementById('p-prog-val').textContent = `${count} / ${total} (${pct}%)`;
       document.getElementById('p-prog-fill').style.width = `${pct}%`;
 
-      // Save state to localStorage
       const state = {};
-      checkboxes.forEach(chk => {
-        state[chk.id] = chk.checked;
-      });
+      checkboxes.forEach(chk => { state[chk.id] = chk.checked; });
       localStorage.setItem(PACKING_STORAGE_KEY, JSON.stringify(state));
     }
 
@@ -1613,17 +1442,171 @@
       }
     }
 
-    // Attach listeners to checkboxes
     document.querySelectorAll('#tab-packing input[type="checkbox"]').forEach(chk => {
       chk.addEventListener('change', updatePackingProgress);
     });
 
-    // Initialize packing list language & saved state
+    // --- TAB 5: CAMP RULES INTERACTIVITY & TRANSLATIONS ---
+    const RULES_PLEDGE_KEY = 'ypl_rules_pledge_signed';
+    const RULES_LANG_KEY = 'ypl_rules_lang';
+
+    const rulesDictionary = {
+      en: {
+        spiritTitle: "YOUTH LEADERSHIP SPIRIT",
+        sp1: "学习 · Learning", sp2: "思辨 · Critical Thinking", sp3: "服务 · Service", sp4: "领导 · Leadership",
+        spiritQuote: "“Youth Policy Lab: Young minds leading through action, responsibility, and vision.”",
+        prohibTitle: "🚫 Section 6: Zero-Tolerance Rules",
+        pr1: "❌ Gambling", pr2: "❌ Violence / Bullying / Harassment", pr3: "❌ Drugs / Dangerous Goods", pr4: "❌ Drunkenness", pr5: "❌ Smoking Outside Designated Areas", pr6: "❌ Cyberbullying / Defamation", pr7: "❌ Unauthorized Absence / Overnight Leave",
+        sec1Head: "1. Respect & Unity",
+        r1_1_t: "1.1 Mutual Respect", r1_1_d: "Respect every camper, committee member, mentor, and guest. Maintain courtesy, respect differing opinions, avoid abusive language or discrimination, and foster an inclusive learning environment.",
+        r1_2_t: "1.2 Team Spirit", r1_2_d: "Actively participate in group activities, support each other, and complete challenges together.",
+        r1_3_t: "1.3 Youth Leadership Image", r1_3_d: "Demonstrate responsibility, integrity, and discipline suitable for youth leaders.",
+        sec2Head: "2. Discipline & Attendance",
+        r2_1_t: "2.1 Punctuality & Attendance", r2_1_d: "Attend all sessions on time. Repeated unexcused absences/tardiness will face disciplinary actions. Early departures require prior approval.",
+        r2_2_t: "2.2 Active Participation", r2_2_d: "Engage fully in lectures, forums, and workshops. Do not be a passive bystander.",
+        r2_3_t: "2.3 Directives", r2_3_d: "Comply with committee instructions. Report special circumstances to group leaders immediately.",
+        r2_4_t: "2.4 Night Curfew (12:00 AM)", r2_4_d: "Return to accommodation before 12:00 AM and report to your team leader for mandatory headcounts.",
+        sec3Head: "3. Safety Guidelines",
+        r3_1_t: "3.1 Departure Rules", r3_1_d: "Do not leave the camp premises without explicit permission from organizers.",
+        r3_2_t: "3.2 Personal Safety", r3_2_d: "Follow safety protocols during activities. Dangerous or illegal acts are strictly forbidden.",
+        r3_3_t: "3.3 Accountability", r3_3_d: "Campers are responsible for their actions. Organizers hold no liability for injuries or losses resulting from rule violations.",
+        r3_4_t: "3.4 Buddy System", r3_4_d: "Travel with a partner/group at all times. Avoid isolated or unfamiliar areas alone. Notify team leaders before leaving activity zones.",
+        sec4Head: "4 & 5. Living Rules & Team System",
+        r4_1_t: "4.1 Property Care", r4_1_d: "Maintain cleanliness. Property damage caused intentionally must be compensated.",
+        r4_2_t: "4.2 Quiet Hours", r4_2_d: "Keep noise levels low during rest hours to respect roommates and other guests.",
+        r5_1_t: "5.1 Team System", r5_1_d: "Team leaders monitor member safety and check-ins; members must coordinate, maintain contact, and avoid acting independently.",
+        pledgeTitle: "📝 Camper Pledge",
+        pledgeBody: "I pledge to participate in 'Youth Policy Lab 2026' with an active, open, and responsible mindset. I will abide by all camp rules, respect fellow campers, mentors, and staff, and strive to grow as an empowered, responsible youth leader.",
+        pledgeChkTitle: "I have read, understood, and agree to abide by all camp rules.",
+        pledgeChkDesc: "Clicking this acknowledges your digital pledge to the Youth Policy Lab Organizers."
+      },
+      zh: {
+        spiritTitle: "青年领袖精神",
+        sp1: "学习", sp2: "思辨", sp3: "服务", sp4: "领导",
+        spiritQuote: "“这YOUNG说政事，青年敢发声；以行动实践责任，以担当创造未来。”",
+        prohibTitle: "🚫 第6条：禁止事项（零容忍）",
+        pr1: "❌ 赌博行为", pr2: "❌ 打架 / 霸凌 / 骚扰 / 暴力", pr3: "❌ 吸毒 / 违禁品 / 危险物品", pr4: "❌ 酗酒 / 醉酒闹事", pr5: "❌ 吸烟（非指定区域）", pr6: "❌ 散播不实消息 / 网络霸凌 / 诽谤", pr7: "❌ 未经许可擅自离营 / 夜不归宿",
+        sec1Head: "1. 尊重与团结",
+        r1_1_t: "1.1 尊重每一位营员、工委、导师及嘉宾", r1_1_d: "以礼待人，尊重不同意见，不辱骂、不歧视、不恶意攻击他人，共同营造友善、包容及积极的学习环境。",
+        r1_2_t: "1.2 发挥团队精神", r1_2_d: "积极参与团队活动，互相帮助、互相鼓励，与组员共同完成各项任务及挑战。",
+        r1_3_t: "1.3 维护青年领袖形象", r1_3_d: "展现青年应有的责任感、诚信、纪律及良好品德，言行举止符合青年领袖应有的风范。",
+        sec2Head: "2. 活动纪律",
+        r2_1_t: "2.1 准时出席所有活动", r2_1_d: "请按照大会时间表准时集合及签到，不得无故迟到、早退或缺席。多次迟到者视情况处分。早退或缺席须获批准。",
+        r2_2_t: "2.2 全程积极参与", r2_2_d: "每位营员皆为青年领袖营的重要成员，主动参与课程、论坛、工作坊及团队活动，不做旁观者。",
+        r2_3_t: "2.3 服从大会安排", r2_3_d: "营员须遵守大会及工委的指示。如有特殊情况，请第一时间向组长或工委说明。",
+        r2_4_t: "2.4 晚上12时前返回住宿", r2_4_d: "所有营员必须于晚上12时前返回住宿地点，并向组长报到。各小组组长须完成点名汇报。",
+        sec3Head: "3. 安全守则",
+        r3_1_t: "3.1 不得擅自离队或离开营地", r3_1_d: "未经大会批准，不得私自离开活动场地或住宿地点。紧急情况须立即通知工委。",
+        r3_2_t: "3.2 注意个人及他人安全", r3_2_d: "进行活动时必须遵守安全指示，不得进行危险、违法或影响他人安全的行为。",
+        r3_3_t: "3.3 个人行为，责任自负", r3_3_d: "营员须对自己的行为负责。因个人违反营规导致的损失，相关责任由当事人自行承担。",
+        r3_4_t: "3.4 结伴同行", r3_4_d: "营会期间请尽量与组员结伴同行，避免单独前往偏僻地方。离开活动范围前必须先通知领队/筹委。",
+        sec4Head: "4 & 5. 生活规范与小组制度",
+        r4_1_t: "4.1 保持环境整洁与爱护公物", r4_1_d: "共同维护住宿及活动场地卫生。故意损坏公共财物须承担赔偿责任。",
+        r4_2_t: "4.2 尊重他人休息", r4_2_d: "晚上休息时间请降低音量，不喧哗、不影响他人休息。",
+        r5_1_t: "5.1 小组制度与责任", r5_1_d: "组长照顾组员安全、提醒营规；组员须配合组长安排，保持联系，不得擅自行动。",
+        pledgeTitle: "📝 营员承诺",
+        pledgeBody: "我愿意以积极、开放及负责任 Attitude 参与《这YOUNG说政事·2026年青年领袖营》，遵守大会各项规定，尊重每一位营员、工委及导师，珍惜团队合作机会，勇于学习、理性交流、关心社会、服务他人，努力成为具备责任感、领导力及公民意识的青年领袖。",
+        pledgeChkTitle: "我已阅读、理解并同意遵守上述所有营规。",
+        pledgeChkDesc: "勾选此项即代表您向《这YOUNG说政事》筹委会提交电子承诺。"
+      }
+    };
+
+    function toggleRuleCard(headerEl) {
+      const card = headerEl.parentElement;
+      card.classList.toggle('active');
+    }
+
+    function toggleAllRules(expand) {
+      document.querySelectorAll('.rule-card').forEach(card => {
+        if (expand) card.classList.add('active');
+        else card.classList.remove('active');
+      });
+    }
+
+    function togglePledge(chk) {
+      localStorage.setItem(RULES_PLEDGE_KEY, chk.checked ? '1' : '0');
+      if (chk.checked) showToast('Camp pledge signed digitally!');
+    }
+
+    function setRulesLang(lang) {
+      localStorage.setItem(RULES_LANG_KEY, lang);
+      document.getElementById('rules-lang-en').classList.toggle('active', lang === 'en');
+      document.getElementById('rules-lang-zh').classList.toggle('active', lang === 'zh');
+
+      const dict = rulesDictionary[lang];
+      if (!dict) return;
+
+      document.getElementById('r-spirit-title').textContent = dict.spiritTitle;
+      document.getElementById('r-sp-1').textContent = dict.sp1;
+      document.getElementById('r-sp-2').textContent = dict.sp2;
+      document.getElementById('r-sp-3').textContent = dict.sp3;
+      document.getElementById('r-sp-4').textContent = dict.sp4;
+      document.getElementById('r-spirit-quote').textContent = dict.spiritQuote;
+
+      document.getElementById('r-prohib-title').textContent = dict.prohibTitle;
+      document.getElementById('r-pr-1').textContent = dict.pr1;
+      document.getElementById('r-pr-2').textContent = dict.pr2;
+      document.getElementById('r-pr-3').textContent = dict.pr3;
+      document.getElementById('r-pr-4').textContent = dict.pr4;
+      document.getElementById('r-pr-5').textContent = dict.pr5;
+      document.getElementById('r-pr-6').textContent = dict.pr6;
+      document.getElementById('r-pr-7').textContent = dict.pr7;
+
+      document.getElementById('r-sec1-head').textContent = dict.sec1Head;
+      document.getElementById('r-1-1-t').textContent = dict.r1_1_t;
+      document.getElementById('r-1-1-d').textContent = dict.r1_1_d;
+      document.getElementById('r-1-2-t').textContent = dict.r1_2_t;
+      document.getElementById('r-1-2-d').textContent = dict.r1_2_d;
+      document.getElementById('r-1-3-t').textContent = dict.r1_3_t;
+      document.getElementById('r-1-3-d').textContent = dict.r1_3_d;
+
+      document.getElementById('r-sec2-head').textContent = dict.sec2Head;
+      document.getElementById('r-2-1-t').textContent = dict.r2_1_t;
+      document.getElementById('r-2-1-d').textContent = dict.r2_1_d;
+      document.getElementById('r-2-2-t').textContent = dict.r2_2_t;
+      document.getElementById('r-2-2-d').textContent = dict.r2_2_d;
+      document.getElementById('r-2-3-t').textContent = dict.r2_3_t;
+      document.getElementById('r-2-3-d').textContent = dict.r2_3_d;
+      document.getElementById('r-2-4-t').textContent = dict.r2_4_t;
+      document.getElementById('r-2-4-d').textContent = dict.r2_4_d;
+
+      document.getElementById('r-sec3-head').textContent = dict.sec3Head;
+      document.getElementById('r-3-1-t').textContent = dict.r3_1_t;
+      document.getElementById('r-3-1-d').textContent = dict.r3_1_d;
+      document.getElementById('r-3-2-t').textContent = dict.r3_2_t;
+      document.getElementById('r-3-2-d').textContent = dict.r3_2_d;
+      document.getElementById('r-3-3-t').textContent = dict.r3_3_t;
+      document.getElementById('r-3-3-d').textContent = dict.r3_3_d;
+      document.getElementById('r-3-4-t').textContent = dict.r3_4_t;
+      document.getElementById('r-3-4-d').textContent = dict.r3_4_d;
+
+      document.getElementById('r-sec4-head').textContent = dict.sec4Head;
+      document.getElementById('r-4-1-t').textContent = dict.r4_1_t;
+      document.getElementById('r-4-1-d').textContent = dict.r4_1_d;
+      document.getElementById('r-4-2-t').textContent = dict.r4_2_t;
+      document.getElementById('r-4-2-d').textContent = dict.r4_2_d;
+      document.getElementById('r-5-1-t').textContent = dict.r5_1_t;
+      document.getElementById('r-5-1-d').textContent = dict.r5_1_d;
+
+      document.getElementById('r-pledge-title').textContent = dict.pledgeTitle;
+      document.getElementById('r-pledge-body').textContent = dict.pledgeBody;
+      document.getElementById('r-pledge-chk-title').textContent = dict.pledgeChkTitle;
+      document.getElementById('r-pledge-chk-desc').textContent = dict.pledgeChkDesc;
+    }
+
+    // Init Packing & Rules tab configurations
     const savedPackingLang = localStorage.getItem(PACKING_LANG_KEY) || 'zh';
     setPackingLang(savedPackingLang);
     loadPackingState();
 
-    // Data polling
+    const savedRulesLang = localStorage.getItem(RULES_LANG_KEY) || 'zh';
+    setRulesLang(savedRulesLang);
+    const pledgeSigned = localStorage.getItem(RULES_PLEDGE_KEY);
+    if (pledgeSigned === '1') {
+      document.getElementById('chk_rules_pledge').checked = true;
+    }
+
+    // Polling setup
     loadDirectoryData();
     loadTimelineData();
     setInterval(() => {
