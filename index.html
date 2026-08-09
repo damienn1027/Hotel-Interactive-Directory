@@ -209,6 +209,7 @@
     .filter-btn, .btn {
       background: transparent; color: var(--text-secondary); border: none; padding: 6px 12px;
       border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif; transition: all 0.2s ease;
+      white-space: nowrap;
     }
     .filter-btn:hover, .btn:hover { background: rgba(120,120,120,0.1); color: var(--text-primary); }
     .filter-btn.active, .btn.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
@@ -333,7 +334,18 @@
       .tab-nav { width: 100%; display: flex; }
       .tab-nav button { flex: 1; text-align: center; padding: 8px 4px; font-size: 0.8rem; }
       
-      .filter-group, .controls { display: none !important; } 
+      /* Display horizontally scrollable filters on mobile */
+      .filter-group { 
+        display: flex !important; 
+        overflow-x: auto; 
+        max-width: 100%;
+        width: 100%;
+        -webkit-overflow-scrolling: touch;
+        padding: 4px;
+        gap: 6px;
+      }
+      .filter-btn { flex-shrink: 0; padding: 6px 12px; font-size: 0.8rem; }
+      .controls { display: none !important; } 
       
       /* Mobile Search Bar Setup */
       #searchInput { width: 100%; }
@@ -392,10 +404,10 @@
       <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
       <div class="filter-group">
         <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="vacant">Vacant</button>
-        <button class="filter-btn" data-filter="vip">VIPs</button>
-        <button class="filter-btn" data-filter="boys">Boys</button>
-        <button class="filter-btn" data-filter="girls">Girls</button>
+        <button class="filter-btn" data-filter="vacant">🟢 Vacant</button>
+        <button class="filter-btn" data-filter="vip">⭐ VIPs</button>
+        <button class="filter-btn" data-filter="boys">👦 Boys</button>
+        <button class="filter-btn" data-filter="girls">👧 Girls</button>
       </div>
       <div class="controls">
         <button class="btn active" onclick="setView('3d')">3D</button>
@@ -586,7 +598,6 @@
       lastScrollY = window.scrollY;
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          // If we scroll down past 40px, the header should have naturally scrolled out of view.
           ticking = false;
         });
         ticking = true;
@@ -642,8 +653,9 @@
             if (name) {
               roomData[roomNo].occupants.push({ name, gender });
               stats.pax++;
-              if (gender.toLowerCase().includes('boy') || gender.toLowerCase().includes('male')) stats.boys++;
-              if (gender.toLowerCase().includes('girl') || gender.toLowerCase().includes('female')) stats.girls++;
+              const gLower = gender.toLowerCase();
+              if (gLower.includes('boy') || gLower.includes('male') || gLower.includes('男') || gLower === 'm') stats.boys++;
+              if (gLower.includes('girl') || gLower.includes('female') || gLower.includes('女') || gLower === 'f') stats.girls++;
             }
             if (remarks && !roomData[roomNo].remarks) roomData[roomNo].remarks = remarks;
             if (roomType && !roomData[roomNo].type) roomData[roomNo].type = roomType;
@@ -666,7 +678,6 @@
           }
           if (data.occupants.length > 0) {
             stats.occupiedRooms++;
-            // Draw attention to occupied rooms
             if (topFace) topFace.style.borderTop = "4px solid var(--text-primary)";
           } else {
             if (topFace) topFace.style.borderTop = "none";
@@ -681,7 +692,8 @@
       document.getElementById('stat-girls').textContent = stats.girls;
       document.getElementById('stat-vacant').textContent = (totalRoomsCount - stats.occupiedRooms);
 
-      const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+      const activeFilterBtn = document.querySelector('.filter-btn.active');
+      const activeFilter = activeFilterBtn ? activeFilterBtn.getAttribute('data-filter') : 'all';
       applySearchAndFilter(document.getElementById('searchInput').value, activeFilter);
     }
 
@@ -755,13 +767,31 @@
 
         if (isFiltering) {
           let textMatch = true;
-          if (query.length > 0) textMatch = data && data.occupants && data.occupants.some(o => o.name.toLowerCase().includes(query));
+          if (query.length > 0) {
+            textMatch = data && data.occupants && data.occupants.some(o => o.name.toLowerCase().includes(query));
+          }
 
           let filterMatch = true;
-          if (filter === 'vacant') filterMatch = !data || !data.occupants || data.occupants.length === 0;
-          else if (filter === 'vip') filterMatch = data && data.remarks && data.remarks.toLowerCase().includes('vip');
-          else if (filter === 'boys') filterMatch = data && data.occupants && data.occupants.some(o => o.gender.toLowerCase().includes('boy') || o.gender.toLowerCase().includes('male'));
-          else if (filter === 'girls') filterMatch = data && data.occupants && data.occupants.some(o => o.gender.toLowerCase().includes('girl') || o.gender.toLowerCase().includes('female'));
+          if (filter === 'vacant') {
+            filterMatch = !data || !data.occupants || data.occupants.length === 0;
+          } else if (filter === 'vip') {
+            const isVipRemark = data && data.remarks && data.remarks.toLowerCase().includes('vip');
+            const isVipOccupant = data && data.occupants && data.occupants.some(o => 
+              (o.name && o.name.toLowerCase().includes('vip')) || 
+              (o.gender && o.gender.toLowerCase().includes('vip'))
+            );
+            filterMatch = isVipRemark || isVipOccupant;
+          } else if (filter === 'boys') {
+            filterMatch = data && data.occupants && data.occupants.some(o => {
+              const g = (o.gender || '').toLowerCase();
+              return g.includes('boy') || g.includes('male') || g.includes('男') || g === 'm';
+            });
+          } else if (filter === 'girls') {
+            filterMatch = data && data.occupants && data.occupants.some(o => {
+              const g = (o.gender || '').toLowerCase();
+              return g.includes('girl') || g.includes('female') || g.includes('女') || g === 'f';
+            });
+          }
 
           match = textMatch && filterMatch;
           
@@ -774,7 +804,8 @@
     }
 
     document.getElementById('searchInput').addEventListener('input', (e) => {
-      applySearchAndFilter(e.target.value, document.querySelector('.filter-btn.active').getAttribute('data-filter'));
+      const activeBtn = document.querySelector('.filter-btn.active');
+      applySearchAndFilter(e.target.value, activeBtn ? activeBtn.getAttribute('data-filter') : 'all');
     });
 
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -828,12 +859,15 @@
             <div style="border-top:1px solid rgba(0,0,0,0.05); padding-top:8px;">
               <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Occupants</div>
               ${data.occupants.length > 0 
-                ? data.occupants.map(occ => `
+                ? data.occupants.map(occ => {
+                    const gLower = (occ.gender || '').toLowerCase();
+                    const isBoy = gLower.includes('boy') || gLower.includes('male') || gLower.includes('男') || gLower === 'm';
+                    return `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                       <span style="font-weight:600; font-size:0.9rem; color:var(--brand-black);">${occ.name}</span>
-                      <span style="font-size:0.7rem; color:${(occ.gender.toLowerCase().includes('boy') || occ.gender.toLowerCase().includes('male')) ? 'var(--brand-blue)' : 'var(--brand-orange)'}; font-weight:700;">${occ.gender}</span>
+                      <span style="font-size:0.7rem; color:${isBoy ? 'var(--brand-blue)' : 'var(--brand-orange)'}; font-weight:700;">${occ.gender}</span>
                     </div>
-                  `).join('')
+                  `}).join('')
                 : '<div style="color:var(--text-secondary); font-size:0.85rem; font-style:italic; font-weight:500;">No occupants assigned</div>'
               }
             </div>
@@ -869,3 +903,4 @@
   </script>
 </body>
 </html>
+
