@@ -15,29 +15,46 @@
 
   <style>
     :root {
-      /* Official Youth Policy Lab Brand Colors (Digital RGB) */
+      /* Official Youth Policy Lab Brand Colors */
       --brand-orange: #FF5722;
       --brand-green: #00C853;
       --brand-blue: #007AFF;
       --brand-yellow: #FFC748;
       --brand-black: #141419;
       
-      /* Light Theme UI Variables */
+      /* Light Theme UI Variables (Default) */
       --bg-color: #f8f9fa;
       --surface-color: #ffffff;
       --surface-secondary: #f1f3f5;
       --text-primary: var(--brand-black);
       --text-secondary: #6c757d;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --shadow-soft: 0 4px 20px rgba(20, 20, 25, 0.05);
       
-      /* Dynamic Room Colors matching exact brand hex codes */
+      /* Room Blocks */
       --twin-room: var(--brand-blue);
       --double-room: var(--brand-yellow);
       --triple-room: var(--brand-green);
       --family-room: var(--brand-orange);
       --corridor: #e9ecef;
+      --room-text: var(--brand-black);
     }
 
-    /* Prevent mobile rubber-band loops & address bar layout jumps */
+    /* Dark Mode UI Variables */
+    body.dark-mode {
+      --bg-color: #000000;
+      --surface-color: #1c1c1e;
+      --surface-secondary: #2c2c2e;
+      --text-primary: #f5f5f7;
+      --text-secondary: #86868b;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --glass-bg: rgba(28, 28, 30, 0.85);
+      --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --corridor: #2c2c2e;
+    }
+
+    /* Prevent mobile rubber-band loops */
     html, body {
       overscroll-behavior-y: none;
       touch-action: pan-x pan-y;
@@ -57,156 +74,144 @@
       align-items: center; 
       padding: 0 0 60px 0;
       overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* Bright Frosted Glass Sticky Header */
-    header {
+    /* ========================================= */
+    /* 1. MAIN HEADER (Scrolls out of the way)   */
+    /* ========================================= */
+    .main-header {
+      width: 100%;
+      padding: 30px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      max-width: 1250px;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      position: relative;
+    }
+
+    /* Logo Styling */
+    .brand-logo {
+      height: 60px;
+      width: auto;
+      object-fit: contain;
+      transition: opacity 0.2s ease;
+    }
+
+    h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-primary); }
+    .brand-hl-1 { color: var(--brand-blue); }
+    .brand-hl-2 { color: var(--brand-green); }
+    .brand-hl-3 { color: var(--brand-orange); }
+
+    /* Dark Mode Toggle Button */
+    .theme-toggle {
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      position: absolute;
+      right: 0;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-soft);
+    }
+    .theme-toggle:hover { transform: scale(1.1); }
+
+    .header-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
+      border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+      background: var(--surface-color); color: var(--text-secondary);
+      border: 1px solid var(--border-color); transition: all 0.3s ease;
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-secondary); transition: all 0.3s ease; }
+    .status-badge.synced .status-dot { background: var(--brand-green); box-shadow: 0 0 8px rgba(0, 200, 83, 0.4); }
+    .status-badge.synced { color: var(--text-primary); }
+
+    .stats-container { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .stat-card {
+      background: var(--surface-color); border: 2px solid var(--border-color); border-radius: 12px;
+      padding: 10px 16px; display: flex; flex-direction: column; align-items: center; min-width: 90px;
+    }
+    .stat-value { font-size: 1.4rem; font-weight: 700; }
+    #stat-pax { color: var(--brand-blue); }
+    #stat-boys { color: var(--brand-green); }
+    #stat-girls { color: var(--brand-orange); }
+    #stat-vacant { color: var(--text-primary); }
+    .stat-label { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-top: 2px; }
+
+    .legend-container { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-primary); font-weight: 600; }
+    .legend-box { width: 14px; height: 14px; border-radius: 4px; }
+
+    /* ========================================= */
+    /* 2. STICKY TOOLBAR (Stays at the top)      */
+    /* ========================================= */
+    .sticky-toolbar {
       position: sticky;
       top: 0;
       width: 100%;
-      background: rgba(255, 255, 255, 0.9);
+      background: var(--glass-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-bottom: 2px solid rgba(0, 0, 0, 0.05);
-      padding: 20px 40px;
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 40px;
       z-index: 100;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 30px;
-      transition: padding 0.3s ease, background 0.3s ease;
-      box-shadow: 0 4px 20px rgba(20, 20, 25, 0.05);
+      gap: 20px;
+      box-shadow: var(--shadow-soft);
     }
 
-    .header-left { display: flex; flex-direction: column; gap: 12px; max-width: 500px; }
-    .header-right { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; flex: 1; max-width: 500px; transition: opacity 0.3s ease; }
-
-    /* Brand Typography styling */
-    .app-title-group { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-    h1 { 
-      font-size: 1.6rem; 
-      font-weight: 700; 
-      letter-spacing: -0.5px; 
-      transition: all 0.3s ease; 
-      color: var(--brand-black);
-    }
-    .brand-hl-1 { color: var(--brand-blue); }
-    .brand-hl-2 { color: var(--brand-green); }
-    .brand-hl-3 { color: var(--brand-orange); }
-    
-    .tab-nav {
-      display: flex;
-      background: var(--surface-secondary);
-      padding: 4px;
-      border-radius: 10px;
-      gap: 4px;
-      border: 1px solid rgba(0,0,0,0.05);
-    }
-
+    .tab-nav { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 10px; gap: 4px; border: 1px solid var(--border-color); }
     .tab-nav button {
-      background: transparent;
-      color: var(--text-secondary);
-      border: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      font-family: 'Poppins', sans-serif;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      background: transparent; color: var(--text-secondary); border: none; padding: 8px 16px;
+      border-radius: 6px; font-size: 0.9rem; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.2s ease;
     }
+    .tab-nav button.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
-    .tab-nav button.active { 
-      background: var(--brand-black); 
-      color: white; 
-      box-shadow: 0 2px 8px rgba(20, 20, 25, 0.2); 
-    }
-
+    .toolbar-right { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    
     .dir-tools.hidden { display: none !important; }
 
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      background: var(--surface-secondary);
-      color: var(--text-secondary);
-      transition: all 0.3s ease;
-      width: fit-content;
-      margin-bottom: 4px;
-      border: 1px solid rgba(0,0,0,0.05);
-    }
-    
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-secondary); transition: all 0.3s ease; }
-    .status-badge.synced .status-dot { background: var(--brand-green); box-shadow: 0 0 8px rgba(0, 200, 83, 0.4); }
-    .status-badge.synced { color: var(--brand-black); }
-
-    /* Live Stats Dashboard - Bold Brand Colors */
-    .stats-container { display: flex; gap: 10px; }
-    .stat-card {
-      background: var(--surface-color);
-      border: 2px solid var(--surface-secondary);
-      border-radius: 12px;
-      padding: 8px 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 85px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-    }
-    .stat-value { font-size: 1.3rem; font-weight: 700; }
-    #stat-pax { color: var(--brand-blue); }
-    #stat-boys { color: var(--brand-green); }
-    #stat-girls { color: var(--brand-orange); }
-    #stat-vacant { color: var(--brand-black); }
-    .stat-label { font-size: 0.65rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
-
-    /* Interactive Tools */
-    .tools-container { width: 100%; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
-
     #searchInput {
-      width: 100%;
-      max-width: 380px;
-      padding: 10px 16px;
-      border-radius: 10px;
-      border: 2px solid var(--surface-secondary);
-      background: var(--surface-color);
-      color: var(--brand-black);
-      font-size: 0.9rem;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 500;
-      transition: all 0.2s;
+      width: 250px; padding: 8px 16px; border-radius: 8px; border: 2px solid var(--surface-secondary);
+      background: var(--surface-color); color: var(--text-primary); font-size: 0.9rem; font-family: 'Poppins', sans-serif;
+      font-weight: 500; transition: all 0.2s;
     }
-
     #searchInput:focus { outline: none; border-color: var(--brand-blue); box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15); }
-    #searchInput::placeholder { color: #adb5bd; font-weight: 400; }
+    #searchInput::placeholder { color: var(--text-secondary); font-weight: 400; }
 
-    .filter-group, .controls { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 8px; gap: 4px; border: 1px solid rgba(0,0,0,0.05); }
-    
+    .filter-group, .controls { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 8px; gap: 4px; border: 1px solid var(--border-color); }
     .filter-btn, .btn {
-      background: transparent;
-      color: var(--text-secondary);
-      border: none;
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      font-weight: 600;
-      font-family: 'Poppins', sans-serif;
-      transition: all 0.2s ease;
+      background: transparent; color: var(--text-secondary); border: none; padding: 6px 12px;
+      border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif; transition: all 0.2s ease;
     }
-    
-    .filter-btn:hover, .btn:hover { background: rgba(0,0,0,0.05); color: var(--brand-black); }
-    .filter-btn.active, .btn.active { background: var(--brand-black); color: white; box-shadow: 0 2px 8px rgba(20,20,25,0.2); }
-    .right-toolbar { display: flex; gap: 10px; align-items: center; }
-
-    /* Legend */
-    .legend-container { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
-    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--brand-black); font-weight: 600; }
-    .legend-box { width: 12px; height: 12px; border-radius: 3px; }
+    .filter-btn:hover, .btn:hover { background: rgba(120,120,120,0.1); color: var(--text-primary); }
+    .filter-btn.active, .btn.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
     /* Tab Content Wrappers */
     .tab-content { display: none; width: 100%; justify-content: center; }
@@ -217,37 +222,40 @@
     /* ============================== */
     .viewport { perspective: 1400px; width: 100%; max-width: 1250px; display: flex; flex-direction: column; gap: 60px; padding: 40px 20px; }
     .floor-container {
-      background: var(--surface-color); border: 2px solid var(--surface-secondary); border-radius: 24px; padding: 40px;
+      background: var(--surface-color); border: 2px solid var(--border-color); border-radius: 24px; padding: 40px;
       transform-style: preserve-3d; transform: rotateX(45deg) rotateZ(-5deg) translateZ(0);
-      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 30px 60px rgba(20, 20, 25, 0.08);
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: var(--shadow-soft);
     }
 
-    .viewport.flat .floor-container { transform: rotateX(0deg) rotateZ(0deg) translateZ(0); box-shadow: 0 15px 30px rgba(20, 20, 25, 0.05); }
+    .viewport.flat .floor-container { transform: rotateX(0deg) rotateZ(0deg) translateZ(0); }
 
-    .floor-title { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.5px; color: var(--brand-black); margin-bottom: 24px; transform: translateZ(10px); display: inline-block; padding-bottom: 4px; border-bottom: 4px solid var(--brand-orange); }
+    .floor-title { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 24px; transform: translateZ(10px); display: inline-block; padding-bottom: 4px; border-bottom: 4px solid var(--brand-orange); }
     .wing-title { font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); margin: 16px 0 8px 0; text-transform: uppercase; letter-spacing: 1px; transform: translateZ(10px); }
     .room-row { display: flex; gap: 8px; margin-bottom: 10px; transform-style: preserve-3d; }
 
     .room-block { flex: 1; min-width: 52px; height: 60px; position: relative; transform-style: preserve-3d; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease, opacity 0.3s ease; cursor: pointer; }
     .room-block:focus { outline: none; }
-    .room-block:focus .face-top { box-shadow: 0 0 0 4px rgba(20,20,25,0.2), inset 0 0 0 2px #ffffff !important; }
+    .room-block:focus .face-top { box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.4), inset 0 0 0 2px #ffffff !important; }
 
     .room-block .face-top {
-      position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: var(--brand-black); border-radius: 6px;
+      position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: #000; border-radius: 6px;
       transform: translateZ(16px); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3); transition: all 0.3s ease;
     }
+    
+    /* Contrast fix for dark mode family room text */
+    body.dark-mode .room-block .face-top { color: #fff; box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.3); }
 
     .room-block .face-front {
-      position: absolute; width: 100%; height: 16px; bottom: 0; transform-origin: bottom; transform: rotateX(-90deg); filter: brightness(0.85); border-radius: 0 0 6px 6px; transition: all 0.3s ease;
+      position: absolute; width: 100%; height: 16px; bottom: 0; transform-origin: bottom; transform: rotateX(-90deg); filter: brightness(0.8); border-radius: 0 0 6px 6px; transition: all 0.3s ease;
     }
 
     .room-block:hover { transform: translateZ(16px) scale(1.05); z-index: 50; }
-    .room-block:hover .face-top { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15), inset 0 0 0 2px #ffffff; }
+    .room-block:hover .face-top { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 0 0 2px #ffffff; }
 
-    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-top { background-color: var(--surface-secondary) !important; color: #adb5bd !important; box-shadow: none !important; border-top: none !important; }
-    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-front { background-color: #dee2e6 !important; }
+    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-top { background-color: var(--surface-secondary) !important; color: var(--text-secondary) !important; box-shadow: none !important; border-top: none !important; }
+    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-front { background-color: var(--border-color) !important; }
     .viewport.filtered .room-block:not(.highlight) { pointer-events: none; transform: translateZ(0) scale(0.98) !important; }
-    .room-block.highlight .face-top { box-shadow: 0 0 0 4px var(--brand-black), 0 15px 30px rgba(0,0,0,0.2) !important; z-index: 60; }
+    .room-block.highlight .face-top { box-shadow: 0 0 0 4px var(--text-primary), 0 15px 30px rgba(0,0,0,0.2) !important; z-index: 60; }
 
     .room-block[data-room-type="twin"] .face-top, .room-block[data-room-type="twin"] .face-front { background-color: var(--twin-room); }
     .room-block[data-room-type="double"] .face-top, .room-block[data-room-type="double"] .face-front { background-color: var(--double-room); }
@@ -255,61 +263,20 @@
     .room-block[data-room-type="family"] .face-top, .room-block[data-room-type="family"] .face-front { background-color: var(--family-room); color: white; }
     
     .room-block[data-room-type="corridor"] { cursor: default; }
-    .room-block[data-room-type="corridor"] .face-top { background-color: var(--corridor); color: #adb5bd; transform: translateZ(2px); }
-    .room-block[data-room-type="corridor"] .face-front { background-color: #ced4da; height: 2px; }
+    .room-block[data-room-type="corridor"] .face-top { background-color: var(--corridor); color: var(--text-secondary); transform: translateZ(2px); }
+    .room-block[data-room-type="corridor"] .face-front { background-color: var(--border-color); height: 2px; }
     .room-block[data-room-type="corridor"]:hover { transform: none; }
 
     /* ============================== */
     /* TAB 2: TIMELINE UI             */
     /* ============================== */
-    .timeline-wrapper {
-      width: 100%;
-      max-width: 700px;
-      padding: 40px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    
-    .timeline-date-header {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--brand-orange);
-      margin-top: 24px;
-      margin-bottom: 8px;
-      padding-bottom: 8px;
-      border-bottom: 2px dashed var(--surface-secondary);
-      display: inline-block;
-    }
-    
-    .timeline-item {
-      display: flex;
-      gap: 20px;
-      background: var(--surface-color);
-      padding: 20px;
-      border-radius: 16px;
-      border: 2px solid var(--surface-secondary);
-      transition: transform 0.2s ease, box-shadow 0.2s;
-      box-shadow: 0 4px 15px rgba(20,20,25,0.03);
-    }
-    
-    .timeline-item:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 25px rgba(20,20,25,0.08);
-      border-color: rgba(20,20,25,0.1);
-    }
-    
-    .timeline-time {
-      min-width: 100px;
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--brand-blue);
-      flex-shrink: 0;
-      padding-top: 2px;
-    }
-    
+    .timeline-wrapper { width: 100%; max-width: 700px; padding: 40px 20px; display: flex; flex-direction: column; gap: 16px; }
+    .timeline-date-header { font-size: 1.4rem; font-weight: 700; color: var(--brand-orange); margin-top: 24px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 2px dashed var(--border-color); display: inline-block; }
+    .timeline-item { display: flex; gap: 20px; background: var(--surface-color); padding: 20px; border-radius: 16px; border: 2px solid var(--border-color); transition: transform 0.2s ease, box-shadow 0.2s; box-shadow: var(--shadow-soft); }
+    .timeline-item:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-color: var(--brand-blue); }
+    .timeline-time { min-width: 100px; font-size: 1rem; font-weight: 700; color: var(--brand-blue); flex-shrink: 0; padding-top: 2px; }
     .timeline-content { display: flex; flex-direction: column; gap: 6px; }
-    .timeline-title { font-size: 1.15rem; font-weight: 700; color: var(--brand-black); }
+    .timeline-title { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); }
     .timeline-venue { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); display: flex; align-items: flex-start; gap: 6px; }
 
     /* ============================== */
@@ -318,15 +285,15 @@
     .handbook-wrapper { width: 100%; max-width: 800px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
     .canva-embed-container {
       position: relative; width: 100%; max-width: calc((100dvh - 160px) * 0.7047); aspect-ratio: 1 / 1.4189;
-      box-shadow: 0 15px 40px rgba(20,20,25,0.15); border-radius: 12px; overflow: hidden; background: var(--surface-secondary); border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: var(--shadow-soft); border-radius: 12px; overflow: hidden; background: var(--surface-secondary); border: 1px solid var(--border-color);
     }
     .canva-embed-container iframe { position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; }
 
-    /* TOOLTIPS & TOASTS - Updated to Light Theme */
+    /* TOOLTIPS & TOASTS */
     #tooltip {
-      position: fixed; display: none; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-      color: var(--brand-black); padding: 16px; border-radius: 14px; font-size: 0.85rem; pointer-events: none; z-index: 1000;
-      box-shadow: 0 15px 35px rgba(20,20,25,0.15), 0 0 0 1px rgba(20,20,25,0.05); min-width: 240px;
+      position: fixed; display: none; background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      color: var(--text-primary); padding: 16px; border-radius: 14px; font-size: 0.85rem; pointer-events: none; z-index: 1000;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 0 0 1px var(--border-color); min-width: 240px;
     }
     .click-hint { font-size: 0.7rem; color: var(--text-secondary); margin-top: 12px; text-align: center; font-weight: 500; }
     #toast {
@@ -337,104 +304,105 @@
     #toast.show { transform: translate(-50%, 0); opacity: 1; }
 
     /* ============================== */
-    /* MOBILE RESPONSIVE FALLBACKS    */
+    /* MOBILE RESPONSIVE ADAPTATIONS  */
     /* ============================== */
     @media (max-width: 1024px) {
-      header { flex-direction: column; align-items: stretch; padding: 16px; gap: 16px; }
-      .app-title-group { justify-content: center; }
-      .header-left, .header-right { max-width: 100%; align-items: center; }
-      .tools-container { align-items: center; }
-      #searchInput { max-width: 100%; }
-      .viewport { padding: 20px 10px; gap: 30px; perspective: none; }
+      .sticky-toolbar { flex-direction: column; padding: 12px 20px; gap: 12px; }
+      .toolbar-right { width: 100%; justify-content: center; }
+      #searchInput { max-width: 100%; flex: 1; }
+      .viewport { padding: 20px 10px; perspective: none; }
       .floor-container { transform: none !important; padding: 20px 15px; border-radius: 16px; overflow-x: auto; }
       .room-block:hover { transform: none; z-index: 1; }
       .room-row { min-width: 600px; }
+      .theme-toggle { position: relative; }
     }
 
     @media (max-width: 768px) {
-      header { position: relative; padding: 16px 12px 12px 12px; border-bottom: none; box-shadow: none; background: var(--bg-color); }
-      h1 { font-size: 1.4rem; text-align: center; margin-bottom: 0px; }
-      .app-title-group { flex-direction: column; gap: 12px; }
-      .legend-container, .controls { display: none !important; }
-      .stats-container { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 8px; -webkit-overflow-scrolling: touch; margin-bottom: 8px; width: 100%; border-bottom: 1px solid rgba(0,0,0,0.05); }
-      .stat-card { min-width: 100px; padding: 8px 12px; border-width: 1px; }
-      .stat-value { font-size: 1.2rem; }
-      .stat-label { font-size: 0.65rem; }
+      .main-header { padding: 20px 16px; }
+      .brand-section { flex-direction: column; gap: 10px; }
+      .theme-toggle { position: absolute; top: 0; right: 0; width: 36px; height: 36px; font-size: 1rem; }
+      .brand-logo { height: 50px; }
+      h1 { font-size: 1.4rem; text-align: center; }
+      
+      .header-info-row { flex-direction: column; gap: 16px; }
+      .stats-container { width: 100%; flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+      .stat-card { min-width: 100px; padding: 8px 12px; }
+      .legend-container { display: none; }
+      
+      .sticky-toolbar { padding: 10px 12px; }
+      .tab-nav { width: 100%; display: flex; }
+      .tab-nav button { flex: 1; text-align: center; padding: 8px 4px; font-size: 0.8rem; }
+      
+      .filter-group, .controls { display: none !important; } 
+      
+      /* Mobile Search Bar Setup */
+      #searchInput { width: 100%; }
+      
+      /* Target Safari specifically to fix placeholder color bleed */
+      #searchInput::-webkit-input-placeholder { color: var(--text-secondary); opacity: 1; }
       
       .handbook-wrapper, .timeline-wrapper { padding: 16px 12px; }
       .canva-embed-container { max-width: 100%; }
-      
-      header.compact { padding: 10px 12px; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.95); box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.05); }
-      header.compact .app-title-group h1, header.compact .filter-group, header.compact .dir-tools.left { display: none !important; }
-      header.compact .tab-nav { margin: 0; }
-      header.compact .header-right { order: 2; margin-left: 8px; flex: unset; max-width: auto; }
-      header.compact .tools-container { align-items: flex-end; }
-      
-      header.compact #searchInput {
-        width: 40px; height: 40px; border-radius: 20px; padding: 0; color: transparent !important; background-color: var(--surface-secondary);
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%23141419' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat; background-position: center; border: none; text-indent: -9999px;
-      }
-      header.compact #searchInput::placeholder { color: transparent !important; }
-      
-      header.compact #searchInput:focus, header.compact #searchInput:not(:placeholder-shown) {
-        width: 180px; color: var(--brand-black) !important; background-image: none; background-color: var(--surface-color); border: 2px solid var(--brand-blue); padding: 10px 16px; text-indent: 0;
-      }
-      header.compact #searchInput:focus::placeholder, header.compact #searchInput:not(:placeholder-shown)::placeholder { color: #adb5bd !important; }
     }
   </style>
 </head>
 <body>
 
-  <header id="mainHeader">
-    <!-- LEFT SIDE -->
-    <div class="header-left">
-      <div class="app-title-group">
-        <h1><span class="brand-hl-1">Youth</span> <span class="brand-hl-2">Policy</span> <span class="brand-hl-3">Lab</span></h1>
-        <div class="tab-nav">
-          <button class="active" onclick="switchTab('directory')">Directory</button>
-          <button onclick="switchTab('timeline')">Timeline</button>
-          <button onclick="switchTab('handbook')">Handbook</button>
-        </div>
+  <!-- SCROLLING HEADER (Branding & Stats) -->
+  <header class="main-header">
+    <div class="brand-section">
+      <!-- Ensure you export your files as transparent PNGs named logo-light.png and logo-dark.png! -->
+      <img src="logo-light.png" alt="Youth Policy Lab Logo" class="brand-logo" id="brandLogo" onerror="this.style.display='none'; document.getElementById('fallbackTitle').style.display='block';">
+      
+      <!-- Text Fallback -->
+      <h1 id="fallbackTitle" style="display:none;"><span class="brand-hl-1">Youth</span> <span class="brand-hl-2">Policy</span> <span class="brand-hl-3">Lab</span></h1>
+      
+      <!-- Dark/Light Theme Toggle -->
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle Dark Mode">🌙</button>
+    </div>
+    
+    <div class="header-info-row dir-tools" id="dirToolsHeader">
+      <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting...</span></div>
+      
+      <div class="stats-container">
+        <div class="stat-card"><span class="stat-value" id="stat-pax">-</span><span class="stat-label">Participants</span></div>
+        <div class="stat-card"><span class="stat-value" id="stat-boys">-</span><span class="stat-label">Boys</span></div>
+        <div class="stat-card"><span class="stat-value" id="stat-girls">-</span><span class="stat-label">Girls</span></div>
+        <div class="stat-card"><span class="stat-value" id="stat-vacant">-</span><span class="stat-label">Vacant</span></div>
       </div>
       
-      <div class="dir-tools left" id="dirToolsLeft">
-        <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting to Live Google Sheet...</span></div>
-        <div class="stats-container">
-          <div class="stat-card"><span class="stat-value" id="stat-pax">-</span><span class="stat-label">Participants</span></div>
-          <div class="stat-card"><span class="stat-value" id="stat-boys">-</span><span class="stat-label">Boys</span></div>
-          <div class="stat-card"><span class="stat-value" id="stat-girls">-</span><span class="stat-label">Girls</span></div>
-          <div class="stat-card"><span class="stat-value" id="stat-vacant">-</span><span class="stat-label">Vacant</span></div>
-        </div>
-        <div class="legend-container">
-          <div class="legend-item"><div class="legend-box" style="background-color: var(--twin-room);"></div> Twin</div>
-          <div class="legend-item"><div class="legend-box" style="background-color: var(--double-room);"></div> Double</div>
-          <div class="legend-item"><div class="legend-box" style="background-color: var(--triple-room);"></div> Triple</div>
-          <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT SIDE -->
-    <div class="header-right dir-tools right" id="dirToolsRight">
-      <div class="tools-container">
-        <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
-        <div class="right-toolbar">
-          <div class="filter-group">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="vacant">Vacant</button>
-            <button class="filter-btn" data-filter="vip">VIPs</button>
-            <button class="filter-btn" data-filter="boys">Boys</button>
-            <button class="filter-btn" data-filter="girls">Girls</button>
-          </div>
-          <div class="controls">
-            <button class="btn active" onclick="setView('3d')">3D</button>
-            <button class="btn" onclick="setView('2d')">Flat</button>
-          </div>
-        </div>
+      <div class="legend-container">
+        <div class="legend-item"><div class="legend-box" style="background-color: var(--twin-room);"></div> Twin</div>
+        <div class="legend-item"><div class="legend-box" style="background-color: var(--double-room);"></div> Double</div>
+        <div class="legend-item"><div class="legend-box" style="background-color: var(--triple-room);"></div> Triple</div>
+        <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family</div>
       </div>
     </div>
   </header>
+
+  <!-- STICKY NAV TOOLBAR (Follows you down the page) -->
+  <nav class="sticky-toolbar">
+    <div class="tab-nav">
+      <button class="active" onclick="switchTab('directory')">Directory</button>
+      <button onclick="switchTab('timeline')">Timeline</button>
+      <button onclick="switchTab('handbook')">Handbook</button>
+    </div>
+
+    <div class="toolbar-right dir-tools" id="dirToolsNav">
+      <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
+      <div class="filter-group">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="vacant">Vacant</button>
+        <button class="filter-btn" data-filter="vip">VIPs</button>
+        <button class="filter-btn" data-filter="boys">Boys</button>
+        <button class="filter-btn" data-filter="girls">Girls</button>
+      </div>
+      <div class="controls">
+        <button class="btn active" onclick="setView('3d')">3D</button>
+        <button class="btn" onclick="setView('2d')">Flat</button>
+      </div>
+    </div>
+  </nav>
 
   <!-- TAB 1: DIRECTORY MAP -->
   <div class="tab-content active" id="tab-directory">
@@ -550,6 +518,34 @@
   <div id="toast">Copied to clipboard!</div>
 
   <script>
+    // --- Theme Management Logic ---
+    const themeToggle = document.getElementById('themeToggle');
+    const brandLogo = document.getElementById('brandLogo');
+    const currentTheme = localStorage.getItem('theme');
+    
+    // Check saved preference or default to light
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      themeToggle.textContent = '☀️';
+      brandLogo.src = 'logo-dark.png'; // Load white-text logo
+    } else {
+      themeToggle.textContent = '🌙';
+      brandLogo.src = 'logo-light.png'; // Load black-text logo
+    }
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+        themeToggle.textContent = '☀️';
+        brandLogo.src = 'logo-dark.png'; // Switch to white-text logo
+      } else {
+        localStorage.setItem('theme', 'light');
+        themeToggle.textContent = '🌙';
+        brandLogo.src = 'logo-light.png'; // Switch to black-text logo
+      }
+    });
+
     // Live Google Sheets CSV URLs
     const DIR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRMmnBQIEjwVoJhvD9l8LelAodWCfdSg8v3z8dNcBt7PkMiNP5a13Ylw3foUnfQvWdzU2NaXWgGCJWA/pub?gid=546426841&single=true&output=csv';
     const TIMELINE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGCH-pDLeS0Rc56C_TABl3uCTWyj8DSnEaxFEJi-l0b1C4eJE_ExobLPzpiHuu3-VMDyzxYXh4KUbA/pub?gid=1028971239&single=true&output=csv';
@@ -565,8 +561,8 @@
       document.querySelectorAll('.tab-nav button').forEach(btn => btn.classList.remove('active'));
       document.querySelector(`.tab-nav button[onclick="switchTab('${tabId}')"]`).classList.add('active');
 
-      const leftTools = document.getElementById('dirToolsLeft');
-      const rightTools = document.getElementById('dirToolsRight');
+      const leftTools = document.getElementById('dirToolsHeader');
+      const rightTools = document.getElementById('dirToolsNav');
       
       if (tabId === 'directory') {
         leftTools.classList.remove('hidden');
@@ -577,11 +573,12 @@
       }
     }
 
-    // --- Mobile Scroll Compact Header with Safari Bounce Protection ---
+    // --- Mobile Scroll with Safari Bounce Protection ---
     let lastScrollY = 0;
     let ticking = false;
 
     window.addEventListener('scroll', () => {
+      // Protect against iOS Safari rubber-band boundaries triggering loops
       if (window.scrollY < 0 || window.scrollY > document.documentElement.scrollHeight - window.innerHeight) {
         return; 
       }
@@ -589,12 +586,7 @@
       lastScrollY = window.scrollY;
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          const header = document.getElementById('mainHeader');
-          if (lastScrollY > 80) {
-            header.classList.add('compact');
-          } else if (lastScrollY < 20) {
-            header.classList.remove('compact');
-          }
+          // If we scroll down past 40px, the header should have naturally scrolled out of view.
           ticking = false;
         });
         ticking = true;
@@ -624,11 +616,11 @@
           parseDirRows(results.data);
           statusBadge.classList.add('synced');
           const now = new Date();
-          statusBadge.querySelector('span').textContent = `Live Synced at ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+          statusBadge.querySelector('span').textContent = `Synced at ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
         },
         error: function() {
           statusBadge.classList.remove('synced');
-          statusBadge.querySelector('span').textContent = '⚠️ Offline - Retrying...';
+          statusBadge.querySelector('span').textContent = '⚠️ Offline';
         }
       });
     }
@@ -674,7 +666,8 @@
           }
           if (data.occupants.length > 0) {
             stats.occupiedRooms++;
-            if (topFace) topFace.style.borderTop = "4px solid var(--brand-black)";
+            // Draw attention to occupied rooms
+            if (topFace) topFace.style.borderTop = "4px solid var(--text-primary)";
           } else {
             if (topFace) topFace.style.borderTop = "none";
           }
@@ -698,7 +691,6 @@
         download: true, header: false, skipEmptyLines: true,
         complete: function(results) { renderTimeline(results.data); },
         error: function(err) {
-          console.error("Timeline Fetch Error: ", err);
           document.getElementById('timeline-container').innerHTML = '<div style="text-align:center; color:var(--brand-orange); font-weight:600;">Failed to load timeline data. Check CSV link.</div>';
         }
       });
