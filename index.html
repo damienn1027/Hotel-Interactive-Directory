@@ -2,362 +2,456 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>YMCA Hostel Directory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Youth Policy Lab - YMCA Hostel Directory</title>
   
-  <!-- iOS Native Web App Tags -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Hostel Dir">
-  
+  <!-- PapaParse for direct Google Sheets CSV integration -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <style>
-    /* ========================================= */
-    /* APPLE SYSTEM THEMES (LIGHT & DARK)        */
-    /* ========================================= */
     :root {
-      /* Default Light Mode */
-      --bg-color: #F5F5F7;
-      --surface-color: #FFFFFF;
-      --surface-secondary: #E5E5EA;
-      --text-primary: #1C1C1E;
-      --text-secondary: #8E8E93;
-      --glass-bg: rgba(245, 245, 247, 0.85);
-      --glass-border: rgba(0, 0, 0, 0.1);
+      /* Apple-inspired Dark Theme */
+      --bg-color: #000000;
+      --surface-color: #1c1c1e;
+      --surface-secondary: #2c2c2e;
+      --text-primary: #f5f5f7;
+      --text-secondary: #86868b;
+      --accent-blue: #0a84ff;
+      --accent-green: #30d158;
       
-      /* Apple Data Visualization Colors */
-      --twin-room: #5E5CE6;       /* System Indigo */
-      --double-room: #FF9F0A;     /* System Sunset Orange */
-      --triple-room: #00C7BE;     /* System Mint Teal */
-      --family-room: #FF375F;     /* System Rose/Pink */
-      --corridor: #D1D1D6;        /* Light Gray */
-      --accent-green: #34C759;
-      --accent-blue: #007AFF;
+      /* Dynamic Room Colors matching exact hex codes */
+      --twin-room: #32ade6;       /* Cyan/Blue */
+      --double-room: #ffd60a;     /* Yellow */
+      --triple-room: #30d158;     /* Green */
+      --family-room: #bf5af2;     /* Purple */
+      --corridor: #2c2c2e;        /* Dark Gray */
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        /* Midnight Dark Mode */
-        --bg-color: #000000;
-        --surface-color: #1C1C1E;
-        --surface-secondary: #2C2C2E;
-        --text-primary: #F5F5F7;
-        --text-secondary: #8E8E93;
-        --glass-bg: rgba(28, 28, 30, 0.85);
-        --glass-border: rgba(255, 255, 255, 0.1);
-        
-        --corridor: #2C2C2E;
-        --accent-green: #30D158;
-        --accent-blue: #0A84FF;
-      }
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     
     body { 
       background-color: var(--bg-color); 
       color: var(--text-primary); 
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
-      min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
-      padding: 0 0 60px 0; overflow-x: hidden;
+      min-height: 100vh;
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      padding: 0 0 60px 0;
+      overflow-x: hidden;
     }
 
-    /* ------------------------------------- */
-    /* NATIVE iOS HEADER (Scrolls Naturally) */
-    /* ------------------------------------- */
-    .top-header {
-      width: 100%;
-      padding: 40px 24px 16px 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: var(--bg-color);
-    }
-
-    h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
-    
-    .status-badge {
-      display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; 
-      font-size: 0.75rem; font-weight: 600; background: var(--surface-secondary); 
-      color: var(--text-secondary); margin-bottom: 20px;
-    }
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-secondary); }
-    .status-badge.synced .status-dot { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
-    .status-badge.synced { color: var(--text-primary); }
-
-    .stats-container { display: flex; gap: 16px; width: 100%; max-width: 900px; flex-wrap: wrap; justify-content: center; }
-    .stat-card {
-      background: var(--surface-color); border: 1px solid var(--glass-border); border-radius: 16px; 
-      padding: 12px 20px; display: flex; flex-direction: column; align-items: center; min-width: 120px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-    }
-    .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
-    .stat-label { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-
-    /* ------------------------------------- */
-    /* STICKY TOOLS (Locks to Top)           */
-    /* ------------------------------------- */
-    .sticky-tools {
+    /* Frosted Glass Sticky Header - Desktop Two-Column Layout */
+    header {
       position: sticky;
       top: 0;
       width: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px 40px;
       z-index: 100;
-      background: var(--glass-bg);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border-bottom: 1px solid var(--glass-border);
-      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 500px;
+    }
+
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-end;
+      flex: 1;
+      max-width: 500px;
+    }
+
+    h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 2px; }
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+      width: fit-content;
+    }
+    
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-secondary); }
+    .status-badge.synced .status-dot { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+    .status-badge.synced { color: var(--text-primary); }
+
+    /* Live Stats Dashboard (Left Side Compact) */
+    .stats-container {
+      display: flex;
+      gap: 10px;
+    }
+
+    .stat-card {
+      background: var(--surface-color);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 8px 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      min-width: 85px;
     }
 
-    .tools-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+    .stat-value { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); }
+    .stat-label { font-size: 0.65rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Interactive Tools: Search & Filters (Right Side) */
+    .tools-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-end;
+    }
 
     #searchInput {
-      width: 100%; max-width: 480px; padding: 12px 20px; border-radius: 12px;
-      border: 1px solid var(--glass-border); background: var(--surface-color); 
-      color: var(--text-primary); font-size: 1rem; transition: all 0.2s;
-      -webkit-appearance: none;
+      width: 100%;
+      max-width: 380px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      transition: all 0.2s;
     }
-    #searchInput:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15); }
-    #searchInput::placeholder { color: var(--text-secondary); }
+
+    #searchInput:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.2);
+    }
+
+    #searchInput::placeholder { color: #636366; }
 
     .filter-group, .controls {
-      display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 10px; gap: 2px; flex-wrap: wrap; justify-content: center;
+      display: flex;
+      background: var(--surface-color);
+      padding: 3px;
+      border-radius: 8px;
+      gap: 2px;
     }
-    .filter-btn, .btn {
-      background: transparent; color: var(--text-primary); border: none; padding: 6px 16px;
-      border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 500; transition: all 0.2s ease;
-    }
-    .filter-btn.active, .btn.active { background: var(--surface-color); color: var(--text-primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-weight: 600; }
-
-    .legend-container { display: flex; gap: 20px; justify-content: center; padding-top: 4px; flex-wrap: wrap; }
-    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-secondary); font-weight: 500; }
-    .legend-box { width: 12px; height: 12px; border-radius: 4px; }
-
-    /* ------------------------------------- */
-    /* 3D DESKTOP CANVAS                     */
-    /* ------------------------------------- */
-    .viewport { perspective: 1400px; width: 100%; max-width: 1250px; display: flex; flex-direction: column; gap: 60px; padding: 40px 20px; }
     
-    .floor-container {
-      background: var(--surface-color); border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px;
-      transform-style: preserve-3d; transform: rotateX(45deg) rotateZ(-5deg) translateZ(0);
-      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.08);
+    .filter-btn, .btn {
+      background: transparent;
+      color: var(--text-primary);
+      border: none;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
     }
-    .viewport.flat .floor-container { transform: rotateX(0deg) rotateZ(0deg) translateZ(0); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05); }
+    
+    .filter-btn:hover, .btn:hover { background: rgba(255,255,255,0.1); }
+    .filter-btn.active, .btn.active { background: #636366; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); font-weight: 600; }
 
-    .floor-title { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 24px; transform: translateZ(10px); }
-    .wing-title { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin: 16px 0 8px 0; letter-spacing: 1px; transform: translateZ(10px); }
+    .right-toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* Legend */
+    .legend-container {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; }
+    .legend-box { width: 10px; height: 10px; border-radius: 2px; }
+
+    /* 3D Perspective Canvas */
+    .viewport {
+      perspective: 1400px;
+      width: 100%;
+      max-width: 1250px;
+      display: flex;
+      flex-direction: column;
+      gap: 60px;
+      padding: 30px 20px;
+    }
+
+    .floor-container {
+      background: rgba(28, 28, 30, 0.6);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 40px;
+      transform-style: preserve-3d;
+      transform: rotateX(45deg) rotateZ(-5deg) translateZ(0);
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    .viewport.flat .floor-container {
+      transform: rotateX(0deg) rotateZ(0deg) translateZ(0);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .floor-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+      transform: translateZ(10px);
+    }
+
+    .wing-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin: 16px 0 8px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transform: translateZ(10px);
+    }
 
     .room-row { display: flex; gap: 6px; margin-bottom: 8px; transform-style: preserve-3d; }
 
+    /* 3D Block Element */
     .room-block {
-      flex: 1; min-width: 52px; height: 60px; position: relative;
-      transform-style: preserve-3d; transition: transform 0.3s ease, opacity 0.3s ease;
+      flex: 1;
+      min-width: 52px;
+      height: 60px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease, opacity 0.3s ease;
       cursor: pointer;
     }
+    
+    .room-block:focus { outline: none; }
+    .room-block:focus .face-top { box-shadow: 0 0 0 3px var(--accent-blue), inset 0 0 0 1px #ffffff !important; }
 
     .room-block .face-top {
-      position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 0.85rem; color: #FFFFFF; border-radius: 6px;
-      transform: translateZ(16px); transition: all 0.3s ease; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #000000;
+      border-radius: 6px;
+      transform: translateZ(16px);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+      transition: all 0.3s ease;
     }
+
     .room-block .face-front {
-      position: absolute; width: 100%; height: 16px; bottom: 0; transform-origin: bottom;
-      transform: rotateX(-90deg); filter: brightness(0.6); border-radius: 0 0 6px 6px;
+      position: absolute;
+      width: 100%;
+      height: 16px;
+      bottom: 0;
+      transform-origin: bottom;
+      transform: rotateX(-90deg);
+      filter: brightness(0.6);
+      border-radius: 0 0 6px 6px;
+      transition: all 0.3s ease;
     }
 
     .room-block:hover { transform: translateZ(16px) scale(1.03); z-index: 50; }
+    .room-block:hover .face-top { box-shadow: 0 0 25px rgba(255, 255, 255, 0.4), inset 0 0 0 2px #ffffff; }
 
-    /* Dimming logic for Search & Filters */
-    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-top { background-color: var(--surface-secondary) !important; color: var(--text-secondary) !important; border-top: none !important; text-shadow: none; }
-    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-front { background-color: var(--surface-color) !important; }
-    .viewport.filtered .room-block:not(.highlight) { pointer-events: none; opacity: 0.4 !important; }
-    .room-block.highlight .face-top { box-shadow: 0 0 0 4px var(--accent-blue) !important; }
+    /* Dimming logic for Search & Filters (Safari Safe) */
+    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-top {
+      background-color: var(--surface-secondary) !important;
+      color: #636366 !important;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05) !important;
+      border-top: none !important;
+    }
 
-    /* Data-Attribute Room Colors */
+    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-front {
+      background-color: var(--surface-color) !important;
+    }
+
+    .viewport.filtered .room-block:not(.highlight) { pointer-events: none; transform: translateZ(0) scale(0.98) !important; }
+    
+    .room-block.highlight .face-top { box-shadow: 0 0 30px var(--accent-blue), inset 0 0 0 2px #ffffff !important; }
+
+    /* Room Colors mapped strictly to exact hex codes */
     .room-block[data-room-type="twin"] .face-top, .room-block[data-room-type="twin"] .face-front { background-color: var(--twin-room); }
     .room-block[data-room-type="double"] .face-top, .room-block[data-room-type="double"] .face-front { background-color: var(--double-room); }
     .room-block[data-room-type="triple"] .face-top, .room-block[data-room-type="triple"] .face-front { background-color: var(--triple-room); }
     .room-block[data-room-type="family"] .face-top, .room-block[data-room-type="family"] .face-front { background-color: var(--family-room); }
+    
     .room-block[data-room-type="corridor"] { cursor: default; }
-    .room-block[data-room-type="corridor"] .face-top { background-color: var(--corridor); color: var(--text-secondary); text-shadow: none; transform: translateZ(2px); }
-    .room-block[data-room-type="corridor"] .face-front { background-color: var(--surface-secondary); height: 2px; }
+    .room-block[data-room-type="corridor"] .face-top { background-color: var(--corridor); color: #86868b; transform: translateZ(2px); }
+    .room-block[data-room-type="corridor"] .face-front { background-color: #1c1c1e; height: 2px; }
+    .room-block[data-room-type="corridor"]:hover { transform: none; }
 
-    /* ------------------------------------- */
-    /* DESKTOP INFO CARD (HOVER)             */
-    /* ------------------------------------- */
-    #infoCard {
-      position: fixed; display: none; background: var(--glass-bg);
-      backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-      color: var(--text-primary); padding: 16px; border-radius: 16px; pointer-events: none; z-index: 1000;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2); min-width: 240px; border: 1px solid var(--glass-border);
-    }
-    .click-hint { font-size: 0.7rem; color: var(--text-secondary); margin-top: 10px; text-align: center; }
-
-    #toast {
-      position: fixed; bottom: 30px; left: 50%; transform: translate3d(-50%, 100px, 0);
-      background: var(--accent-green); color: white; padding: 12px 24px; border-radius: 30px; font-weight: 600; font-size: 0.9rem;
-      opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000; box-shadow: 0 8px 16px rgba(48, 209, 88, 0.3);
-    }
-    #toast.show { transform: translate3d(-50%, 0, 0); opacity: 1; }
-
-    #mobileOverlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-      z-index: 900; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
-    }
-    #mobileOverlay.active { opacity: 1; pointer-events: auto; }
-
-    /* ========================================= */
-    /* iOS SAFARI MOBILE REDESIGN                */
-    /* ========================================= */
-    @media (max-width: 768px) {
-      body { padding-bottom: 20px; }
-      
-      .top-header { padding: 40px 12px 16px 12px; } 
-      h1 { font-size: 1.5rem; text-align: center; margin-bottom: 4px; }
-      
-      .stats-container { 
-        flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; 
-        padding-bottom: 8px; margin-bottom: 0; -webkit-overflow-scrolling: touch; scrollbar-width: none;
-      }
-      .stats-container::-webkit-scrollbar { display: none; }
-      .stat-card { min-width: 100px; padding: 10px; border-radius: 14px; }
-      
-      .sticky-tools { padding: 12px; gap: 8px; }
-      .legend-container, .controls { display: none; }
-
-      /* Mobile 2D Fallback */
-      .viewport { perspective: none; padding: 10px; gap: 30px; }
-      .floor-container { 
-        transform: none !important; 
-        padding: 20px 10px; border-radius: 20px; overflow-x: auto; -webkit-overflow-scrolling: touch;
-      }
-      .room-row { min-width: 700px; gap: 10px; margin-bottom: 10px; transform-style: flat; }
-      
-      .room-block { height: 65px; border-radius: 12px; transform-style: flat; }
-      .room-block .face-front { display: none; } 
-      .room-block .face-top { 
-        transform: none !important;
-        border-radius: 12px; font-size: 1rem;
-      }
-      .room-block:hover { transform: none; }
-      .room-block:active .face-top { transform: scale(0.92) !important; transition: transform 0.1s !important; } 
-
-      /* Apple Maps Bottom Sheet Tooltip */
-      #infoCard {
-        position: fixed !important; display: block !important; left: 0 !important; top: auto !important; bottom: 0 !important;
-        width: 100%; margin: 0; border-radius: 32px 32px 0 0; padding: 12px 24px 40px 24px;
-        background: var(--glass-bg);
-        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-        border: 1px solid var(--glass-border); border-bottom: none; box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
-        transform: translate3d(0, 100%, 0); transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-        z-index: 1000; pointer-events: auto;
-      }
-      #infoCard.sheet-open { transform: translate3d(0, 0, 0); }
-      .click-hint { display: none; }
-      #infoCard::before {
-        content: ''; display: block; width: 40px; height: 5px; background: var(--text-secondary);
-        border-radius: 10px; margin: 0 auto 16px auto; opacity: 0.5;
-      }
-      
-      .mobile-actions { display: flex; gap: 10px; margin-top: 20px; }
-      .mobile-btn { flex: 1; text-align: center; padding: 14px; border-radius: 14px; font-weight: 600; font-size: 1rem; border: none; }
-      .btn-copy { background: var(--accent-blue); color: white; }
-      .btn-copy:active { background: #005bb5; }
+    /* Frosted Tooltip Card */
+    #tooltip {
+      position: fixed;
+      display: none;
+      background: rgba(28, 28, 30, 0.85);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      color: var(--text-primary);
+      padding: 16px;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+      min-width: 230px;
+      border: 1px solid rgba(255,255,255,0.1);
     }
     
-    .mobile-actions { display: none; }
-    @media (max-width: 768px) { .mobile-actions { display: flex; } }
+    .click-hint { font-size: 0.7rem; color: var(--text-secondary); margin-top: 10px; text-align: center; }
 
+    /* Apple-style Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translate(-50%, 100px);
+      background: rgba(48, 209, 88, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 2000;
+      pointer-events: none;
+    }
+    #toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+    /* Mobile Responsive Fallback */
+    @media (max-width: 1024px) {
+      header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+        gap: 16px;
+      }
+      .header-left, .header-right { max-width: 100%; align-items: center; }
+      .tools-container { align-items: center; }
+      #searchInput { max-width: 100%; }
+      .viewport { padding: 10px; gap: 30px; perspective: none; }
+      .floor-container { transform: none !important; padding: 20px 10px; border-radius: 16px; overflow-x: auto; }
+      .room-block:hover { transform: none; z-index: 1; }
+      .room-row { min-width: 600px; }
+    }
   </style>
 </head>
 <body>
 
-  <div id="mobileOverlay"></div>
-
-  <!-- TOP HEADER (Scrolls Away) -->
-  <div class="top-header">
-    <h1>YMCA Hostel Directory</h1>
-    <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting to Live Sheet...</span></div>
-    
-    <div class="stats-container">
-      <div class="stat-card"><span class="stat-value" id="stat-pax">-</span><span class="stat-label">Participants</span></div>
-      <div class="stat-card"><span class="stat-value" id="stat-boys">-</span><span class="stat-label">Boys</span></div>
-      <div class="stat-card"><span class="stat-value" id="stat-girls">-</span><span class="stat-label">Girls</span></div>
-      <div class="stat-card"><span class="stat-value" id="stat-vacant">-</span><span class="stat-label">Vacant</span></div>
-    </div>
-  </div>
-
-  <!-- STICKY TOOLS (Locks to Top) -->
-  <div class="sticky-tools">
-    <div class="tools-container">
-      <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
-      <div class="filter-group">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="vacant">Vacant</button>
-        <button class="filter-btn" data-filter="vip">VIPs</button>
-        <button class="filter-btn" data-filter="boys">Boys</button>
-        <button class="filter-btn" data-filter="girls">Girls</button>
+  <header id="mainHeader">
+    <!-- LEFT SIDE: Title, Status, Stats, Legend -->
+    <div class="header-left">
+      <div>
+        <h1>YMCA Hostel Directory</h1>
+        <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting to Live Google Sheet...</span></div>
       </div>
-      <div class="controls">
-        <button class="btn active" onclick="setView('3d')">3D View</button>
-        <button class="btn" onclick="setView('2d')">Flat View</button>
+      
+      <div class="stats-container">
+        <div class="stat-card"><span class="stat-value" id="stat-pax">-</span><span class="stat-label">Participants</span></div>
+        <div class="stat-card"><span class="stat-value" id="stat-boys">-</span><span class="stat-label">Boys</span></div>
+        <div class="stat-card"><span class="stat-value" id="stat-girls">-</span><span class="stat-label">Girls</span></div>
+        <div class="stat-card"><span class="stat-value" id="stat-vacant">-</span><span class="stat-label">Vacant Rooms</span></div>
+      </div>
+
+      <div class="legend-container">
+        <div class="legend-item"><div class="legend-box" style="background-color: var(--twin-room);"></div> Twin</div>
+        <div class="legend-item"><div class="legend-box" style="background-color: var(--double-room);"></div> Double</div>
+        <div class="legend-item"><div class="legend-box" style="background-color: var(--triple-room);"></div> Triple</div>
+        <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family</div>
       </div>
     </div>
-    
-    <div class="legend-container">
-      <div class="legend-item"><div class="legend-box" style="background-color: var(--twin-room);"></div> Twin</div>
-      <div class="legend-item"><div class="legend-box" style="background-color: var(--double-room);"></div> Double</div>
-      <div class="legend-item"><div class="legend-box" style="background-color: var(--triple-room);"></div> Triple</div>
-      <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family</div>
+
+    <!-- RIGHT SIDE: Search Bar, Filters, View Toggles -->
+    <div class="header-right">
+      <div class="tools-container">
+        <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
+        
+        <div class="right-toolbar">
+          <div class="filter-group">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="vacant">Vacant</button>
+            <button class="filter-btn" data-filter="vip">VIPs</button>
+            <button class="filter-btn" data-filter="boys">Boys</button>
+            <button class="filter-btn" data-filter="girls">Girls</button>
+          </div>
+
+          <div class="controls">
+            <button class="btn active" onclick="setView('3d')">3D</button>
+            <button class="btn" onclick="setView('2d')">Flat</button>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </header>
 
   <div class="viewport" id="viewport">
     
     <!-- LEVEL 3 -->
     <div class="floor-container">
       <div class="floor-title">Level 3</div>
+      
       <div class="wing-title">Wing C</div>
       <div class="room-row">
         <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="312" data-room-type="double"><div class="face-top">312</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="311" data-room-type="twin"><div class="face-top">311</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="310" data-room-type="double"><div class="face-top">310</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="309" data-room-type="twin"><div class="face-top">309</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="307" data-room-type="twin"><div class="face-top">307</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="305" data-room-type="twin"><div class="face-top">305</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="304" data-room-type="double"><div class="face-top">304</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="303" data-room-type="twin"><div class="face-top">303</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="302" data-room-type="double"><div class="face-top">302</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="301" data-room-type="twin"><div class="face-top">301</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 312" data-room="312" data-room-type="double"><div class="face-top">312</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 311" data-room="311" data-room-type="twin"><div class="face-top">311</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 310" data-room="310" data-room-type="double"><div class="face-top">310</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 309" data-room="309" data-room-type="twin"><div class="face-top">309</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 307" data-room="307" data-room-type="twin"><div class="face-top">307</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 305" data-room="305" data-room-type="twin"><div class="face-top">305</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 304" data-room="304" data-room-type="double"><div class="face-top">304</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 303" data-room="303" data-room-type="twin"><div class="face-top">303</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 302" data-room="302" data-room-type="double"><div class="face-top">302</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 301" data-room="301" data-room-type="twin"><div class="face-top">301</div><div class="face-front"></div></div>
         <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
 
       <div class="wing-title">Wing D</div>
       <div class="room-row">
         <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="329" data-room-type="twin"><div class="face-top">329</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="328" data-room-type="double"><div class="face-top">328</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="327" data-room-type="twin"><div class="face-top">327</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="325" data-room-type="twin"><div class="face-top">325</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="323" data-room-type="twin"><div class="face-top">323</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="321" data-room-type="twin"><div class="face-top">321</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="320" data-room-type="double"><div class="face-top">320</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="319" data-room-type="twin"><div class="face-top">319</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="318" data-room-type="triple"><div class="face-top">318</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="317" data-room-type="triple"><div class="face-top">317</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="316" data-room-type="triple"><div class="face-top">316</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="315" data-room-type="triple"><div class="face-top">315</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="314" data-room-type="triple"><div class="face-top">314</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 329" data-room="329" data-room-type="twin"><div class="face-top">329</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 328" data-room="328" data-room-type="double"><div class="face-top">328</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 327" data-room="327" data-room-type="twin"><div class="face-top">327</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 325" data-room="325" data-room-type="twin"><div class="face-top">325</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 323" data-room="323" data-room-type="twin"><div class="face-top">323</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 321" data-room="321" data-room-type="twin"><div class="face-top">321</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 320" data-room="320" data-room-type="double"><div class="face-top">320</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 319" data-room="319" data-room-type="twin"><div class="face-top">319</div><div class="face-front"></div></div>
+        
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 318" data-room="318" data-room-type="triple"><div class="face-top">318</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 317" data-room="317" data-room-type="triple"><div class="face-top">317</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 316" data-room="316" data-room-type="triple"><div class="face-top">316</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 315" data-room="315" data-room-type="triple"><div class="face-top">315</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 314" data-room="314" data-room-type="triple"><div class="face-top">314</div><div class="face-front"></div></div>
         <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
     </div>
@@ -365,68 +459,68 @@
     <!-- LEVEL 2 -->
     <div class="floor-container">
       <div class="floor-title">Level 2</div>
+      
       <div class="wing-title">Wing A</div>
       <div class="room-row">
         <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="212" data-room-type="double"><div class="face-top">212</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="211" data-room-type="twin"><div class="face-top">211</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="210" data-room-type="double"><div class="face-top">210</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="209" data-room-type="twin"><div class="face-top">209</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="208" data-room-type="twin"><div class="face-top">208</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="207" data-room-type="twin"><div class="face-top">207</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="206" data-room-type="twin"><div class="face-top">206</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="205" data-room-type="double"><div class="face-top">205</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="204" data-room-type="twin"><div class="face-top">204</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="203" data-room-type="double"><div class="face-top">203</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="202" data-room-type="double"><div class="face-top">202</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="201" data-room-type="twin"><div class="face-top">201</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 212" data-room="212" data-room-type="double"><div class="face-top">212</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 211" data-room="211" data-room-type="twin"><div class="face-top">211</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 210" data-room="210" data-room-type="double"><div class="face-top">210</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 209" data-room="209" data-room-type="twin"><div class="face-top">209</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 208" data-room="208" data-room-type="twin"><div class="face-top">208</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 207" data-room="207" data-room-type="twin"><div class="face-top">207</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 206" data-room="206" data-room-type="twin"><div class="face-top">206</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 205" data-room="205" data-room-type="double"><div class="face-top">205</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 204" data-room="204" data-room-type="twin"><div class="face-top">204</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 203" data-room="203" data-room-type="double"><div class="face-top">203</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 202" data-room="202" data-room-type="double"><div class="face-top">202</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 201" data-room="201" data-room-type="twin"><div class="face-top">201</div><div class="face-front"></div></div>
         <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
 
       <div class="wing-title">Wing B</div>
       <div class="room-row">
         <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="229" data-room-type="twin"><div class="face-top">229</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="228" data-room-type="double"><div class="face-top">228</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="227" data-room-type="twin"><div class="face-top">227</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="226" data-room-type="twin"><div class="face-top">226</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="225" data-room-type="twin"><div class="face-top">225</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="224" data-room-type="twin"><div class="face-top">224</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="223" data-room-type="twin"><div class="face-top">223</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="222" data-room-type="twin"><div class="face-top">222</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="221" data-room-type="twin"><div class="face-top">221</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="220" data-room-type="double"><div class="face-top">220</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="219" data-room-type="twin"><div class="face-top">219</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="218" data-room-type="twin"><div class="face-top">218</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="217" data-room-type="twin"><div class="face-top">217</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="216" data-room-type="twin"><div class="face-top">216</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="215" data-room-type="twin"><div class="face-top">215</div><div class="face-front"></div></div>
-        <div class="room-block" tabindex="0" role="button" data-room="214" data-room-type="twin"><div class="face-top">214</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 229" data-room="229" data-room-type="twin"><div class="face-top">229</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 228" data-room="228" data-room-type="double"><div class="face-top">228</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 227" data-room="227" data-room-type="twin"><div class="face-top">227</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 226" data-room="226" data-room-type="twin"><div class="face-top">226</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 225" data-room="225" data-room-type="twin"><div class="face-top">225</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 224" data-room="224" data-room-type="twin"><div class="face-top">224</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 223" data-room="223" data-room-type="twin"><div class="face-top">223</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 222" data-room="222" data-room-type="twin"><div class="face-top">222</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 221" data-room="221" data-room-type="twin"><div class="face-top">221</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 220" data-room="220" data-room-type="double"><div class="face-top">220</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 219" data-room="219" data-room-type="twin"><div class="face-top">219</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 218" data-room="218" data-room-type="twin"><div class="face-top">218</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 217" data-room="217" data-room-type="twin"><div class="face-top">217</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 216" data-room="216" data-room-type="twin"><div class="face-top">216</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 215" data-room="215" data-room-type="twin"><div class="face-top">215</div><div class="face-front"></div></div>
+        <div class="room-block" tabindex="0" role="button" aria-label="Room 214" data-room="214" data-room-type="twin"><div class="face-top">214</div><div class="face-front"></div></div>
         <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
       </div>
     </div>
+
   </div>
 
-  <div id="infoCard">
-    <div id="infoCardContent"></div>
-    <div class="mobile-actions">
-      <button class="mobile-btn btn-copy" id="mobileCopyBtn">Copy Room Details</button>
-    </div>
-  </div>
-  
+  <div id="tooltip"></div>
   <div id="toast">Copied to clipboard!</div>
 
   <script>
+    // Live Google Sheets CSV URL
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRMmnBQIEjwVoJhvD9l8LelAodWCfdSg8v3z8dNcBt7PkMiNP5a13Ylw3foUnfQvWdzU2NaXWgGCJWA/pub?gid=546426841&single=true&output=csv';
-    const REFRESH_INTERVAL_MS = 60000; 
+    const REFRESH_INTERVAL_MS = 60000; // Auto-sync every 60 seconds
 
     let roomData = {};
     const totalRoomsCount = document.querySelectorAll('.room-block[data-room]').length;
 
+    // View Switcher (3D vs 2D)
     function setView(mode) {
       const viewport = document.getElementById('viewport');
       const buttons = document.querySelectorAll('.controls .btn');
+      
       buttons.forEach(btn => btn.classList.remove('active'));
+      
       if (mode === '2d') {
         viewport.classList.add('flat');
         buttons[1].classList.add('active');
@@ -436,28 +530,27 @@
       }
     }
 
+    // Fetch and parse live spreadsheet CSV
     function loadGoogleSheetData() {
       const statusBadge = document.getElementById('sync-status');
+      
       Papa.parse(SHEET_CSV_URL, {
         download: true,
         header: false,
         skipEmptyLines: true,
         complete: function(results) {
-          localStorage.setItem('ymca_offline_data', JSON.stringify(results.data));
           parseRows(results.data);
+          
+          // Update Status UI
           statusBadge.classList.add('synced');
-          const timeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          const now = new Date();
+          const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
           statusBadge.querySelector('span').textContent = `Live Synced at ${timeString}`;
         },
-        error: function() {
-          const offlineData = localStorage.getItem('ymca_offline_data');
+        error: function(err) {
+          console.error("CSV Fetch Error: ", err);
           statusBadge.classList.remove('synced');
-          if(offlineData) {
-            parseRows(JSON.parse(offlineData));
-            statusBadge.querySelector('span').textContent = '⚠️ Offline (Showing Cached Data)';
-          } else {
-            statusBadge.querySelector('span').textContent = '⚠️ Offline - No Data Cached';
-          }
+          statusBadge.querySelector('span').textContent = '⚠️ Offline - Retrying...';
         }
       });
     }
@@ -475,7 +568,9 @@
           const remarks = row[4] ? row[4].trim() : '';
 
           if (/^\d{3}$/.test(roomNo)) {
-            if (!roomData[roomNo]) roomData[roomNo] = { type: roomType, remarks: remarks, occupants: [] };
+            if (!roomData[roomNo]) {
+              roomData[roomNo] = { type: roomType, remarks: remarks, occupants: [] };
+            }
             if (name) {
               roomData[roomNo].occupants.push({ name, gender });
               stats.pax++;
@@ -488,12 +583,14 @@
         }
       });
 
+      // Render Data to Map
       document.querySelectorAll('.room-block[data-room]').forEach(block => {
         const roomNo = block.getAttribute('data-room');
         const topFace = block.querySelector('.face-top');
         const data = roomData[roomNo];
 
         if (data) {
+          // Dynamic Colors
           if (data.type) {
             const t = data.type.toLowerCase();
             if (t.includes('twin')) block.setAttribute('data-room-type', 'twin');
@@ -501,6 +598,8 @@
             else if (t.includes('triple')) block.setAttribute('data-room-type', 'triple');
             else if (t.includes('family')) block.setAttribute('data-room-type', 'family');
           }
+
+          // Occupancy Indicators & Stats
           if (data.occupants.length > 0) {
             stats.occupiedRooms++;
             if (topFace) topFace.style.borderTop = "4px solid var(--accent-green)";
@@ -512,15 +611,18 @@
         }
       });
       
+      // Update Dashboard Stats
       document.getElementById('stat-pax').textContent = stats.pax;
       document.getElementById('stat-boys').textContent = stats.boys;
       document.getElementById('stat-girls').textContent = stats.girls;
       document.getElementById('stat-vacant').textContent = (totalRoomsCount - stats.occupiedRooms);
 
+      // Re-apply active filters seamlessly
       const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
       applySearchAndFilter(document.getElementById('searchInput').value, activeFilter);
     }
 
+    // Search and Filter Logic
     function applySearchAndFilter(query = '', filter = 'all') {
       const viewport = document.getElementById('viewport');
       query = query.toLowerCase().trim();
@@ -536,12 +638,21 @@
 
         if (isFiltering) {
           let textMatch = true;
-          if (query.length > 0) textMatch = data && data.occupants && data.occupants.some(o => o.name.toLowerCase().includes(query));
+          if (query.length > 0) {
+            textMatch = data && data.occupants && data.occupants.some(o => o.name.toLowerCase().includes(query));
+          }
+
           let filterMatch = true;
-          if (filter === 'vacant') filterMatch = !data || !data.occupants || data.occupants.length === 0;
-          else if (filter === 'vip') filterMatch = data && data.remarks && data.remarks.toLowerCase().includes('vip');
-          else if (filter === 'boys') filterMatch = data && data.occupants && data.occupants.some(o => o.gender.toLowerCase().includes('boy') || o.gender.toLowerCase().includes('male'));
-          else if (filter === 'girls') filterMatch = data && data.occupants && data.occupants.some(o => o.gender.toLowerCase().includes('girl') || o.gender.toLowerCase().includes('female'));
+          if (filter === 'vacant') {
+            filterMatch = !data || !data.occupants || data.occupants.length === 0;
+          } else if (filter === 'vip') {
+            filterMatch = data && data.remarks && data.remarks.toLowerCase().includes('vip');
+          } else if (filter === 'boys') {
+            filterMatch = data && data.occupants && data.occupants.some(o => o.gender.toLowerCase().includes('boy') || o.gender.toLowerCase().includes('male'));
+          } else if (filter === 'girls') {
+            filterMatch = data && data.occupants && data.occupants.some(o => o.gender.toLowerCase().includes('girl') || o.gender.toLowerCase().includes('female'));
+          }
+
           match = textMatch && filterMatch;
           
           if (match) block.classList.add('highlight');
@@ -552,27 +663,26 @@
       });
     }
 
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      applySearchAndFilter(e.target.value, document.querySelector('.filter-btn.active').getAttribute('data-filter'));
+    // UI Tools Event Listeners
+    const searchInput = document.getElementById('searchInput');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+
+    searchInput.addEventListener('input', (e) => {
+      const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+      applySearchAndFilter(e.target.value, activeFilter);
     });
 
-    document.querySelectorAll('.filter-btn').forEach(btn => {
+    filterBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        filterBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        applySearchAndFilter(document.getElementById('searchInput').value, btn.getAttribute('data-filter'));
+        applySearchAndFilter(searchInput.value, btn.getAttribute('data-filter'));
       });
     });
 
-    // ----------------------------------------------------------------
-    // INFO CARD ENGINE
-    // ----------------------------------------------------------------
-    const infoCard = document.getElementById('infoCard');
-    const infoCardContent = document.getElementById('infoCardContent');
-    const mobileCopyBtn = document.getElementById('mobileCopyBtn');
-    const mobileOverlay = document.getElementById('mobileOverlay');
-    let currentActiveRoomNo = null;
-
+    // Tooltip & Click-to-Copy Engine
+    const tooltip = document.getElementById('tooltip');
+    
     function showToast(message) {
       const toast = document.getElementById('toast');
       toast.textContent = message;
@@ -580,41 +690,13 @@
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    function populateInfoCard(roomNo) {
-      const data = roomData[roomNo];
-      if (data) {
-        infoCardContent.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <strong style="font-size:1.4rem; color:var(--text-primary);">Room ${roomNo}</strong>
-            <span style="font-size:0.75rem; background:var(--surface-secondary); padding:4px 10px; border-radius:8px; color:var(--text-secondary); font-weight:600;">${data.type || 'Room'}</span>
-          </div>
-          <div style="border-top:1px solid var(--glass-border); padding-top:14px;">
-            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;">Occupants</div>
-            ${data.occupants.length > 0 
-              ? data.occupants.map(occ => `
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <span style="font-weight:600; font-size:1.1rem;">${occ.name}</span>
-                    <span style="font-size:0.75rem; color:${(occ.gender.toLowerCase().includes('boy') || occ.gender.toLowerCase().includes('male')) ? 'var(--twin-room)' : 'var(--family-room)'}; font-weight:700;">${occ.gender}</span>
-                  </div>
-                `).join('')
-              : '<div style="color:var(--text-secondary); font-size:1rem; font-style:italic;">No occupants assigned</div>'
-            }
-          </div>
-          ${data.remarks ? `<div style="margin-top:14px; background:rgba(255, 59, 48, 0.15); color:#FF375F; font-size:0.9rem; font-weight:600; padding:8px 12px; border-radius:8px; display:inline-block; border:1px solid rgba(255,59,48,0.2);">${data.remarks}</div>` : ''}
-          <div class="click-hint">Click or press Enter to copy</div>
-        `;
-      } else {
-        infoCardContent.innerHTML = `
-          <strong style="font-size:1.4rem; color:var(--text-primary);">Room ${roomNo}</strong>
-          <div style="color:var(--text-secondary); font-size:1rem; margin-top:10px;">Vacant / Unassigned</div>
-          <div class="click-hint">Click or press Enter to copy</div>
-        `;
-      }
-    }
+    function triggerCopy(block) {
+      if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return;
 
-    function copyToClipboard(roomNo) {
+      const roomNo = block.getAttribute('data-room');
       const data = roomData[roomNo];
       let textToCopy = `Room ${roomNo}\n`;
+      
       if (data && data.occupants && data.occupants.length > 0) {
         textToCopy += `Type: ${data.type || 'Room'}\nOccupants:\n`;
         data.occupants.forEach(o => { textToCopy += `- ${o.name} (${o.gender})\n`; });
@@ -622,61 +704,69 @@
       } else {
         textToCopy += `Status: Vacant`;
       }
+
       navigator.clipboard.writeText(textToCopy).then(() => {
-        showToast(`Room ${roomNo} copied!`);
-        closeMobileSheet();
-      });
+        showToast(`Room ${roomNo} details copied!`);
+      }).catch(err => console.error("Copy failed: ", err));
     }
-
-    function openMobileSheet(roomNo) {
-      if(window.innerWidth > 768) return; 
-      currentActiveRoomNo = roomNo;
-      populateInfoCard(roomNo);
-      mobileOverlay.classList.add('active');
-      infoCard.classList.add('sheet-open');
-    }
-
-    function closeMobileSheet() {
-      mobileOverlay.classList.remove('active');
-      infoCard.classList.remove('sheet-open');
-    }
-
-    mobileOverlay.addEventListener('click', closeMobileSheet);
-    
-    mobileCopyBtn.addEventListener('click', () => { if(currentActiveRoomNo) copyToClipboard(currentActiveRoomNo); });
 
     document.querySelectorAll('.room-block[data-room]').forEach(block => {
+      // Mouse Hover
       block.addEventListener('mousemove', (e) => {
-        if(window.innerWidth <= 768) return; 
         if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return; 
 
-        populateInfoCard(block.getAttribute('data-room'));
-        infoCard.style.display = 'block';
-        infoCard.style.left = (e.clientX + 20) + 'px';
-        infoCard.style.top = (e.clientY + 20) + 'px';
-      });
-
-      block.addEventListener('mouseleave', () => {
-        if(window.innerWidth > 768) infoCard.style.display = 'none';
-      });
-
-      block.addEventListener('click', () => {
-        if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return;
         const roomNo = block.getAttribute('data-room');
-        if (window.innerWidth <= 768) openMobileSheet(roomNo);
-        else copyToClipboard(roomNo);
+        const data = roomData[roomNo];
+
+        if (data) {
+          tooltip.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <strong style="font-size:1.1rem; color:var(--accent-blue);">Room ${roomNo}</strong>
+              <span style="font-size:0.7rem; background:rgba(255,255,255,0.15); padding:3px 8px; border-radius:6px; color:#e5e5ea; font-weight:600;">${data.type || 'Room'}</span>
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:8px;">
+              <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;">Occupants</div>
+              ${data.occupants.length > 0 
+                ? data.occupants.map(occ => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                      <span style="font-weight:500; font-size:0.9rem;">${occ.name}</span>
+                      <span style="font-size:0.7rem; color:${(occ.gender.toLowerCase().includes('boy') || occ.gender.toLowerCase().includes('male')) ? 'var(--twin-room)' : 'var(--family-room)'}; font-weight:600;">${occ.gender}</span>
+                    </div>
+                  `).join('')
+                : '<div style="color:var(--text-secondary); font-size:0.85rem; font-style:italic;">No occupants assigned</div>'
+              }
+            </div>
+            ${data.remarks ? `<div style="margin-top:8px; background:rgba(255, 59, 48, 0.2); color:#ff453a; font-size:0.75rem; font-weight:600; padding:4px 8px; border-radius:6px; display:inline-block; border:1px solid rgba(255,59,48,0.3);">${data.remarks}</div>` : ''}
+            <div class="click-hint">Click or press Enter to copy details</div>
+          `;
+        } else {
+          tooltip.innerHTML = `
+            <strong style="font-size:1.1rem; color:var(--text-primary);">Room ${roomNo}</strong>
+            <div style="color:var(--text-secondary); font-size:0.85rem; margin-top:6px;">Vacant / Unassigned</div>
+            <div class="click-hint">Click or press Enter to copy details</div>
+          `;
+        }
+
+        tooltip.style.display = 'block';
+        tooltip.style.left = (e.clientX + 20) + 'px';
+        tooltip.style.top = (e.clientY + 20) + 'px';
       });
 
+      block.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+
+      // Mouse Click
+      block.addEventListener('click', () => triggerCopy(block));
+
+      // Keyboard Accessibility (Enter key to copy)
       block.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          const roomNo = block.getAttribute('data-room');
-          if (window.innerWidth <= 768) openMobileSheet(roomNo);
-          else copyToClipboard(roomNo);
+          triggerCopy(block);
         }
       });
     });
 
+    // Execute initial load and start background interval
     loadGoogleSheetData();
     setInterval(loadGoogleSheetData, REFRESH_INTERVAL_MS);
 
