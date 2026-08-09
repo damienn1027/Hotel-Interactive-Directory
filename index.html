@@ -166,6 +166,17 @@
     .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-primary); font-weight: 600; }
     .legend-box { width: 14px; height: 14px; border-radius: 4px; }
 
+    /* Countdown Timer */
+    .countdown-section { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .countdown-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); }
+    .countdown-timer { display: flex; align-items: flex-start; gap: 8px; background: var(--surface-color); border: 2px solid var(--border-color); border-radius: 16px; padding: 14px 22px; box-shadow: var(--shadow-soft); }
+    .countdown-unit { display: flex; flex-direction: column; align-items: center; min-width: 46px; }
+    .countdown-value { font-size: 1.7rem; font-weight: 700; color: var(--brand-orange); font-variant-numeric: tabular-nums; line-height: 1; }
+    .countdown-unit-label { font-size: 0.65rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+    .countdown-separator { font-size: 1.5rem; font-weight: 700; color: var(--text-secondary); padding-top: 2px; }
+    .countdown-started { font-size: 1.1rem; font-weight: 700; color: var(--brand-green); padding: 6px 10px; }
+    .countdown-date { font-size: 0.7rem; font-weight: 500; color: var(--text-secondary); }
+
     /* ========================================= */
     /* 2. STICKY TOOLBAR (Stays at the top)      */
     /* ========================================= */
@@ -324,6 +335,11 @@
       .theme-toggle { position: absolute; top: 0; right: 0; width: 36px; height: 36px; font-size: 1rem; }
       .brand-logo { height: 50px; }
       h1 { font-size: 1.4rem; text-align: center; }
+      .countdown-timer { gap: 6px; padding: 10px 14px; }
+      .countdown-unit { min-width: 38px; }
+      .countdown-value { font-size: 1.3rem; }
+      .countdown-separator { font-size: 1.1rem; padding-top: 1px; }
+      .countdown-date { font-size: 0.65rem; }
       
       .header-info-row { flex-direction: column; gap: 16px; }
       .stats-container { width: 100%; flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
@@ -372,16 +388,24 @@
       <!-- Dark/Light Theme Toggle -->
       <button id="themeToggle" class="theme-toggle" aria-label="Toggle Dark Mode">🌙</button>
     </div>
+
+    <!-- Countdown Timer: counts down to event start -->
+    <div class="countdown-section" id="countdownSection">
+      <div class="countdown-label" id="countdownLabel">Event Starts In</div>
+      <div class="countdown-timer" id="countdownTimer">
+        <div class="countdown-unit"><span class="countdown-value" id="cd-days">00</span><span class="countdown-unit-label">Days</span></div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-unit"><span class="countdown-value" id="cd-hours">00</span><span class="countdown-unit-label">Hours</span></div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-unit"><span class="countdown-value" id="cd-mins">00</span><span class="countdown-unit-label">Mins</span></div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-unit"><span class="countdown-value" id="cd-secs">00</span><span class="countdown-unit-label">Secs</span></div>
+      </div>
+      <div class="countdown-date">14 Aug 2026 · 9:00 AM MYT</div>
+    </div>
     
     <div class="header-info-row dir-tools" id="dirToolsHeader">
       <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting...</span></div>
-      
-      <div class="stats-container">
-        <div class="stat-card"><span class="stat-value" id="stat-pax">-</span><span class="stat-label">Participants</span></div>
-        <div class="stat-card"><span class="stat-value" id="stat-boys">-</span><span class="stat-label">Boys</span></div>
-        <div class="stat-card"><span class="stat-value" id="stat-girls">-</span><span class="stat-label">Girls</span></div>
-        <div class="stat-card"><span class="stat-value" id="stat-vacant">-</span><span class="stat-label">Vacant</span></div>
-      </div>
       
       <div class="legend-container">
         <div class="legend-item"><div class="legend-box" style="background-color: var(--twin-room);"></div> Twin</div>
@@ -389,6 +413,13 @@
         <div class="legend-item"><div class="legend-box" style="background-color: var(--triple-room);"></div> Triple</div>
         <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family</div>
       </div>
+    </div>
+    <!-- Participant stats: moved below the sync status / legend row -->
+    <div class="stats-container dir-tools" id="statsRow">
+      <div class="stat-card"><span class="stat-value" id="stat-pax">-</span><span class="stat-label">Participants</span></div>
+      <div class="stat-card"><span class="stat-value" id="stat-boys">-</span><span class="stat-label">Boys</span></div>
+      <div class="stat-card"><span class="stat-value" id="stat-girls">-</span><span class="stat-label">Girls</span></div>
+      <div class="stat-card"><span class="stat-value" id="stat-vacant">-</span><span class="stat-label">Vacant</span></div>
     </div>
   </header>
 
@@ -558,6 +589,38 @@
       }
     });
 
+    // --- Countdown Timer Logic ---
+    // 14 Aug 2026, 9:00 AM Malaysia Time (UTC+8, no DST)
+    const EVENT_START = new Date('2026-08-14T09:00:00+08:00');
+    let countdownInterval = null;
+
+    function updateCountdown() {
+      const diff = EVENT_START.getTime() - Date.now();
+      const label = document.getElementById('countdownLabel');
+      const timerEl = document.getElementById('countdownTimer');
+
+      if (diff <= 0) {
+        label.textContent = "It's Happening!";
+        timerEl.innerHTML = '<div class="countdown-started">🎉 The event has started!</div>';
+        if (countdownInterval) clearInterval(countdownInterval);
+        return;
+      }
+
+      const pad = n => String(n).padStart(2, '0');
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins = Math.floor((diff % 3600000) / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+
+      document.getElementById('cd-days').textContent = pad(days);
+      document.getElementById('cd-hours').textContent = pad(hours);
+      document.getElementById('cd-mins').textContent = pad(mins);
+      document.getElementById('cd-secs').textContent = pad(secs);
+    }
+
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 1000);
+
     // Live Google Sheets CSV URLs
     const DIR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRMmnBQIEjwVoJhvD9l8LelAodWCfdSg8v3z8dNcBt7PkMiNP5a13Ylw3foUnfQvWdzU2NaXWgGCJWA/pub?gid=546426841&single=true&output=csv';
     const TIMELINE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGCH-pDLeS0Rc56C_TABl3uCTWyj8DSnEaxFEJi-l0b1C4eJE_ExobLPzpiHuu3-VMDyzxYXh4KUbA/pub?gid=1028971239&single=true&output=csv';
@@ -575,13 +638,16 @@
 
       const leftTools = document.getElementById('dirToolsHeader');
       const rightTools = document.getElementById('dirToolsNav');
+      const statsRow = document.getElementById('statsRow');
       
       if (tabId === 'directory') {
         leftTools.classList.remove('hidden');
         rightTools.classList.remove('hidden');
+        statsRow.classList.remove('hidden');
       } else {
         leftTools.classList.add('hidden');
         rightTools.classList.add('hidden');
+        statsRow.classList.add('hidden');
       }
     }
 
@@ -903,4 +969,3 @@
   </script>
 </body>
 </html>
-
