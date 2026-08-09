@@ -38,6 +38,7 @@
       --triple-room: var(--brand-green);
       --family-room: var(--brand-orange);
       --corridor: #e9ecef;
+      --room-text: var(--brand-black);
     }
 
     /* Dark Mode UI Variables */
@@ -53,6 +54,7 @@
       --corridor: #2c2c2e;
     }
 
+    /* Prevent mobile rubber-band loops */
     html, body {
       overscroll-behavior-y: none;
       touch-action: pan-x pan-y;
@@ -76,108 +78,172 @@
     }
 
     /* ========================================= */
-    /* 1. MAIN HEADER (Logo, Countdown, Theme)   */
+    /* 1. MAIN HEADER (Scrolls naturally)        */
     /* ========================================= */
     .main-header {
-      width: 100%; padding: 30px 20px 20px 20px; display: flex; flex-direction: column;
-      align-items: center; gap: 16px; max-width: 1250px; position: relative;
+      width: 100%;
+      padding: 40px 20px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
     }
 
-    .brand-section { display: flex; align-items: center; justify-content: center; width: 100%; position: relative; }
-    .brand-logo { height: 60px; width: auto; object-fit: contain; transition: opacity 0.2s ease; }
-    
-    /* Fallback Text if Image Fails */
-    h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-primary); }
-    .brand-hl-1 { color: var(--brand-blue); } .brand-hl-2 { color: var(--brand-green); } .brand-hl-3 { color: var(--brand-orange); }
+    .brand-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
 
+    .brand-logo {
+      height: 70px;
+      width: auto;
+      object-fit: contain;
+      transition: opacity 0.2s ease;
+    }
+
+    h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-primary); margin-bottom: -5px; }
+    .brand-hl-1 { color: var(--brand-blue); }
+    .brand-hl-2 { color: var(--brand-green); }
+    .brand-hl-3 { color: var(--brand-orange); }
+
+    /* Event Countdown Timer */
+    .countdown-timer {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      padding: 6px 18px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-soft);
+      letter-spacing: 0.5px;
+    }
+    .countdown-timer strong { color: var(--brand-blue); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    /* Dark Mode Toggle Button */
     .theme-toggle {
-      background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 50%;
-      width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; cursor: pointer; position: absolute; right: 0; transition: all 0.2s ease; box-shadow: var(--shadow-soft);
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-soft);
     }
     .theme-toggle:hover { transform: scale(1.1); }
 
-    .countdown-pill {
-      background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 30px;
-      padding: 8px 24px; font-size: 0.95rem; font-weight: 600; color: var(--text-secondary);
-      box-shadow: var(--shadow-soft); display: flex; align-items: center; gap: 8px; letter-spacing: 0.5px;
-    }
-    .countdown-pill span { color: var(--brand-blue); font-weight: 700; font-variant-numeric: tabular-nums; }
-
     /* ========================================= */
-    /* 2. STICKY TABS NAV                        */
+    /* 2. STICKY TOOLBAR (Only Tabs)             */
     /* ========================================= */
     .sticky-toolbar {
-      position: sticky; top: 0; width: 100%; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border-color); padding: 12px 0; z-index: 100; display: flex; justify-content: center; box-shadow: var(--shadow-soft);
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 20px;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      box-shadow: var(--shadow-soft);
     }
 
-    .tab-nav { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 12px; gap: 4px; border: 1px solid var(--border-color); }
+    .tab-nav { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 10px; gap: 4px; border: 1px solid var(--border-color); }
     .tab-nav button {
       background: transparent; color: var(--text-secondary); border: none; padding: 8px 24px;
-      border-radius: 8px; font-size: 0.9rem; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.2s ease;
+      border-radius: 6px; font-size: 0.9rem; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.2s ease;
     }
     .tab-nav button.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
     /* Tab Content Wrappers */
-    .tab-content { display: none; width: 100%; flex-direction: column; align-items: center; }
-    .tab-content.active { display: flex; }
+    .tab-content { display: none; width: 100%; justify-content: center; }
+    .tab-content.active { display: flex; flex-direction: column; align-items: center; }
 
     /* ========================================= */
-    /* 3. DIRECTORY DASHBOARD & MAP              */
+    /* TAB 1: DIRECTORY DASHBOARD & MAP          */
     /* ========================================= */
+    .viewport { perspective: 1400px; width: 100%; max-width: 1250px; display: flex; flex-direction: column; gap: 40px; padding: 30px 20px; }
+    
+    /* Directory specific tools container */
     .directory-dashboard {
-      width: 100%; max-width: 1250px; background: var(--surface-color); border: 1px solid var(--border-color);
-      border-radius: 16px; padding: 20px; margin: 30px 20px 0 20px; display: flex; flex-direction: column; gap: 20px; box-shadow: var(--shadow-soft);
+      background: var(--surface-color);
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-soft);
+      width: 100%;
     }
 
-    .dir-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
-    .dir-row.bottom-row { justify-content: flex-start; gap: 30px; border-top: 1px solid var(--border-color); padding-top: 16px; }
+    .dir-dash-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .dir-dash-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); }
 
     #searchInput {
-      flex: 1; min-width: 250px; padding: 10px 16px; border-radius: 10px; border: 2px solid var(--surface-secondary);
-      background: var(--surface-secondary); color: var(--text-primary); font-size: 0.95rem; font-family: 'Poppins', sans-serif; font-weight: 500; transition: all 0.2s;
+      width: 100%; max-width: 380px; padding: 10px 16px; border-radius: 10px; border: 2px solid var(--surface-secondary);
+      background: var(--surface-color); color: var(--text-primary); font-size: 0.9rem; font-family: 'Poppins', sans-serif;
+      font-weight: 500; transition: all 0.2s;
     }
-    #searchInput:focus { outline: none; border-color: var(--brand-blue); background: var(--surface-color); box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15); }
-    #searchInput::placeholder { color: var(--text-secondary); font-weight: 400; }
+    #searchInput:focus { outline: none; border-color: var(--brand-blue); box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15); }
+    #searchInput::placeholder { color: #adb5bd; font-weight: 400; }
 
-    .filter-group, .controls { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 10px; gap: 4px; }
+    .filter-group, .controls { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 8px; gap: 4px; border: 1px solid var(--border-color); flex-wrap: wrap; }
     .filter-btn, .btn {
       background: transparent; color: var(--text-secondary); border: none; padding: 6px 14px;
-      border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif; transition: all 0.2s ease;
+      border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif; transition: all 0.2s ease;
     }
     .filter-btn:hover, .btn:hover { background: rgba(120,120,120,0.1); color: var(--text-primary); }
     .filter-btn.active, .btn.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
+    .right-toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+
     .status-badge {
-      display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
-      background: var(--surface-secondary); color: var(--text-secondary); transition: all 0.3s ease;
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
+      border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+      background: var(--surface-color); color: var(--text-secondary);
+      border: 1px solid var(--border-color); transition: all 0.3s ease;
     }
     .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-secondary); transition: all 0.3s ease; }
     .status-badge.synced .status-dot { background: var(--brand-green); box-shadow: 0 0 8px rgba(0, 200, 83, 0.4); }
     .status-badge.synced { color: var(--text-primary); }
 
-    .stats-container { display: flex; gap: 8px; flex-wrap: wrap; }
-    .stat-pill {
-      display: flex; align-items: center; gap: 8px; background: var(--surface-secondary); padding: 6px 12px;
-      border-radius: 8px; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;
+    .stats-container { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .stat-card {
+      background: var(--surface-secondary); border-radius: 8px;
+      padding: 6px 12px; display: flex; align-items: baseline; gap: 6px; min-width: max-content;
     }
-    .stat-value { font-size: 1rem; color: var(--text-primary); }
-    #stat-pax { color: var(--brand-blue); } #stat-boys { color: var(--brand-green); } #stat-girls { color: var(--brand-orange); }
+    .stat-value { font-size: 1.1rem; font-weight: 700; }
+    #stat-pax { color: var(--brand-blue); }
+    #stat-boys { color: var(--brand-green); }
+    #stat-girls { color: var(--brand-orange); }
+    #stat-vacant { color: var(--text-primary); }
+    .stat-label { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; }
 
-    .legend-container { display: flex; gap: 14px; flex-wrap: wrap; margin-left: auto; }
+    .legend-container { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
     .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-primary); font-weight: 600; }
     .legend-box { width: 14px; height: 14px; border-radius: 4px; }
 
-    /* Map Viewport */
-    .viewport { perspective: 1400px; width: 100%; max-width: 1250px; display: flex; flex-direction: column; gap: 60px; padding: 40px 20px; }
+    /* Map Elements */
     .floor-container {
       background: var(--surface-color); border: 2px solid var(--border-color); border-radius: 24px; padding: 40px;
       transform-style: preserve-3d; transform: rotateX(45deg) rotateZ(-5deg) translateZ(0);
       transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: var(--shadow-soft);
     }
     .viewport.flat .floor-container { transform: rotateX(0deg) rotateZ(0deg) translateZ(0); }
-
     .floor-title { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 24px; transform: translateZ(10px); display: inline-block; padding-bottom: 4px; border-bottom: 4px solid var(--brand-orange); }
     .wing-title { font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); margin: 16px 0 8px 0; text-transform: uppercase; letter-spacing: 1px; transform: translateZ(10px); }
     .room-row { display: flex; gap: 8px; margin-bottom: 10px; transform-style: preserve-3d; }
@@ -185,17 +251,9 @@
     .room-block { flex: 1; min-width: 52px; height: 60px; position: relative; transform-style: preserve-3d; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease, opacity 0.3s ease; cursor: pointer; }
     .room-block:focus { outline: none; }
     .room-block:focus .face-top { box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.4), inset 0 0 0 2px #ffffff !important; }
-
-    .room-block .face-top {
-      position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: #000; border-radius: 6px;
-      transform: translateZ(16px); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3); transition: all 0.3s ease;
-    }
+    .room-block .face-top { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: #000; border-radius: 6px; transform: translateZ(16px); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3); transition: all 0.3s ease; }
     body.dark-mode .room-block .face-top { color: #fff; box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.3); }
-
-    .room-block .face-front {
-      position: absolute; width: 100%; height: 16px; bottom: 0; transform-origin: bottom; transform: rotateX(-90deg); filter: brightness(0.8); border-radius: 0 0 6px 6px; transition: all 0.3s ease;
-    }
-
+    .room-block .face-front { position: absolute; width: 100%; height: 16px; bottom: 0; transform-origin: bottom; transform: rotateX(-90deg); filter: brightness(0.8); border-radius: 0 0 6px 6px; transition: all 0.3s ease; }
     .room-block:hover { transform: translateZ(16px) scale(1.05); z-index: 50; }
     .room-block:hover .face-top { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 0 0 2px #ffffff; }
 
@@ -208,14 +266,13 @@
     .room-block[data-room-type="double"] .face-top, .room-block[data-room-type="double"] .face-front { background-color: var(--double-room); }
     .room-block[data-room-type="triple"] .face-top, .room-block[data-room-type="triple"] .face-front { background-color: var(--triple-room); }
     .room-block[data-room-type="family"] .face-top, .room-block[data-room-type="family"] .face-front { background-color: var(--family-room); color: white; }
-    
     .room-block[data-room-type="corridor"] { cursor: default; }
     .room-block[data-room-type="corridor"] .face-top { background-color: var(--corridor); color: var(--text-secondary); transform: translateZ(2px); }
     .room-block[data-room-type="corridor"] .face-front { background-color: var(--border-color); height: 2px; }
     .room-block[data-room-type="corridor"]:hover { transform: none; }
 
     /* ============================== */
-    /* 4. TIMELINE UI                 */
+    /* TAB 2: TIMELINE UI             */
     /* ============================== */
     .timeline-wrapper { width: 100%; max-width: 700px; padding: 40px 20px; display: flex; flex-direction: column; gap: 16px; }
     .timeline-date-header { font-size: 1.4rem; font-weight: 700; color: var(--brand-orange); margin-top: 24px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 2px dashed var(--border-color); display: inline-block; }
@@ -227,7 +284,7 @@
     .timeline-venue { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); display: flex; align-items: flex-start; gap: 6px; }
 
     /* ============================== */
-    /* 5. HANDBOOK CANVA EMBED        */
+    /* TAB 3: HANDBOOK CANVA EMBED    */
     /* ============================== */
     .handbook-wrapper { width: 100%; max-width: 800px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
     .canva-embed-container {
@@ -254,9 +311,8 @@
     /* MOBILE RESPONSIVE ADAPTATIONS  */
     /* ============================== */
     @media (max-width: 1024px) {
-      .dir-row { flex-direction: column; align-items: stretch; gap: 16px; }
-      .dir-row.bottom-row { justify-content: center; }
-      .legend-container { margin-left: 0; justify-content: center; width: 100%; }
+      .dir-dash-top, .dir-dash-bottom { justify-content: center; }
+      #searchInput { max-width: 100%; flex: 1; }
       .viewport { padding: 20px 10px; perspective: none; }
       .floor-container { transform: none !important; padding: 20px 15px; border-radius: 16px; overflow-x: auto; }
       .room-block:hover { transform: none; z-index: 1; }
@@ -264,24 +320,27 @@
     }
 
     @media (max-width: 768px) {
-      .main-header { padding: 20px 16px; }
-      .theme-toggle { position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; font-size: 1rem; }
+      .main-header { padding: 20px 16px 10px 16px; }
+      .theme-toggle { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; font-size: 1rem; }
       .brand-logo { height: 50px; }
       h1 { font-size: 1.4rem; text-align: center; }
-      .countdown-pill { font-size: 0.8rem; padding: 6px 16px; }
       
       .sticky-toolbar { padding: 10px 12px; }
-      .tab-nav { width: 100%; }
-      .tab-nav button { flex: 1; text-align: center; padding: 8px 4px; font-size: 0.85rem; }
+      .tab-nav { width: 100%; display: flex; }
+      .tab-nav button { flex: 1; text-align: center; padding: 8px 4px; font-size: 0.8rem; }
       
-      .directory-dashboard { margin: 16px 12px 0 12px; width: calc(100% - 24px); padding: 16px; gap: 16px; }
-      .filter-group, .controls { display: none !important; } /* Hide complex tools on phone */
+      .directory-dashboard { padding: 16px 12px; border-radius: 12px; gap: 12px; }
+      .dir-dash-top { flex-direction: column; align-items: stretch; gap: 12px; }
+      .right-toolbar { flex-direction: column; align-items: stretch; width: 100%; }
+      .filter-group { overflow-x: auto; flex-wrap: nowrap; width: 100%; padding-bottom: 4px; justify-content: flex-start; -webkit-overflow-scrolling: touch; }
+      .controls { display: none; } /* Hide 3D toggles on mobile */
       
-      .stats-container { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 4px; width: 100%; }
-      .stat-pill { min-width: max-content; }
+      .dir-dash-bottom { flex-direction: column; align-items: center; gap: 12px; }
+      .stats-container { width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; justify-content: flex-start; -webkit-overflow-scrolling: touch; }
+      .stat-card { min-width: 90px; }
+      .legend-container { display: none; } /* Hide legend on mobile to save space */
       
-      #searchInput { width: 100%; min-width: unset; }
-      #searchInput::-webkit-input-placeholder { color: var(--text-secondary); opacity: 1; }
+      #searchInput { width: 100%; }
       
       .handbook-wrapper, .timeline-wrapper { padding: 16px 12px; }
       .canva-embed-container { max-width: 100%; }
@@ -290,20 +349,21 @@
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header class="main-header" id="mainHeader">
+  <!-- SCROLLING HEADER (Scrolls away naturally) -->
+  <header class="main-header">
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle Dark Mode">🌙</button>
     <div class="brand-section">
+      <!-- Ensure you export your files as transparent PNGs named logo-light.png and logo-dark.png! -->
       <img src="logo-light.png" alt="Youth Policy Lab Logo" class="brand-logo" id="brandLogo" onerror="this.style.display='none'; document.getElementById('fallbackTitle').style.display='block';">
+      <!-- Text Fallback -->
       <h1 id="fallbackTitle" style="display:none;"><span class="brand-hl-1">Youth</span> <span class="brand-hl-2">Policy</span> <span class="brand-hl-3">Lab</span></h1>
-      <button id="themeToggle" class="theme-toggle" aria-label="Toggle Dark Mode">🌙</button>
-    </div>
-    
-    <div class="countdown-pill">
-      ⏳ Commences in <span id="countdown">Loading...</span>
+      
+      <!-- Event Countdown -->
+      <div id="countdown-timer" class="countdown-timer">Loading countdown...</div>
     </div>
   </header>
 
-  <!-- STICKY NAV TABS -->
+  <!-- STICKY NAV TOOLBAR (Only tabs, stays at the top) -->
   <nav class="sticky-toolbar">
     <div class="tab-nav">
       <button class="active" onclick="switchTab('directory')">Directory</button>
@@ -314,43 +374,44 @@
 
   <!-- TAB 1: DIRECTORY MAP -->
   <div class="tab-content active" id="tab-directory">
-    
-    <!-- Directory Tools Dashboard -->
-    <div class="directory-dashboard">
-      <div class="dir-row top-row">
-        <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
-        <div class="filter-group">
-          <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="vacant">Vacant</button>
-          <button class="filter-btn" data-filter="vip">VIPs</button>
-          <button class="filter-btn" data-filter="boys">Boys</button>
-          <button class="filter-btn" data-filter="girls">Girls</button>
-        </div>
-        <div class="controls">
-          <button class="btn active" onclick="setView('3d')">3D</button>
-          <button class="btn" onclick="setView('2d')">Flat</button>
-        </div>
-      </div>
-      
-      <div class="dir-row bottom-row">
-        <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting...</span></div>
-        <div class="stats-container">
-          <div class="stat-pill">Participants <span class="stat-value" id="stat-pax">-</span></div>
-          <div class="stat-pill">Boys <span class="stat-value" id="stat-boys">-</span></div>
-          <div class="stat-pill">Girls <span class="stat-value" id="stat-girls">-</span></div>
-          <div class="stat-pill">Vacant <span class="stat-value" id="stat-vacant">-</span></div>
-        </div>
-        <div class="legend-container">
-          <div class="legend-item"><div class="legend-box" style="background-color: var(--twin-room);"></div> Twin</div>
-          <div class="legend-item"><div class="legend-box" style="background-color: var(--double-room);"></div> Double</div>
-          <div class="legend-item"><div class="legend-box" style="background-color: var(--triple-room);"></div> Triple</div>
-          <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Map Viewport -->
     <div class="viewport" id="viewport">
+      
+      <!-- ALL DIRECTORY TOOLS NOW LIVE INSIDE THE TAB -->
+      <div class="directory-dashboard">
+        <div class="dir-dash-top">
+          <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
+          <div class="right-toolbar">
+            <div class="filter-group">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="vacant">Vacant</button>
+              <button class="filter-btn" data-filter="vip">VIPs</button>
+              <button class="filter-btn" data-filter="boys">Boys</button>
+              <button class="filter-btn" data-filter="girls">Girls</button>
+            </div>
+            <div class="controls">
+              <button class="btn active" onclick="setView('3d')">3D</button>
+              <button class="btn" onclick="setView('2d')">Flat</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="dir-dash-bottom">
+          <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting...</span></div>
+          <div class="stats-container">
+            <div class="stat-card"><span class="stat-value" id="stat-pax">-</span><span class="stat-label">Participants</span></div>
+            <div class="stat-card"><span class="stat-value" id="stat-boys">-</span><span class="stat-label">Boys</span></div>
+            <div class="stat-card"><span class="stat-value" id="stat-girls">-</span><span class="stat-label">Girls</span></div>
+            <div class="stat-card"><span class="stat-value" id="stat-vacant">-</span><span class="stat-label">Vacant</span></div>
+          </div>
+          <div class="legend-container">
+            <div class="legend-item"><div class="legend-box" style="background-color: var(--twin-room);"></div> Twin</div>
+            <div class="legend-item"><div class="legend-box" style="background-color: var(--double-room);"></div> Double</div>
+            <div class="legend-item"><div class="legend-box" style="background-color: var(--triple-room);"></div> Triple</div>
+            <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family</div>
+          </div>
+        </div>
+      </div>
+
       <!-- LEVEL 3 -->
       <div class="floor-container">
         <div class="floor-title">Level 3</div>
@@ -436,7 +497,7 @@
     </div>
   </div>
 
-  <!-- TAB 2: EVENT TIMELINE (SMART CSV PARSE) -->
+  <!-- TAB 2: EVENT TIMELINE -->
   <div class="tab-content" id="tab-timeline">
     <div class="timeline-wrapper" id="timeline-container">
       <div style="text-align: center; color: var(--text-secondary); padding: 40px; font-weight: 500;">
@@ -445,7 +506,7 @@
     </div>
   </div>
 
-  <!-- TAB 3: EVENT HANDBOOK (SMART CANVA EMBED) -->
+  <!-- TAB 3: EVENT HANDBOOK -->
   <div class="tab-content" id="tab-handbook">
     <div class="handbook-wrapper">
       <div class="canva-embed-container">
@@ -462,54 +523,121 @@
   <div id="toast">Copied to clipboard!</div>
 
   <script>
-    // --- 1. Theme Management Logic ---
-    const themeToggle = document.getElementById('themeToggle');
-    const brandLogo = document.getElementById('brandLogo');
-    const currentTheme = localStorage.getItem('theme');
-    
-    if (currentTheme === 'dark') {
-      document.body.classList.add('dark-mode');
-      themeToggle.textContent = '☀️';
-      brandLogo.src = 'logo-dark.png';
-    } else {
-      themeToggle.textContent = '🌙';
-      brandLogo.src = 'logo-light.png';
-    }
-
-    themeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark-mode');
-      if (document.body.classList.contains('dark-mode')) {
-        localStorage.setItem('theme', 'dark');
-        themeToggle.textContent = '☀️';
-        brandLogo.src = 'logo-dark.png';
-      } else {
-        localStorage.setItem('theme', 'light');
-        themeToggle.textContent = '🌙';
-        brandLogo.src = 'logo-light.png';
-      }
-    });
-
-    // --- 2. Safe Countdown Timer Logic ---
-    const commencementDate = new Date("August 14, 2026 09:15:00").getTime();
-    const countdownEl = document.getElementById('countdown');
-
-    const countdownTimer = setInterval(function() {
+    // --- Event Countdown Logic ---
+    function updateCountdown() {
+      // Set to 14 August 2026, 09:15:00 Malaysia Time (+08:00)
+      const targetDate = new Date('2026-08-14T09:15:00+08:00').getTime();
       const now = new Date().getTime();
-      const distance = commencementDate - now;
+      const distance = targetDate - now;
+      const timerEl = document.getElementById('countdown-timer');
 
       if (distance < 0) {
-        clearInterval(countdownTimer);
-        countdownEl.innerHTML = "Event Commenced!";
+        timerEl.innerHTML = "Event Commenced!";
         return;
       }
 
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floorI completely understand your frustration. It is incredibly annoying when an interface renders but flat-out refuses to bind or display the actual data, especially when it feels like crucial logic is just vanishing with every revision. 
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));Here is the updated layout structure incorporating your requests. The countdown timer has been added directly under the logo, and the directory filters (sync, participants, boy, girls, vacant, room legends) are now grouped immediately below the search bar. 
 
-I am more than happy to scrap what you have and start fresh with a clean, robust rewrite that ensures your data actually connects and reflects properly. 
+### HTML, CSS, and JavaScript Implementation
 
-However, you didn't include the code in your message! 
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Directory</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
 
-Could you paste the current code (or the last version that at least had the right structure), along with a quick note on what language or framework you are using and what the data is supposed to look like?
+        /* Header containing Logo and Timer */
+        .header-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .countdown-timer {
+            font-size: 1.2em;
+            color: #d9534f;
+            font-weight: bold;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Main Directory Section */
+        .directory-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Search Bar */
+        .search-bar {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        /* Directory Legends/Filters */
+        .directory-legends {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .legend-item {
+            background-color: #e9ecef;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .legend-item:hover {
+            background-color: #d1d4d7;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo and Countdown -->
+    <div class="header-section">
+        <div class="logo">Event Logo</div>
+        <div class="countdown-timer" id="timer">Loading countdown...</div>
+    </div>
+
+    <!-- Directory & Search -->
+    <div class="directory-container">
+        
+        <!-- Search Bar -->
+        <input type="text" class="search-bar" placeholder="Search directory...">
+        
+        <!-- Directory Legends (Under Search Bar) -->
+        <div class="directory-
