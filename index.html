@@ -250,17 +250,38 @@
     }
     #toast.show { transform: translate(-50%, 0); opacity: 1; }
 
-    /* Canva Embed Container */
+    /* Improved Canva Embed Container (Responsive Height constraint) */
     .handbook-wrapper {
       width: 100%;
-      max-width: 800px; /* Constrains the A4 height to prevent massive vertical scrolling on laptops */
       padding: 30px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* Mobile Responsive Fallback */
+    .canva-embed-container {
+      position: relative;
+      width: 100%;
+      /* Mathematically constrains the width so the height NEVER overflows the laptop screen */
+      /* 100vh = full screen height. 160px = header height. 0.7047 = Canva's width-to-height ratio */
+      max-width: calc((100vh - 160px) * 0.7047); 
+      aspect-ratio: 1 / 1.4189;
+      box-shadow: 0 10px 40px 0 rgba(0,0,0,0.6);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--surface-secondary);
+    }
+
+    .canva-embed-container iframe {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      border: none;
+    }
+
+    /* Mobile Responsive Fallbacks */
     @media (max-width: 1024px) {
       header { flex-direction: column; align-items: stretch; padding: 16px; gap: 16px; }
       .app-title-group { justify-content: center; }
@@ -282,6 +303,9 @@
       .stat-card { min-width: 105px; padding: 8px 12px; }
       .stat-value { font-size: 1.2rem; }
       .stat-label { font-size: 0.65rem; }
+      
+      /* Let the Canva embed expand fully on mobile for natural scrolling */
+      .canva-embed-container { max-width: 100%; }
       
       /* Mobile Compact Header */
       header.compact { padding: 10px 12px; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; }
@@ -443,15 +467,13 @@
     </div>
   </div>
 
-  <!-- TAB 2: EVENT HANDBOOK (CANVA EMBED) -->
+  <!-- TAB 2: EVENT HANDBOOK (SMART CANVA EMBED) -->
   <div class="tab-content" id="tab-handbook">
     <div class="handbook-wrapper">
-      <div style="position: relative; width: 100%; height: 0; padding-top: 141.8919%; padding-bottom: 0; box-shadow: 0 10px 40px 0 rgba(0,0,0,0.6); border-radius: 12px; overflow: hidden; will-change: transform;">
-        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0; margin: 0;"
-          src="https://www.canva.com/design/DAHRPS_ZU_o/CByP7RS412eexO5d8742dw/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-        </iframe>
+      <div class="canva-embed-container">
+        <iframe loading="lazy" src="https://www.canva.com/design/DAHRPS_ZU_o/CByP7RS412eexO5d8742dw/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
       </div>
-      <a href="https://www.canva.com/design/DAHRPS_ZU_o/CByP7RS412eexO5d8742dw/view?utm_content=DAHRPS_ZU_o&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener" style="color: var(--accent-blue); text-decoration: none; font-size: 0.85rem; font-weight: 600; margin-top: 16px; transition: opacity 0.2s; display: inline-block;">
+      <a href="https://www.canva.com/design/DAHRPS_ZU_o/CByP7RS412eexO5d8742dw/view?utm_content=DAHRPS_ZU_o&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500; margin-top: 16px; transition: color 0.2s; display: inline-block;">
         这young说政事小册子 by Wei Ying ↗
       </a>
     </div>
@@ -471,15 +493,11 @@
 
     // --- Tab Switching Logic ---
     function switchTab(tabId) {
-      // Toggle active classes on tab content containers
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.getElementById(`tab-${tabId}`).classList.add('active');
-
-      // Toggle active states on the segmented control buttons
       document.querySelectorAll('.tab-nav button').forEach(btn => btn.classList.remove('active'));
       document.querySelector(`.tab-nav button[onclick="switchTab('${tabId}')"]`).classList.add('active');
 
-      // Hide or show the directory-specific header tools smoothly
       const leftTools = document.getElementById('dirToolsLeft');
       const rightTools = document.getElementById('dirToolsRight');
       
