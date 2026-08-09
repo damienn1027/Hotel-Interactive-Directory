@@ -25,7 +25,7 @@
       /* Light Theme UI Variables (Default) */
       --bg-color: #f8f9fa;
       --surface-color: #ffffff;
-      --surface-secondary: #f1f3f5;
+      --surface-secondary: #e9ecef;
       --text-primary: var(--brand-black);
       --text-secondary: #6c757d;
       --border-color: rgba(0, 0, 0, 0.08);
@@ -33,12 +33,9 @@
       --shadow-soft: 0 4px 20px rgba(20, 20, 25, 0.05);
       
       /* Room Blocks */
-      --twin-room: var(--brand-blue);
-      --double-room: var(--brand-yellow);
-      --triple-room: var(--brand-green);
-      --family-room: var(--brand-orange);
       --corridor: #e9ecef;
       --room-text: var(--brand-black);
+      --occupied-gradient: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-green) 100%);
     }
 
     /* Dark Mode UI Variables */
@@ -131,7 +128,7 @@
 
     .header-info-row {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       width: 100%;
       flex-wrap: wrap;
@@ -147,10 +144,6 @@
     .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-secondary); transition: all 0.3s ease; }
     .status-badge.synced .status-dot { background: var(--brand-green); box-shadow: 0 0 8px rgba(0, 200, 83, 0.4); }
     .status-badge.synced { color: var(--text-primary); }
-
-    .legend-container { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
-    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-primary); font-weight: 600; }
-    .legend-box { width: 14px; height: 14px; border-radius: 4px; }
 
     /* Countdown Timer */
     .countdown-section { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -234,30 +227,39 @@
     .room-block:focus { outline: none; }
     .room-block:focus .face-top { box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.4), inset 0 0 0 2px #ffffff !important; }
 
-    .room-block .face-top {
-      position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: #000; border-radius: 6px;
-      transform: translateZ(16px); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3); transition: all 0.3s ease;
+    /* Base Room Style (Default Vacant / Greyed Out) */
+    .room-block[data-room] .face-top {
+      position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;
+      background-color: var(--surface-secondary); color: var(--text-secondary); border-radius: 6px;
+      transform: translateZ(16px); box-shadow: inset 0 0 0 1px var(--border-color); transition: all 0.3s ease;
     }
-    
-    body.dark-mode .room-block .face-top { color: #fff; box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.3); }
 
-    .room-block .face-front {
-      position: absolute; width: 100%; height: 16px; bottom: 0; transform-origin: bottom; transform: rotateX(-90deg); filter: brightness(0.8); border-radius: 0 0 6px 6px; transition: all 0.3s ease;
+    .room-block[data-room] .face-front {
+      position: absolute; width: 100%; height: 16px; bottom: 0; transform-origin: bottom; transform: rotateX(-90deg);
+      background-color: var(--border-color); filter: brightness(0.8); border-radius: 0 0 6px 6px; transition: all 0.3s ease;
+    }
+
+    /* Highlight Occupied Rooms with Unified Gradient */
+    .room-block.occupied .face-top {
+      background: var(--occupied-gradient) !important;
+      color: #ffffff !important;
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3) !important;
+    }
+
+    .room-block.occupied .face-front {
+      background: var(--brand-blue) !important;
+      filter: brightness(0.75);
     }
 
     .room-block:hover { transform: translateZ(16px) scale(1.05); z-index: 50; }
-    .room-block:hover .face-top { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 0 0 2px #ffffff; }
+    .room-block:hover .face-top { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 0 0 2px #ffffff !important; }
 
-    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-top { background-color: var(--surface-secondary) !important; color: var(--text-secondary) !important; box-shadow: none !important; border-top: none !important; }
-    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-front { background-color: var(--border-color) !important; }
+    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-top { background: var(--surface-secondary) !important; color: var(--text-secondary) !important; box-shadow: none !important; }
+    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-front { background: var(--border-color) !important; }
     .viewport.filtered .room-block:not(.highlight) { pointer-events: none; transform: translateZ(0) scale(0.98) !important; }
     .room-block.highlight .face-top { box-shadow: 0 0 0 4px var(--text-primary), 0 15px 30px rgba(0,0,0,0.2) !important; z-index: 60; }
-
-    .room-block[data-room-type="twin"] .face-top, .room-block[data-room-type="twin"] .face-front { background-color: var(--twin-room); }
-    .room-block[data-room-type="double"] .face-top, .room-block[data-room-type="double"] .face-front { background-color: var(--double-room); }
-    .room-block[data-room-type="triple"] .face-top, .room-block[data-room-type="triple"] .face-front { background-color: var(--triple-room); }
-    .room-block[data-room-type="family"] .face-top, .room-block[data-room-type="family"] .face-front { background-color: var(--family-room); color: white; }
     
+    /* Corridor Styling */
     .room-block[data-room-type="corridor"] { cursor: default; }
     .room-block[data-room-type="corridor"] .face-top { background-color: var(--corridor); color: var(--text-secondary); transform: translateZ(2px); }
     .room-block[data-room-type="corridor"] .face-front { background-color: var(--border-color); height: 2px; }
@@ -425,7 +427,6 @@
       .countdown-date { font-size: 0.65rem; }
       
       .header-info-row { flex-direction: column; gap: 16px; }
-      .legend-container { display: none; }
       
       .sticky-toolbar { padding: 10px 12px; }
       .tab-nav { width: 100%; display: flex; }
@@ -469,12 +470,6 @@
     
     <div class="header-info-row dir-tools" id="dirToolsHeader">
       <div id="sync-status" class="status-badge"><div class="status-dot"></div><span>Connecting...</span></div>
-      <div class="legend-container">
-        <div class="legend-item"><div class="legend-box" style="background-color: var(--twin-room);"></div> Twin</div>
-        <div class="legend-item"><div class="legend-box" style="background-color: var(--double-room);"></div> Double</div>
-        <div class="legend-item"><div class="legend-box" style="background-color: var(--triple-room);"></div> Triple</div>
-        <div class="legend-item"><div class="legend-box" style="background-color: var(--family-room);"></div> Family</div>
-      </div>
     </div>
   </header>
 
@@ -952,7 +947,6 @@
     const REFRESH_INTERVAL_MS = 60000;
 
     let roomData = {};
-    const totalRoomsCount = document.querySelectorAll('.room-block[data-room]').length;
 
     // --- Tab Switching Logic ---
     function switchTab(tabId) {
@@ -1057,24 +1051,12 @@
 
       document.querySelectorAll('.room-block[data-room]').forEach(block => {
         const roomNo = block.getAttribute('data-room');
-        const topFace = block.querySelector('.face-top');
         const data = roomData[roomNo];
 
-        if (data) {
-          if (data.type) {
-            const t = data.type.toLowerCase();
-            if (t.includes('twin')) block.setAttribute('data-room-type', 'twin');
-            else if (t.includes('double')) block.setAttribute('data-room-type', 'double');
-            else if (t.includes('triple')) block.setAttribute('data-room-type', 'triple');
-            else if (t.includes('family')) block.setAttribute('data-room-type', 'family');
-          }
-          if (data.occupants.length > 0) {
-            if (topFace) topFace.style.borderTop = "4px solid var(--text-primary)";
-          } else {
-            if (topFace) topFace.style.borderTop = "none";
-          }
+        if (data && data.occupants && data.occupants.length > 0) {
+          block.classList.add('occupied');
         } else {
-           if (topFace) topFace.style.borderTop = "none";
+          block.classList.remove('occupied');
         }
       });
 
