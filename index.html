@@ -349,39 +349,99 @@
       .rule-body { display: flex !important; }
     }
 
-    /* SPLASH SCREEN MODE (?mode=splash) - STRICT LIGHT MODE */
+   /* =========================================
+       SPLASH SCREEN REFINED (?mode=splash) 
+       ========================================= */
     #splash-screen {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background-color: #ffffff !important;
-      color: #141419 !important;
+      background: linear-gradient(135deg, #001233 0%, var(--brand-blue) 50%, var(--brand-green) 100%);
+      background-size: 200% 200%;
+      animation: gradientShift 10s ease infinite;
       z-index: 9999;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
     }
-    body.mode-splash #splash-screen { display: flex; }
-    body.mode-splash > *:not(#splash-screen) { display: none !important; }
+    body.mode-splash #splash-screen { display: block; }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0); filter: drop-shadow(0 10px 20px rgba(0, 122, 255, 0.2)); }
-      50% { transform: translateY(-15px); filter: drop-shadow(0 20px 25px rgba(0, 122, 255, 0.4)); }
+    /* Animated Geometric Background Lines */
+    .splash-bg-lines {
+      position: absolute;
+      top: -50%; left: -50%; width: 200%; height: 200%;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
+      background-size: 50px 50px;
+      transform: rotate(15deg);
+      animation: slideLines 30s linear infinite;
+      pointer-events: none;
     }
 
+    @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    @keyframes slideLines { 0% { transform: rotate(15deg) translateY(0); } 100% { transform: rotate(15deg) translateY(-50px); } }
+
+    /* Enhanced Logo Float & Shadow */
+    @keyframes superFloat {
+      0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5)); }
+      50% { transform: translateY(-25px) scale(1.03); filter: drop-shadow(0 35px 45px rgba(0,0,0,0.2)); }
+    }
     .splash-center-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
+      position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      display: flex; flex-direction: column; align-items: center; z-index: 10;
     }
     .splash-logo { 
-      height: 200px; 
-      width: auto; 
-      object-fit: contain; 
-      animation: float 4s ease-in-out infinite; 
+      height: 240px; width: auto; object-fit: contain; 
+      animation: superFloat 6s ease-in-out infinite; 
+    }
+
+    /* Glassmorphic Cards (QR & Event Widget) */
+    .splash-glass-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      color: white;
+    }
+
+    /* Upcoming Event / Countdown (Top Left) */
+    .splash-event-widget {
+      position: absolute; top: 40px; left: 40px;
+      padding: 24px 30px; display: flex; flex-direction: column; gap: 12px;
+      z-index: 10; min-width: 320px;
+    }
+    .splash-event-title { font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 2px; }
+    .splash-event-name { font-size: 1.6rem; font-weight: 700; line-height: 1.2; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+    
+    .splash-cd-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; text-align: center; margin-top: 10px; }
+    .splash-cd-box { background: rgba(0,0,0,0.25); padding: 12px 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+    .splash-cd-val { font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; color: #fff; }
+    .splash-cd-lbl { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.7); margin-top: 6px; }
+
+    /* QR Code (Top Right) */
+    .splash-qr-container {
+      position: absolute; top: 40px; right: 40px;
+      padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px;
+      z-index: 10;
+    }
+    .splash-qr-container img { width: 130px; height: 130px; border-radius: 12px; }
+    .splash-qr-container p { font-size: 0.85rem; font-weight: 700; margin: 0; letter-spacing: 0.5px; }
+
+    /* Mobile Adaptations */
+    @media (max-width: 768px) {
+      .splash-qr-container { top: 20px; right: 20px; padding: 12px; }
+      .splash-qr-container img { width: 85px; height: 85px; }
+      .splash-qr-container p { font-size: 0.75rem; }
+      .splash-event-widget { top: 20px; left: 20px; right: 140px; min-width: auto; padding: 16px; align-items: flex-start; }
+      .splash-event-name { font-size: 1.1rem; }
+      .splash-cd-grid { gap: 6px; }
+      .splash-cd-box { padding: 8px 4px; }
+      .splash-cd-val { font-size: 1.2rem; }
+      .splash-center-content { top: 60%; }
+      .splash-logo { height: 170px; }
     }
 
     /* ADMIN REMOTE MODE (?mode=admin) */
@@ -844,7 +904,30 @@
 
   <!-- SPLASH SCREEN MODE (?mode=splash) -->
   <div id="splash-screen">
+    <!-- Animated Geometric Background -->
+    <div class="splash-bg-lines"></div>
+    
+    <!-- Countdown / Upcoming Event (Top Left) -->
+    <div class="splash-glass-card splash-event-widget">
+      <div class="splash-event-title">Upcoming Event</div>
+      <div class="splash-event-name" id="sp-event-name">Youth Policy Lab 2026</div>
+      <div class="splash-cd-grid" id="sp-cd-grid">
+        <div class="splash-cd-box"><div class="splash-cd-val" id="sp-days">00</div><div class="splash-cd-lbl">Days</div></div>
+        <div class="splash-cd-box"><div class="splash-cd-val" id="sp-hours">00</div><div class="splash-cd-lbl">Hours</div></div>
+        <div class="splash-cd-box"><div class="splash-cd-val" id="sp-mins">00</div><div class="splash-cd-lbl">Mins</div></div>
+        <div class="splash-cd-box"><div class="splash-cd-val" id="sp-secs">00</div><div class="splash-cd-lbl">Secs</div></div>
+      </div>
+    </div>
+
+    <!-- QR Code (Top Right) -->
+    <div class="splash-glass-card splash-qr-container">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://youthpolicylab.pages.dev" alt="SuperApp QR">
+      <p>Scan for SuperApp</p>
+    </div>
+
+    <!-- Center Floating Logo -->
     <div class="splash-center-content">
+      <!-- Ensure you use your white/light logo version here since the background is dark -->
       <img src="logo-light.png" alt="Youth Policy Lab Logo" class="splash-logo">
     </div>
   </div>
@@ -1514,6 +1597,24 @@
     // Init Data
     loadDirectoryData(); loadTimelineData();
     setInterval(() => { loadDirectoryData(); loadTimelineData(); }, 60000);
+// --- Splash Screen Standalone Timer ---
+    setInterval(() => {
+      if (!document.body.classList.contains('mode-splash')) return;
+      
+      const now = new Date();
+      const diff = EVENT_START.getTime() - now.getTime();
+      
+      if (diff > 0) {
+        const pad = n => String(n).padStart(2, '0');
+        document.getElementById('sp-days').textContent = pad(Math.floor(diff / 86400000));
+        document.getElementById('sp-hours').textContent = pad(Math.floor((diff % 86400000) / 3600000));
+        document.getElementById('sp-mins').textContent = pad(Math.floor((diff % 3600000) / 60000));
+        document.getElementById('sp-secs').textContent = pad(Math.floor((diff % 60000) / 1000));
+      } else {
+         document.getElementById('sp-event-name').textContent = "Event is Live Now!";
+         document.getElementById('sp-cd-grid').style.display = 'none';
+      }
+    }, 1000);
   </script>
 </body>
 </html>
