@@ -149,6 +149,7 @@
     .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-secondary); transition: all 0.3s ease; }
     .status-badge.synced .status-dot { background: var(--brand-green); box-shadow: 0 0 8px rgba(0, 200, 83, 0.4); }
     .status-badge.synced { color: var(--text-primary); }
+    .status-badge.offline .status-dot { background: var(--brand-orange); }
     .refresh-btn { background: none; border: none; cursor: pointer; padding: 0; margin-left: 4px; font-size: 1rem; color: inherit; transition: transform 0.4s ease; }
 
     /* Countdown Timer */
@@ -470,7 +471,7 @@
       <div class="header-right">
         <div id="sync-status" class="status-badge dir-tools">
           <div class="status-dot"></div>
-          <span data-i18n="sync_conn">Connecting...</span>
+          <span>Connecting...</span>
           <button id="manualRefreshBtn" class="refresh-btn" title="Force Refresh Data">🔄</button>
         </div>
         
@@ -519,12 +520,6 @@
     <div class="toolbar-right packing-tools" id="packingToolsNav">
       <button class="btn" onclick="window.print()" data-i18n="tool_print">🖨️ Print / PDF</button>
       <button class="btn" onclick="resetPackingList()" style="color: var(--brand-orange)" data-i18n="tool_reset">🔄 Reset</button>
-    </div>
-
-    <!-- Rules Tools -->
-    <div class="toolbar-right rules-tools" id="rulesToolsNav">
-      <button class="btn" onclick="toggleAllRules(true)" data-i18n="tool_expand">Expand All</button>
-      <button class="btn" onclick="toggleAllRules(false)" data-i18n="tool_collapse">Collapse All</button>
     </div>
   </nav>
 
@@ -658,9 +653,9 @@
       <h3 data-i18n="hub_comm">🚆 Monorail Commute Guide</h3>
       <p style="color: var(--text-secondary); margin-bottom: 16px;" data-i18n="hub_comm_d">Route from YMCA Hostel to Event Venue.</p>
       
-      <!-- Embedded Google Drive Video -->
-      <div style="aspect-ratio: 16/9; background: var(--surface-secondary); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 16px;">
-        <iframe src="https://drive.google.com/file/d/1JeEjRut97WHR_SHzopfhgphexWGB5k3P/preview" width="100%" height="100%" style="border: none;" allow="autoplay" allowfullscreen></iframe>
+      <!-- Embedded Google Drive Video - Fully Constrained for Mobile -->
+      <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; border: 1px solid var(--border-color); background: var(--surface-secondary); margin-bottom: 16px;">
+        <iframe src="https://drive.google.com/file/d/1JeEjRut97WHR_SHzopfhgphexWGB5k3P/preview" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allow="autoplay" allowfullscreen scrolling="no"></iframe>
       </div>
       
       <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-secondary);">
@@ -904,6 +899,8 @@
       "cd_mins": { "en": "Mins", "zh": "分钟", "ms": "Minit" },
       "cd_secs": { "en": "Secs", "zh": "秒", "ms": "Saat" },
       "sync_conn": { "en": "Connecting...", "zh": "连接中...", "ms": "Menyambung..." },
+      "sync_synced": { "en": "Synced at", "zh": "已同步于", "ms": "Disegerakkan jam" },
+      "sync_offline": { "en": "⚠️ Offline", "zh": "⚠️ 离线", "ms": "⚠️ Luar Talian" },
       
       // Tabs
       "nav_dir": { "en": "Directory", "zh": "住宿指南", "ms": "Direktori" },
@@ -927,11 +924,9 @@
       "dir_l2": { "en": "Level 2", "zh": "二楼", "ms": "Aras 2" },
       "time_load": { "en": "Loading Live Itinerary...", "zh": "正在加载最新行程...", "ms": "Memuatkan Jadual..." },
 
-      // Packing/Rules Tools
+      // Packing Tools
       "tool_print": { "en": "🖨️ Print / PDF", "zh": "🖨️ 打印 / PDF", "ms": "🖨️ Cetak / PDF" },
       "tool_reset": { "en": "🔄 Reset", "zh": "🔄 重置", "ms": "🔄 Set Semula" },
-      "tool_expand": { "en": "Expand All", "zh": "全部展开", "ms": "Buka Semua" },
-      "tool_collapse": { "en": "Collapse All", "zh": "全部收起", "ms": "Tutup Semua" },
       
       // Hub
       "hub_wifi": { "en": "📶 Wi-Fi Quick-Connect", "zh": "📶 无线网络连接", "ms": "📶 Sambungan Wi-Fi" },
@@ -1054,10 +1049,29 @@
       "mod_close": { "en": "Close", "zh": "关闭", "ms": "Tutup" }
     };
 
+    let lastSyncedTime = null;
+
     // --- LANGUAGE SWITCHER LOGIC ---
     const langSwitcher = document.getElementById('langSwitcher');
     let currentLang = localStorage.getItem('ypl_lang') || 'en';
     langSwitcher.value = currentLang;
+
+    function updateSyncStatusText() {
+      const statusBadge = document.getElementById('sync-status');
+      const statusSpan = statusBadge.querySelector('span');
+      const lang = localStorage.getItem('ypl_lang') || 'en';
+      
+      if (statusBadge.classList.contains('synced') && lastSyncedTime) {
+        const prefix = (i18n["sync_synced"] && i18n["sync_synced"][lang]) ? i18n["sync_synced"][lang] : "Synced at";
+        statusSpan.innerText = `${prefix} ${lastSyncedTime}`;
+      } else if (statusBadge.classList.contains('offline')) {
+        const offlineText = (i18n["sync_offline"] && i18n["sync_offline"][lang]) ? i18n["sync_offline"][lang] : "⚠️ Offline";
+        statusSpan.innerText = offlineText;
+      } else {
+        const connText = (i18n["sync_conn"] && i18n["sync_conn"][lang]) ? i18n["sync_conn"][lang] : "Connecting...";
+        statusSpan.innerText = connText;
+      }
+    }
 
     function applyTranslations(lang) {
       document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -1072,6 +1086,7 @@
           el.placeholder = i18n[key][lang];
         }
       });
+      updateSyncStatusText();
     }
 
     langSwitcher.addEventListener('change', (e) => {
@@ -1114,7 +1129,7 @@
       document.getElementById('cd-secs').textContent = pad(Math.floor((diff % 60000) / 1000));
     }, 1000);
 
-    // --- Tab Switching Logic (with Vibration & Fixed Toolbar Display) ---
+    // --- Tab Switching Logic ---
     function switchTab(tabId) {
       if (navigator.vibrate) navigator.vibrate(15);
       
@@ -1125,14 +1140,11 @@
       const btn = document.querySelector(`.tab-nav button[onclick="switchTab('${tabId}')"]`);
       if (btn) btn.classList.add('active');
 
-      // Hide all right toolbars and show only the active one cleanly
       document.querySelectorAll('.toolbar-right').forEach(tb => tb.classList.remove('active'));
       if (tabId === 'directory') {
         document.getElementById('dirToolsNav').classList.add('active');
       } else if (tabId === 'packing') {
         document.getElementById('packingToolsNav').classList.add('active');
-      } else if (tabId === 'rules') {
-        document.getElementById('rulesToolsNav').classList.add('active');
       }
     }
 
@@ -1249,17 +1261,15 @@
             else block.classList.remove('occupied');
           });
 
+          lastSyncedTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          statusBadge.classList.remove('offline');
           statusBadge.classList.add('synced');
-          let timeEl = statusBadge.querySelector('.sync-time');
-          if(!timeEl) {
-              statusBadge.querySelector('span').innerHTML += ` <span class="sync-time" style="font-weight:400; opacity:0.8;"></span>`;
-              timeEl = statusBadge.querySelector('.sync-time');
-          }
-          timeEl.textContent = `(${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})`;
+          updateSyncStatusText();
         },
         error: function() {
           statusBadge.classList.remove('synced');
-          statusBadge.querySelector('span').textContent = '⚠️ Offline';
+          statusBadge.classList.add('offline');
+          updateSyncStatusText();
         }
       });
     }
@@ -1459,17 +1469,6 @@
     }
 
     function toggleRuleCard(headerEl) { headerEl.parentElement.classList.toggle('active'); }
-    
-    function toggleAllRules(expand) { 
-      document.querySelectorAll('.rule-card').forEach(card => { 
-        if (expand) {
-          card.classList.add('active'); 
-        } else {
-          card.classList.remove('active'); 
-        }
-      }); 
-    }
-
     function togglePledge(chk) { localStorage.setItem('ypl_rules_pledge_signed', chk.checked ? '1' : '0'); if (chk.checked) showToast('Camp pledge signed digitally!'); }
     
     if (localStorage.getItem('ypl_rules_pledge_signed') === '1') { document.getElementById('chk_rules_pledge').checked = true; }
