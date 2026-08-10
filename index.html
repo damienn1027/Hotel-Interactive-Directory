@@ -287,11 +287,42 @@
     .pledge-card h3 { color: var(--brand-green); font-size: 1.15rem; font-weight: 700; }
     .pledge-box { background: var(--surface-secondary); padding: 16px; border-radius: 12px; font-size: 0.88rem; line-height: 1.6; color: var(--text-primary); border-left: 4px solid var(--brand-green); }
 
-    /* TOOLTIPS, TOASTS & PRINT */
+    /* TOOLTIPS, TOASTS, MODAL & PRINT */
     #tooltip { position: fixed; display: none; background: var(--glass-bg); backdrop-filter: var(--glass-blur); color: var(--text-primary); padding: 16px; border-radius: 14px; font-size: 0.85rem; pointer-events: none; z-index: 1000; box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 0 0 1px var(--border-color); min-width: 240px; }
     .click-hint { font-size: 0.7rem; color: var(--text-secondary); margin-top: 12px; text-align: center; font-weight: 500; }
     #toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 100px); background: var(--brand-green); color: white; padding: 12px 24px; border-radius: 30px; font-weight: 700; font-size: 0.95rem; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000; pointer-events: none; }
     #toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+    /* ROOM DETAILS MOBILE MODAL */
+    .room-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 2500;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .room-modal-overlay.active { display: flex; }
+    .room-modal-card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--surface-color);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      padding: 24px;
+      animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalPop {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
 
     @media print {
       body * { visibility: hidden; }
@@ -839,6 +870,17 @@
     </div>
   </div>
 
+  <!-- Mobile Room Details Modal Popup -->
+  <div id="roomModalOverlay" class="room-modal-overlay">
+    <div class="room-modal-card">
+      <div id="roomModalContent"></div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn-primary" id="roomModalCopyBtn">Copy Details</button>
+        <button class="btn-primary" style="background: var(--surface-secondary); color: var(--text-primary); border: 1px solid var(--border-color);" onclick="closeRoomModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Overlays -->
   <div id="tooltip"></div>
   <div id="toast">Copied to clipboard!</div>
@@ -876,8 +918,10 @@
       document.getElementById('cd-secs').textContent = pad(Math.floor((diff % 60000) / 1000));
     }, 1000);
 
-    // --- Tab Switching Logic ---
+    // --- Tab Switching Logic (with Vibration) ---
     function switchTab(tabId) {
+      if (navigator.vibrate) navigator.vibrate(15);
+      
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.getElementById(`tab-${tabId}`).classList.add('active');
       document.querySelectorAll('.tab-nav button').forEach(btn => btn.classList.remove('active'));
@@ -973,7 +1017,7 @@
       });
     });
 
-    // --- ORIGINAL PAPAPARSE & DIRECTORY LOGIC ---
+    // --- PAPAPARSE & DIRECTORY LOGIC ---
     const DIR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRMmnBQIEjwVoJhvD9l8LelAodWCfdSg8v3z8dNcBt7PkMiNP5a13Ylw3foUnfQvWdzU2NaXWgGCJWA/pub?gid=546426841&single=true&output=csv';
     const TIMELINE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGCH-pDLeS0Rc56C_TABl3uCTWyj8DSnEaxFEJi-l0b1C4eJE_ExobLPzpiHuu3-VMDyzxYXh4KUbA/pub?gid=1028971239&single=true&output=csv';
     let roomData = {};
@@ -1111,9 +1155,12 @@
       });
     });
 
+    // --- Desktop Tooltips & Mobile Click Popups ---
     const tooltip = document.getElementById('tooltip');
+    
     document.querySelectorAll('.room-block[data-room]').forEach(block => {
       block.addEventListener('mousemove', (e) => {
+        if (window.innerWidth <= 768) return; // Skip hover tooltips on mobile
         if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return; 
         const roomNo = block.getAttribute('data-room'); const data = roomData[roomNo];
         if (data) {
@@ -1123,9 +1170,58 @@
         }
         tooltip.style.display = 'block'; tooltip.style.left = (e.clientX + 20) + 'px'; tooltip.style.top = (e.clientY + 20) + 'px';
       });
+
       block.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
-      block.addEventListener('click', () => { if (navigator.vibrate) navigator.vibrate(10); triggerCopy(block); });
+
+      block.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          if (navigator.vibrate) navigator.vibrate(15);
+          openRoomModal(block);
+        } else {
+          if (navigator.vibrate) navigator.vibrate(10);
+          triggerCopy(block);
+        }
+      });
     });
+
+    function openRoomModal(block) {
+      if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return;
+      const roomNo = block.getAttribute('data-room');
+      const data = roomData[roomNo];
+      const contentDiv = document.getElementById('roomModalContent');
+      
+      let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><strong style="font-size:1.2rem; color:var(--text-primary); font-weight:700;">Room ${roomNo}</strong><span style="font-size:0.75rem; background:var(--surface-secondary); padding:4px 10px; border-radius:8px; color:var(--text-secondary); font-weight:600;">${data && data.type ? data.type : 'Room'}</span></div>`;
+      html += `<div style="border-top:1px solid var(--border-color); padding-top:12px;"><div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Occupants</div>`;
+      
+      if (data && data.occupants && data.occupants.length > 0) {
+        html += data.occupants.map(occ => {
+          const gLower = (occ.gender || '').toLowerCase();
+          const isBoy = gLower.includes('boy') || gLower.includes('male') || gLower.includes('男') || gLower === 'm';
+          return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; padding:6px 8px; background:var(--surface-secondary); border-radius:8px;"><span style="font-weight:600; font-size:0.95rem; color:var(--text-primary);">${occ.name}</span><span style="font-size:0.75rem; color:${isBoy ? 'var(--brand-blue)' : 'var(--brand-orange)'}; font-weight:700;">${occ.gender}</span></div>`;
+        }).join('');
+      } else {
+        html += `<div style="color:var(--text-secondary); font-size:0.9rem; font-style:italic; font-weight:500; padding:10px 0;">No occupants assigned (Vacant)</div>`;
+      }
+      html += `</div>`;
+      
+      if (data && data.remarks) {
+        html += `<div style="margin-top:12px; background:rgba(255, 87, 34, 0.1); color:var(--brand-orange); font-size:0.8rem; font-weight:600; padding:8px 12px; border-radius:8px; border:1px solid rgba(255, 87, 34, 0.2);">${data.remarks}</div>`;
+      }
+      
+      contentDiv.innerHTML = html;
+      
+      const copyBtn = document.getElementById('roomModalCopyBtn');
+      copyBtn.onclick = () => {
+        triggerCopy(block);
+        closeRoomModal();
+      };
+      
+      document.getElementById('roomModalOverlay').classList.add('active');
+    }
+
+    function closeRoomModal() {
+      document.getElementById('roomModalOverlay').classList.remove('active');
+    }
 
     function triggerCopy(block) {
       if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return;
