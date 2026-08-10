@@ -170,8 +170,8 @@
     .tab-nav button { background: transparent; color: var(--text-secondary); border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
     .tab-nav button.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
-    .toolbar-right { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-    .dir-tools.hidden, .packing-tools.hidden, .rules-tools.hidden { display: none !important; }
+    .toolbar-right { display: none; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .toolbar-right.active { display: flex !important; }
 
     /* Search & Filters */
     .search-wrapper { position: relative; width: 250px; }
@@ -402,7 +402,7 @@
     /* MOBILE RESPONSIVE ADAPTATIONS */
     @media (max-width: 1024px) {
       .sticky-toolbar { flex-direction: column; padding: 12px 20px; gap: 12px; }
-      .toolbar-right { width: 100%; justify-content: center; }
+      .toolbar-right { justify-content: center; }
       .search-wrapper { max-width: 100%; width: 100%; flex: 1; }
       .viewport { padding: 20px 10px; perspective: none; }
       .quick-jump-bar { top: 180px; }
@@ -497,7 +497,7 @@
     </div>
 
     <!-- Directory Tools -->
-    <div class="toolbar-right dir-tools" id="dirToolsNav">
+    <div class="toolbar-right active dir-tools" id="dirToolsNav">
       <div class="search-wrapper">
         <input type="text" id="searchInput" data-i18n-ph="dir_search" placeholder="Search participant name..." autocomplete="off">
         <button id="clearSearchBtn" class="clear-search-btn" aria-label="Clear search">✕</button>
@@ -516,15 +516,15 @@
     </div>
 
     <!-- Packing List Tools -->
-    <div class="toolbar-right packing-tools hidden" id="packingToolsNav">
+    <div class="toolbar-right packing-tools" id="packingToolsNav">
       <button class="btn" onclick="window.print()" data-i18n="tool_print">🖨️ Print / PDF</button>
       <button class="btn" onclick="resetPackingList()" style="color: var(--brand-orange)" data-i18n="tool_reset">🔄 Reset</button>
     </div>
 
     <!-- Rules Tools -->
-    <div class="toolbar-right rules-tools hidden" id="rulesToolsNav">
-      <button class="btn" onclick="toggleAllRules(true)" data-i18n="tool_expand"> Expand All</button>
-      <button class="btn" onclick="toggleAllRules(false)" data-i18n="tool_collapse"> Collapse All</button>
+    <div class="toolbar-right rules-tools" id="rulesToolsNav">
+      <button class="btn" onclick="toggleAllRules(true)" data-i18n="tool_expand">Expand All</button>
+      <button class="btn" onclick="toggleAllRules(false)" data-i18n="tool_collapse">Collapse All</button>
     </div>
   </nav>
 
@@ -1080,9 +1080,7 @@
       applyTranslations(selectedLang);
     });
 
-    // Apply translations on load
     applyTranslations(currentLang);
-
 
     // --- Theme Management ---
     const themeToggle = document.getElementById('themeToggle');
@@ -1116,7 +1114,7 @@
       document.getElementById('cd-secs').textContent = pad(Math.floor((diff % 60000) / 1000));
     }, 1000);
 
-    // --- Tab Switching Logic (with Vibration) ---
+    // --- Tab Switching Logic (with Vibration & Fixed Toolbar Display) ---
     function switchTab(tabId) {
       if (navigator.vibrate) navigator.vibrate(15);
       
@@ -1127,23 +1125,14 @@
       const btn = document.querySelector(`.tab-nav button[onclick="switchTab('${tabId}')"]`);
       if (btn) btn.classList.add('active');
 
-      const leftTools = document.getElementById('dirToolsHeader');
-      const rightTools = document.getElementById('dirToolsNav');
-      const packingTools = document.getElementById('packingToolsNav');
-      const rulesTools = document.getElementById('rulesToolsNav');
-      
-      if(leftTools) leftTools.classList.add('hidden');
-      if(rightTools) rightTools.classList.add('hidden');
-      if(packingTools) packingTools.classList.add('hidden');
-      if(rulesTools) rulesTools.classList.add('hidden');
-
+      // Hide all right toolbars and show only the active one cleanly
+      document.querySelectorAll('.toolbar-right').forEach(tb => tb.classList.remove('active'));
       if (tabId === 'directory') {
-        if(leftTools) leftTools.classList.remove('hidden');
-        if(rightTools) rightTools.classList.remove('hidden');
+        document.getElementById('dirToolsNav').classList.add('active');
       } else if (tabId === 'packing') {
-        if(packingTools) packingTools.classList.remove('hidden');
+        document.getElementById('packingToolsNav').classList.add('active');
       } else if (tabId === 'rules') {
-        if(rulesTools) rulesTools.classList.remove('hidden');
+        document.getElementById('rulesToolsNav').classList.add('active');
       }
     }
 
@@ -1261,7 +1250,6 @@
           });
 
           statusBadge.classList.add('synced');
-          // Don't overwrite the span inner text, just update a nested time string
           let timeEl = statusBadge.querySelector('.sync-time');
           if(!timeEl) {
               statusBadge.querySelector('span').innerHTML += ` <span class="sync-time" style="font-weight:400; opacity:0.8;"></span>`;
@@ -1366,7 +1354,7 @@
     
     document.querySelectorAll('.room-block[data-room]').forEach(block => {
       block.addEventListener('mousemove', (e) => {
-        if (window.innerWidth <= 768) return; // Skip hover tooltips on mobile
+        if (window.innerWidth <= 768) return; 
         if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return; 
         const roomNo = block.getAttribute('data-room'); const data = roomData[roomNo];
         if (data) {
@@ -1448,7 +1436,6 @@
       const total = checkboxes.length; const count = checked.length;
       const pct = total > 0 ? Math.round((count / total) * 100) : 0;
       
-      // Update string without removing span wrapper
       let titleSpan = document.getElementById('p-prog-title').outerHTML;
       document.querySelector('.progress-header').innerHTML = titleSpan + `<span id="p-prog-val">${count} / ${total} (${pct}%)</span>`;
       
@@ -1472,7 +1459,17 @@
     }
 
     function toggleRuleCard(headerEl) { headerEl.parentElement.classList.toggle('active'); }
-    function toggleAllRules(expand) { document.querySelectorAll('.rule-card').forEach(card => { if (expand) card.classList.add('active'); else card.classList.remove('active'); }); }
+    
+    function toggleAllRules(expand) { 
+      document.querySelectorAll('.rule-card').forEach(card => { 
+        if (expand) {
+          card.classList.add('active'); 
+        } else {
+          card.classList.remove('active'); 
+        }
+      }); 
+    }
+
     function togglePledge(chk) { localStorage.setItem('ypl_rules_pledge_signed', chk.checked ? '1' : '0'); if (chk.checked) showToast('Camp pledge signed digitally!'); }
     
     if (localStorage.getItem('ypl_rules_pledge_signed') === '1') { document.getElementById('chk_rules_pledge').checked = true; }
