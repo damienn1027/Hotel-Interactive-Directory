@@ -125,14 +125,22 @@
     h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-primary); }
     .brand-hl-1 { color: var(--brand-blue); } .brand-hl-2 { color: var(--brand-green); } .brand-hl-3 { color: var(--brand-orange); }
 
-    .theme-toggle {
-      background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 50%;
-      width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; cursor: pointer; transition: all 0.2s ease;
+    .theme-toggle, .lang-select {
+      background: var(--surface-color); border: 1px solid var(--border-color);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s ease;
       backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-      box-shadow: var(--shadow-soft); position: relative;
+      box-shadow: var(--shadow-soft); position: relative; color: var(--text-primary);
     }
+    .theme-toggle { border-radius: 50%; width: 44px; height: 44px; font-size: 1.2rem; }
     .theme-toggle:hover { transform: scale(1.1); }
+    
+    .lang-select {
+      border-radius: 12px; height: 44px; padding: 0 12px; font-family: 'Poppins', sans-serif;
+      font-weight: 600; font-size: 0.9rem; appearance: none; -webkit-appearance: none; outline: none;
+      text-align: center;
+    }
+    .lang-select:hover { border-color: var(--brand-blue); }
 
     .status-badge {
       display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
@@ -328,7 +336,7 @@
       body * { visibility: hidden; }
       #tab-packing, #tab-packing *, #tab-rules, #tab-rules * { visibility: visible; }
       #tab-packing, #tab-rules { position: absolute; left: 0; top: 0; width: 100%; }
-      .sticky-toolbar, .main-header, .theme-toggle { display: none !important; }
+      .sticky-toolbar, .main-header, .theme-toggle, .lang-select { display: none !important; }
       .packing-card, .rule-card, .pledge-card { break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; }
       .rule-body { display: flex !important; }
     }
@@ -409,6 +417,7 @@
       .header-left { justify-content: center; width: 100%; position: relative; }
       .header-right { justify-content: center; width: 100%; }
       .theme-toggle { position: absolute; top: 0; right: 0; width: 38px; height: 38px; font-size: 1rem; }
+      .lang-select { position: absolute; top: 0; right: 46px; height: 38px; font-size: 0.8rem; padding: 0 8px; }
       .brand-logo { height: 45px; }
       .splash-qr-topright { top: 15px; right: 15px; padding: 8px 10px; }
       .splash-qr-topright img { width: 75px; height: 75px; }
@@ -417,29 +426,15 @@
       
       .sticky-toolbar { padding: 10px 12px; }
       
-      /* Fix 1: Horizontal scrollable tab navigation */
-      .tab-nav { 
-        width: 100%; 
-        display: flex; 
-        overflow-x: auto; 
-        flex-wrap: nowrap; 
-        -webkit-overflow-scrolling: touch; 
-        scrollbar-width: none; 
-      }
+      .tab-nav { width: 100%; display: flex; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
       .tab-nav::-webkit-scrollbar { display: none; }
       .tab-nav button { flex-shrink: 0; padding: 8px 12px; font-size: 0.8rem; }
-
       .filter-group { display: flex !important; overflow-x: auto; max-width: 100%; width: 100%; -webkit-overflow-scrolling: touch; padding: 4px; gap: 6px; }
       .filter-btn { flex-shrink: 0; padding: 6px 12px; font-size: 0.8rem; }
       .controls { display: none !important; } 
       .search-wrapper { width: 100%; }
       .handbook-wrapper, .timeline-wrapper, .packing-wrapper, .rules-wrapper, .grid-2 { padding: 16px 12px; }
-      
-      /* Fix 2: Force single column grid stack on mobile */
-      .grid-2 { 
-        grid-template-columns: 1fr !important; 
-      }
-
+      .grid-2 { grid-template-columns: 1fr !important; }
       .canva-embed-container { max-width: 100%; }
       .quick-jump-bar { top: 210px; }
     }
@@ -458,26 +453,32 @@
 
       <!-- MIDDLE: COUNTDOWN TIMER -->
       <div class="countdown-section" id="countdownSection">
-        <div class="countdown-label" id="countdownLabel">Event Starts In</div>
+        <div class="countdown-label" id="countdownLabel" data-i18n="cd_label">Event Starts In</div>
         <div class="countdown-timer" id="countdownTimer">
-          <div class="countdown-unit"><span class="countdown-value" id="cd-days">00</span><span class="countdown-unit-label">Days</span></div>
+          <div class="countdown-unit"><span class="countdown-value" id="cd-days">00</span><span class="countdown-unit-label" data-i18n="cd_days">Days</span></div>
           <div class="countdown-separator">:</div>
-          <div class="countdown-unit"><span class="countdown-value" id="cd-hours">00</span><span class="countdown-unit-label">Hours</span></div>
+          <div class="countdown-unit"><span class="countdown-value" id="cd-hours">00</span><span class="countdown-unit-label" data-i18n="cd_hours">Hours</span></div>
           <div class="countdown-separator">:</div>
-          <div class="countdown-unit"><span class="countdown-value" id="cd-mins">00</span><span class="countdown-unit-label">Mins</span></div>
+          <div class="countdown-unit"><span class="countdown-value" id="cd-mins">00</span><span class="countdown-unit-label" data-i18n="cd_mins">Mins</span></div>
           <div class="countdown-separator">:</div>
-          <div class="countdown-unit"><span class="countdown-value" id="cd-secs">00</span><span class="countdown-unit-label">Secs</span></div>
+          <div class="countdown-unit"><span class="countdown-value" id="cd-secs">00</span><span class="countdown-unit-label" data-i18n="cd_secs">Secs</span></div>
         </div>
         <div class="countdown-date">14 Aug 2026 · 9:00 AM MYT</div>
       </div>
 
-      <!-- TOP RIGHT: SYNC STATUS & LIGHT/DARK TOGGLE -->
+      <!-- TOP RIGHT: SYNC STATUS, LANG & LIGHT/DARK TOGGLE -->
       <div class="header-right">
         <div id="sync-status" class="status-badge dir-tools">
           <div class="status-dot"></div>
-          <span>Connecting...</span>
+          <span data-i18n="sync_conn">Connecting...</span>
           <button id="manualRefreshBtn" class="refresh-btn" title="Force Refresh Data">🔄</button>
         </div>
+        
+        <select id="langSwitcher" class="lang-select">
+          <option value="en">EN</option>
+          <option value="zh">中</option>
+          <option value="ms">BM</option>
+        </select>
         <button id="themeToggle" class="theme-toggle" aria-label="Toggle Dark Mode">🌙</button>
       </div>
     </div>
@@ -486,52 +487,44 @@
   <!-- STICKY NAV TOOLBAR -->
   <nav class="sticky-toolbar">
     <div class="tab-nav">
-      <button class="active" onclick="switchTab('directory')">Directory</button>
-      <button onclick="switchTab('timeline')">Timeline</button>
-      <button onclick="switchTab('hub')">Hub</button>
-      <button onclick="switchTab('engage')">Engage</button>
-      <button onclick="switchTab('handbook')">Handbook</button>
-      <button onclick="switchTab('packing')">Packing List</button>
-      <button onclick="switchTab('rules')">Camp Rules</button>
+      <button class="active" onclick="switchTab('directory')" data-i18n="nav_dir">Directory</button>
+      <button onclick="switchTab('timeline')" data-i18n="nav_time">Timeline</button>
+      <button onclick="switchTab('hub')" data-i18n="nav_hub">Hub</button>
+      <button onclick="switchTab('engage')" data-i18n="nav_eng">Engage</button>
+      <button onclick="switchTab('handbook')" data-i18n="nav_hand">Handbook</button>
+      <button onclick="switchTab('packing')" data-i18n="nav_pack">Packing List</button>
+      <button onclick="switchTab('rules')" data-i18n="nav_rules">Camp Rules</button>
     </div>
 
     <!-- Directory Tools -->
     <div class="toolbar-right dir-tools" id="dirToolsNav">
       <div class="search-wrapper">
-        <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
+        <input type="text" id="searchInput" data-i18n-ph="dir_search" placeholder="Search participant name..." autocomplete="off">
         <button id="clearSearchBtn" class="clear-search-btn" aria-label="Clear search">✕</button>
       </div>
       <div class="filter-group">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="vacant">🟢 Vacant</button>
-        <button class="filter-btn" data-filter="vip">⭐ VIPs</button>
-        <button class="filter-btn" data-filter="boys">👦 Boys</button>
-        <button class="filter-btn" data-filter="girls">👧 Girls</button>
+        <button class="filter-btn active" data-filter="all" data-i18n="dir_all">All</button>
+        <button class="filter-btn" data-filter="vacant" data-i18n="dir_vac">🟢 Vacant</button>
+        <button class="filter-btn" data-filter="vip" data-i18n="dir_vip">⭐ VIPs</button>
+        <button class="filter-btn" data-filter="boys" data-i18n="dir_boys">👦 Boys</button>
+        <button class="filter-btn" data-filter="girls" data-i18n="dir_girls">👧 Girls</button>
       </div>
       <div class="controls">
-        <button class="btn active" onclick="setView('3d')">3D</button>
-        <button class="btn" onclick="setView('2d')">Flat</button>
+        <button class="btn active" onclick="setView('3d')" data-i18n="dir_3d">3D</button>
+        <button class="btn" onclick="setView('2d')" data-i18n="dir_flat">Flat</button>
       </div>
     </div>
 
     <!-- Packing List Tools -->
     <div class="toolbar-right packing-tools hidden" id="packingToolsNav">
-      <div class="filter-group">
-        <button class="filter-btn active" id="lang-en" onclick="setPackingLang('en')">English</button>
-        <button class="filter-btn" id="lang-zh" onclick="setPackingLang('zh')">简体中文</button>
-      </div>
-      <button class="btn" onclick="window.print()">🖨️ Print / PDF</button>
-      <button class="btn" onclick="resetPackingList()" style="color: var(--brand-orange)">🔄 Reset</button>
+      <button class="btn" onclick="window.print()" data-i18n="tool_print">🖨️ Print / PDF</button>
+      <button class="btn" onclick="resetPackingList()" style="color: var(--brand-orange)" data-i18n="tool_reset">🔄 Reset</button>
     </div>
 
     <!-- Rules Tools -->
     <div class="toolbar-right rules-tools hidden" id="rulesToolsNav">
-      <div class="filter-group">
-        <button class="filter-btn active" id="rules-lang-en" onclick="setRulesLang('en')">English</button>
-        <button class="filter-btn" id="rules-lang-zh" onclick="setRulesLang('zh')">简体中文</button>
-      </div>
-      <button class="btn" onclick="toggleAllRules(true)"> Expand All</button>
-      <button class="btn" onclick="toggleAllRules(false)"> Collapse All</button>
+      <button class="btn" onclick="toggleAllRules(true)" data-i18n="tool_expand"> Expand All</button>
+      <button class="btn" onclick="toggleAllRules(false)" data-i18n="tool_collapse"> Collapse All</button>
     </div>
   </nav>
 
@@ -539,13 +532,13 @@
   <div class="tab-content active" id="tab-directory">
     <div class="viewport" id="viewport">
       <div class="quick-jump-bar">
-        <button class="quick-jump-btn" onclick="document.getElementById('floor-L3').scrollIntoView({behavior: 'smooth'})">Level 3</button>
-        <button class="quick-jump-btn" onclick="document.getElementById('floor-L2').scrollIntoView({behavior: 'smooth'})">Level 2</button>
+        <button class="quick-jump-btn" onclick="document.getElementById('floor-L3').scrollIntoView({behavior: 'smooth'})" data-i18n="dir_l3">Level 3</button>
+        <button class="quick-jump-btn" onclick="document.getElementById('floor-L2').scrollIntoView({behavior: 'smooth'})" data-i18n="dir_l2">Level 2</button>
       </div>
 
       <!-- LEVEL 3 -->
       <div class="floor-container" id="floor-L3">
-        <div class="floor-title">Level 3</div>
+        <div class="floor-title" data-i18n="dir_l3">Level 3</div>
         <div class="wing-title">Wing C</div>
         <div class="room-row">
           <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
@@ -584,7 +577,7 @@
 
       <!-- LEVEL 2 -->
       <div class="floor-container" id="floor-L2">
-        <div class="floor-title">Level 2</div>
+        <div class="floor-title" data-i18n="dir_l2">Level 2</div>
         <div class="wing-title">Wing A</div>
         <div class="room-row">
           <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
@@ -631,7 +624,7 @@
   <!-- TAB 2: EVENT TIMELINE -->
   <div class="tab-content" id="tab-timeline">
     <div class="timeline-wrapper" id="timeline-container">
-      <div style="text-align: center; color: var(--text-secondary); padding: 40px; font-weight: 500;">
+      <div id="timeline-loading" style="text-align: center; color: var(--text-secondary); padding: 40px; font-weight: 500;" data-i18n="time_load">
         Loading Live Itinerary...
       </div>
     </div>
@@ -642,28 +635,28 @@
     <div class="grid-2">
       <!-- Wi-Fi -->
       <div class="glass-card">
-        <h3>📶 Wi-Fi Quick-Connect</h3>
-        <p style="color: var(--text-secondary); margin: 10px 0;">Connect to the official hostel network.</p>
+        <h3 data-i18n="hub_wifi">📶 Wi-Fi Quick-Connect</h3>
+        <p style="color: var(--text-secondary); margin: 10px 0;" data-i18n="hub_wifi_d">Connect to the official hostel network.</p>
         <div style="background: var(--surface-secondary); padding: 15px; border-radius: 10px; text-align: center; font-weight: 700; letter-spacing: 1px; font-size: 1.2rem; margin-bottom: 10px;">
           wifi ssid placeholder
         </div>
-        <button class="btn-primary" onclick="navigator.clipboard.writeText('wifi password placeholder'); showToast('Password copied!');">Copy Password</button>
+        <button class="btn-primary" onclick="navigator.clipboard.writeText('wifi password placeholder'); showToast('Password copied!');" data-i18n="hub_wifi_btn">Copy Password</button>
       </div>
 
       <!-- Emergency SOS -->
       <div class="glass-card">
-        <h3>🚨 Emergency SOS & Contacts</h3>
-        <p style="color: var(--text-secondary); margin: 10px 0;">Tap to call directly.</p>
-        <a href="tel:+60124630210" class="sos-btn"><span>🩺 Medical Support</span> <span>📞</span></a>
-        <a href="tel:+60169379378" class="sos-btn"><span>🛡️ Camp Security</span> <span>📞</span></a>
-        <a href="tel:+60128182270" class="sos-btn"><span>📋 Committee Hotdesk</span> <span>📞</span></a>
+        <h3 data-i18n="hub_sos">🚨 Emergency SOS & Contacts</h3>
+        <p style="color: var(--text-secondary); margin: 10px 0;" data-i18n="hub_sos_d">Tap to call directly.</p>
+        <a href="tel:+60124630210" class="sos-btn"><span data-i18n="hub_sos_1">🩺 Medical Support</span> <span>📞</span></a>
+        <a href="tel:+60169379378" class="sos-btn"><span data-i18n="hub_sos_2">🛡️ Camp Security</span> <span>📞</span></a>
+        <a href="tel:+60128182270" class="sos-btn"><span data-i18n="hub_sos_3">📋 Committee Hotdesk</span> <span>📞</span></a>
       </div>
     </div>
 
     <!-- Commute Guide -->
     <div class="glass-card" style="max-width: 1050px; width: calc(100% - 40px); margin: 0 20px 30px 20px;">
-      <h3>🚆 Monorail Commute Guide</h3>
-      <p style="color: var(--text-secondary); margin-bottom: 16px;">Route from YMCA Hostel to Event Venue.</p>
+      <h3 data-i18n="hub_comm">🚆 Monorail Commute Guide</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 16px;" data-i18n="hub_comm_d">Route from YMCA Hostel to Event Venue.</p>
       
       <!-- Embedded Google Drive Video -->
       <div style="aspect-ratio: 16/9; background: var(--surface-secondary); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 16px;">
@@ -671,10 +664,10 @@
       </div>
       
       <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-secondary);">
-        <li>Walk 5 minutes to <strong>Tun Sambanthan Monorail Station</strong>.</li>
-        <li>Scan your pre-loaded Touch 'n Go card.</li>
-        <li>Board train heading towards <strong>Titiwangsa</strong>.</li>
-        <li>Alight at <strong>Raja Chulan Station</strong>.</li>
+        <li><span data-i18n="hub_comm_l1">Walk 5 minutes to </span><strong>Tun Sambanthan Monorail Station</strong>.</li>
+        <li data-i18n="hub_comm_l2">Scan your pre-loaded Touch 'n Go card.</li>
+        <li><span data-i18n="hub_comm_l3">Board train heading towards </span><strong>Titiwangsa</strong>.</li>
+        <li><span data-i18n="hub_comm_l4">Alight at </span><strong>Raja Chulan Station</strong>.</li>
       </ul>
     </div>
   </div>
@@ -684,22 +677,22 @@
     <div class="grid-2">
       <!-- Live Q&A -->
       <div class="glass-card">
-        <h3>💬 Live Q&A Portal</h3>
-        <p style="color: var(--text-secondary); margin: 10px 0 20px 0; font-size: 0.9rem;">Submit your questions for the YB Forums. Selected questions will appear on the projector.</p>
-        <input type="text" id="qa-name" class="input-field" placeholder="Your Name / 姓名 (Optional)">
-        <textarea id="qa-text" class="input-field" rows="3" placeholder="Type your question here..."></textarea>
-        <button class="btn-primary" onclick="submitQA(event)">Submit Question</button>
+        <h3 data-i18n="eng_qa">💬 Live Q&A Portal</h3>
+        <p style="color: var(--text-secondary); margin: 10px 0 20px 0; font-size: 0.9rem;" data-i18n="eng_qa_d">Submit your questions for the YB Forums. Selected questions will appear on the projector.</p>
+        <input type="text" id="qa-name" class="input-field" data-i18n-ph="eng_qa_n" placeholder="Your Name (Optional)">
+        <textarea id="qa-text" class="input-field" rows="3" data-i18n-ph="eng_qa_ph" placeholder="Type your question here..."></textarea>
+        <button class="btn-primary" onclick="submitQA(event)" data-i18n="eng_qa_btn">Submit Question</button>
       </div>
 
       <!-- Session Feedback -->
       <div class="glass-card">
-        <h3>⭐ Post-Session Feedback</h3>
-        <p style="color: var(--text-secondary); margin: 10px 0; text-align: center;">Rate the latest workshop</p>
+        <h3 data-i18n="eng_fb">⭐ Post-Session Feedback</h3>
+        <p style="color: var(--text-secondary); margin: 10px 0; text-align: center;" data-i18n="eng_fb_d">Rate the latest workshop</p>
         <div class="star-rating" id="star-rating">
           <span class="star" data-value="1">★</span><span class="star" data-value="2">★</span><span class="star" data-value="3">★</span><span class="star" data-value="4">★</span><span class="star" data-value="5">★</span>
         </div>
-        <textarea class="input-field" rows="2" placeholder="Any additional comments?"></textarea>
-        <button class="btn-primary" style="background: var(--brand-green)">Submit Feedback</button>
+        <textarea class="input-field" rows="2" data-i18n-ph="eng_fb_ph" placeholder="Any additional comments?"></textarea>
+        <button class="btn-primary" style="background: var(--brand-green)" data-i18n="eng_fb_btn">Submit Feedback</button>
       </div>
     </div>
   </div>
@@ -710,8 +703,8 @@
       <div class="canva-embed-container">
         <iframe loading="lazy" src="https://www.canva.com/design/DAHRPS_ZU_o/CByP7RS412eexO5d8742dw/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
       </div>
-      <a href="https://www.canva.com/design/DAHRPS_ZU_o/CByP7RS412eexO5d8742dw/view?utm_content=DAHRPS_ZU_o&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 600; margin-top: 16px; transition: color 0.2s; display: inline-block;">
-        这young说政事小册子 by Wei Ying ↗
+      <a href="https://www.canva.com/design/DAHRPS_ZU_o/CByP7RS412eexO5d8742dw/view?utm_content=DAHRPS_ZU_o&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 600; margin-top: 16px; transition: color 0.2s; display: inline-block;" data-i18n="hand_link">
+        Handbook View Link ↗
       </a>
     </div>
   </div>
@@ -722,7 +715,7 @@
       <div class="packing-hero">
         <div class="progress-container">
           <div class="progress-header">
-            <span id="p-prog-title">🎒 Packing Progress / 准备进度</span>
+            <span id="p-prog-title" data-i18n="pack_prog">🎒 Packing Progress</span>
             <span id="p-prog-val">0 / 0 (0%)</span>
           </div>
           <div class="progress-bar-bg">
@@ -732,44 +725,47 @@
       </div>
 
       <div class="packing-grid">
+        <!-- Clothing -->
         <div class="packing-card">
-          <h3><span class="icon">👕</span> <span id="p-c1-title">Clothing & Attire / 衣着用品</span></h3>
+          <h3><span class="icon">👕</span> <span data-i18n="pack_cat1">Clothing & Attire</span></h3>
           <div class="checklist-group">
-            <label class="check-item"><input type="checkbox" id="chk_c1"><div class="check-item-text"><span class="item-title" id="p-c1-1-t">Opening & Closing Ceremony Outfit</span><span class="item-desc" id="p-c1-1-d">Camp T-Shirt + Long Pants | 开幕及闭幕服装（营衣 + 长裤）</span></div></label>
-            <label class="check-item"><input type="checkbox" id="chk_c2"><div class="check-item-text"><span class="item-title" id="p-c2-1-t">Daily Clothes (3D2N)</span><span class="item-desc" id="p-c2-1-d">Sufficient changes of clothes. Long pants MANDATORY during activities | 充足替换衣物 （活动期间必须穿长裤）</span></div></label>
-            <label class="check-item"><input type="checkbox" id="chk_c3"><div class="check-item-text"><span class="item-title" id="p-c3-1-t">Semi-Formal Outfit (1 Set)</span><span class="item-desc" id="p-c3-1-d">Collared shirt + long pants/skirt + covered shoes (No tight clothes) | 有领衬衫+长裤/长裙+包鞋（终极回合）</span></div></label>
-            <label class="check-item"><input type="checkbox" id="chk_c4"><div class="check-item-text"><span class="item-title" id="p-c4-1-t">Covered Shoes / Sports Shoes</span><span class="item-desc" id="p-c4-1-d">Closed-toe footwear required | 包鞋／运动鞋</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_c1"><div class="check-item-text"><span class="item-title" data-i18n="p_c1_t">Opening & Closing Ceremony Outfit</span><span class="item-desc" data-i18n="p_c1_d">Camp T-Shirt + Long Pants</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_c2"><div class="check-item-text"><span class="item-title" data-i18n="p_c2_t">Daily Clothes (3D2N)</span><span class="item-desc" data-i18n="p_c2_d">Sufficient changes. Long pants MANDATORY during activities</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_c3"><div class="check-item-text"><span class="item-title" data-i18n="p_c3_t">Semi-Formal Outfit (1 Set)</span><span class="item-desc" data-i18n="p_c3_d">Collared shirt + pants/skirt + covered shoes (No tight clothes)</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_c4"><div class="check-item-text"><span class="item-title" data-i18n="p_c4_t">Covered Shoes / Sports Shoes</span><span class="item-desc" data-i18n="p_c4_d">Closed-toe footwear required</span></div></label>
           </div>
         </div>
+        <!-- Essentials -->
         <div class="packing-card">
-          <h3><span class="icon">🛁</span> <span id="p-c2-title">Personal Essentials / 个人用品</span></h3>
+          <h3><span class="icon">🛁</span> <span data-i18n="pack_cat2">Personal Essentials</span></h3>
           <div class="checklist-group">
-            <label class="check-item"><input type="checkbox" id="chk_p1"><div class="check-item-text"><span class="item-title" id="p-p1-1-t">Toiletries Kit</span><span class="item-desc" id="p-p1-1-d">Towel, toothbrush, toothpaste, body wash, hair dryer | 洗漱用品（毛巾/牙刷/牙膏/沐浴露/吹风机等）</span></div></label>
-            <label class="check-item"><input type="checkbox" id="chk_p2"><div class="check-item-text"><span class="item-title" id="p-p2-1-t">Water Bottle</span><span class="item-desc" id="p-p2-1-d">Reusable bottle for refills | 水壶</span></div></label>
-            <label class="check-item"><input type="checkbox" id="chk_p3"><div class="check-item-text"><span class="item-title" id="p-p3-1-t">Touch 'n Go Card (Locals Only)</span><span class="item-desc" id="p-p3-1-d">Pre-reload funds for self-funded Monorail transit | TNG卡（请提前Top-Up自费搭乘Monorail）</span></div></label>
-            <label class="check-item"><input type="checkbox" id="chk_p4"><div class="check-item-text"><span class="item-title" id="p-p4-1-t">Pocket Cash</span><span class="item-desc" id="p-p4-1-d">Small amount of cash (~RM50 for international students) | 少许现金（外国学生需提前兑换马币）</span></div></label>
-            <label class="check-item"><input type="checkbox" id="chk_p5"><div class="check-item-text"><span class="item-title" id="p-p5-1-t">Umbrella or Raincoat</span><span class="item-desc" id="p-p5-1-d">Weather protection | 雨伞/雨衣</span></div></label>
-            <label class="check-item"><input type="checkbox" id="chk_p6"><div class="check-item-text"><span class="item-title" id="p-p6-1-t">Sanitary Products</span><span class="item-desc" id="p-p6-1-d">If required | 卫生棉（若需要）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p1"><div class="check-item-text"><span class="item-title" data-i18n="p_p1_t">Toiletries Kit</span><span class="item-desc" data-i18n="p_p1_d">Towel, toothbrush, toothpaste, body wash, hair dryer</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p2"><div class="check-item-text"><span class="item-title" data-i18n="p_p2_t">Water Bottle</span><span class="item-desc" data-i18n="p_p2_d">Reusable bottle for refills</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p3"><div class="check-item-text"><span class="item-title" data-i18n="p_p3_t">Touch 'n Go Card (Locals Only)</span><span class="item-desc" data-i18n="p_p3_d">Pre-reload funds for self-funded Monorail transit</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p4"><div class="check-item-text"><span class="item-title" data-i18n="p_p4_t">Pocket Cash</span><span class="item-desc" data-i18n="p_p4_d">Small amount of cash (~RM50)</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p5"><div class="check-item-text"><span class="item-title" data-i18n="p_p5_t">Umbrella or Raincoat</span><span class="item-desc" data-i18n="p_p5_d">Weather protection</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p6"><div class="check-item-text"><span class="item-title" data-i18n="p_p6_t">Sanitary Products</span><span class="item-desc" data-i18n="p_p6_d">If required</span></div></label>
           </div>
         </div>
+        <!-- Study & Health -->
         <div class="packing-card">
-          <h3><span class="icon">📝</span> <span id="p-c3-title">Study & Health / 学习与医药</span></h3>
+          <h3><span class="icon">📝</span> <span data-i18n="pack_cat3">Study & Health</span></h3>
           <div class="checklist-group">
-            <label class="check-item"><input type="checkbox" id="chk_s1"><div class="check-item-text"><span class="item-title" id="p-s1-1-t">Notebook & Stationery</span><span class="item-desc" id="p-s1-1-d">Pens, notepad for policy workshops | 笔记本 + 文具（笔等）</span></div></label>
-            <label class="check-item"><input type="checkbox" id="chk_s2"><div class="check-item-text"><span class="item-title" id="p-s2-1-t">Chargers & Power Banks</span><span class="item-desc" id="p-s2-1-d">Keep your electronics powered | 充电器与随身电源</span></div></label>
-            <label class="check-item"><input type="checkbox" id="chk_m1"><div class="check-item-text"><span class="item-title" id="p-m1-1-t">Personal Medication</span><span class="item-desc" id="p-m1-1-d">Prepare according to personal medical needs | 个人常用药物（请按需要准备）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_s1"><div class="check-item-text"><span class="item-title" data-i18n="p_s1_t">Notebook & Stationery</span><span class="item-desc" data-i18n="p_s1_d">Pens, notepad for policy workshops</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_s2"><div class="check-item-text"><span class="item-title" data-i18n="p_s2_t">Chargers & Power Banks</span><span class="item-desc" data-i18n="p_s2_d">Keep your electronics powered</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_m1"><div class="check-item-text"><span class="item-title" data-i18n="p_m1_t">Personal Medication</span><span class="item-desc" data-i18n="p_m1_d">Prepare according to personal medical needs</span></div></label>
           </div>
         </div>
       </div>
 
       <div class="alert-banner">
-        <h4 id="p-pro-title">🚫 Prohibited Items / 禁止携带物品</h4>
+        <h4 data-i18n="pack_pro">🚫 Prohibited Items</h4>
         <div class="tag-cloud">
-          <span class="prohibited-tag" id="p-p-1">❌ Alcohol / 酒精饮品</span>
-          <span class="prohibited-tag" id="p-p-2">❌ Cigarettes & Vapes / 香烟与电子烟</span>
-          <span class="prohibited-tag" id="p-p-3">❌ Playing Cards & Gambling Gear / 扑克牌及赌博用品</span>
-          <span class="prohibited-tag" id="p-p-4">❌ Dangerous Items / 危险物品</span>
-          <span class="prohibited-tag" id="p-p-5">❌ Loudspeakers & Audio Gear / 音箱或高音量设备</span>
+          <span class="prohibited-tag" data-i18n="p_pro1">❌ Alcohol</span>
+          <span class="prohibited-tag" data-i18n="p_pro2">❌ Cigarettes & Vapes</span>
+          <span class="prohibited-tag" data-i18n="p_pro3">❌ Playing Cards & Gambling Gear</span>
+          <span class="prohibited-tag" data-i18n="p_pro4">❌ Dangerous Items</span>
+          <span class="prohibited-tag" data-i18n="p_pro5">❌ Loudspeakers & Audio Gear</span>
         </div>
       </div>
     </div>
@@ -779,72 +775,72 @@
   <div class="tab-content" id="tab-rules">
     <div class="rules-wrapper">
       <div class="rules-spirit-card">
-        <div class="spirit-title" id="r-spirit-title">YOUTH LEADERSHIP SPIRIT / 青年领袖精神</div>
+        <div class="spirit-title" data-i18n="r_spirit">YOUTH LEADERSHIP SPIRIT</div>
         <div class="spirit-pillars">
-          <span class="spirit-pillar" id="r-sp-1">学习 · Learning</span>
-          <span class="spirit-pillar" id="r-sp-2">思辨 · Critical Thinking</span>
-          <span class="spirit-pillar" id="r-sp-3">服务 · Service</span>
-          <span class="spirit-pillar" id="r-sp-4">领导 · Leadership</span>
+          <span class="spirit-pillar" data-i18n="r_sp1">Learning</span>
+          <span class="spirit-pillar" data-i18n="r_sp2">Critical Thinking</span>
+          <span class="spirit-pillar" data-i18n="r_sp3">Service</span>
+          <span class="spirit-pillar" data-i18n="r_sp4">Leadership</span>
         </div>
       </div>
 
       <div class="alert-banner">
-        <h4 id="r-prohib-title">🚫 Section 6: Zero-Tolerance Rules / 严格禁止事项</h4>
+        <h4 data-i18n="r_pro_title">🚫 Section 6: Zero-Tolerance Rules</h4>
         <div class="tag-cloud">
-          <span class="prohibited-tag" id="r-pr-1">❌ 赌博行为 Gambling</span>
-          <span class="prohibited-tag" id="r-pr-2">❌ 暴力 / 霸凌 Violence & Bullying</span>
-          <span class="prohibited-tag" id="r-pr-3">❌ 违禁品 Drugs & Dangerous Items</span>
-          <span class="prohibited-tag" id="r-pr-4">❌ 酗酒 Drunkenness</span>
-          <span class="prohibited-tag" id="r-pr-5">❌ 非指定区域吸烟 Smoking</span>
-          <span class="prohibited-tag" id="r-pr-6">❌ 网络霸凌 Cyberbullying</span>
-          <span class="prohibited-tag" id="r-pr-7">❌ 擅自离营 Unauthorized Absence</span>
+          <span class="prohibited-tag" data-i18n="r_pr1">❌ Gambling</span>
+          <span class="prohibited-tag" data-i18n="r_pr2">❌ Violence & Bullying</span>
+          <span class="prohibited-tag" data-i18n="r_pr3">❌ Drugs & Dangerous Items</span>
+          <span class="prohibited-tag" data-i18n="r_pr4">❌ Drunkenness</span>
+          <span class="prohibited-tag" data-i18n="r_pr5">❌ Smoking</span>
+          <span class="prohibited-tag" data-i18n="r_pr6">❌ Cyberbullying</span>
+          <span class="prohibited-tag" data-i18n="r_pr7">❌ Unauthorized Absence</span>
         </div>
       </div>
 
       <div class="rules-accordion">
         <div class="rule-card active">
           <div class="rule-header" onclick="toggleRuleCard(this)">
-            <span id="r-sec1-head">1. Respect & Unity / 尊重与团结</span><span class="rule-arrow">▼</span>
+            <span data-i18n="r_sec1">1. Respect & Unity</span><span class="rule-arrow">▼</span>
           </div>
           <div class="rule-body">
-            <div class="rule-item"><strong id="r-1-1-t">1.1 Mutual Respect</strong><span id="r-1-1-d">Respect every camper, committee member, mentor, and guest.</span></div>
-            <div class="rule-item"><strong id="r-1-2-t">1.2 Team Spirit</strong><span id="r-1-2-d">Actively participate in group activities, support each other.</span></div>
-            <div class="rule-item"><strong id="r-1-3-t">1.3 Youth Leadership Image</strong><span id="r-1-3-d">Demonstrate responsibility, integrity, and discipline.</span></div>
+            <div class="rule-item"><strong data-i18n="r_1_1_t">1.1 Mutual Respect</strong><span data-i18n="r_1_1_d">Respect every camper, committee member, mentor, and guest.</span></div>
+            <div class="rule-item"><strong data-i18n="r_1_2_t">1.2 Team Spirit</strong><span data-i18n="r_1_2_d">Actively participate in group activities, support each other.</span></div>
+            <div class="rule-item"><strong data-i18n="r_1_3_t">1.3 Youth Leadership Image</strong><span data-i18n="r_1_3_d">Demonstrate responsibility, integrity, and discipline.</span></div>
           </div>
         </div>
         <div class="rule-card">
           <div class="rule-header" onclick="toggleRuleCard(this)">
-            <span id="r-sec2-head">2. Discipline & Attendance / 活动纪律</span><span class="rule-arrow">▼</span>
+            <span data-i18n="r_sec2">2. Discipline & Attendance</span><span class="rule-arrow">▼</span>
           </div>
           <div class="rule-body">
-            <div class="rule-item"><strong id="r-2-1-t">2.1 Punctuality</strong><span id="r-2-1-d">Attend all sessions on time. Early departures require prior approval.</span></div>
-            <div class="rule-item"><strong id="r-2-2-t">2.2 Participation</strong><span id="r-2-2-d">Engage fully in lectures, forums, and workshops.</span></div>
-            <div class="rule-item"><strong id="r-2-3-t">2.3 Directives</strong><span id="r-2-3-d">Comply with committee instructions.</span></div>
-            <div class="rule-item"><strong id="r-2-4-t">2.4 Night Curfew (12:00 AM)</strong><span id="r-2-4-d">Return to accommodation before 12:00 AM.</span></div>
+            <div class="rule-item"><strong data-i18n="r_2_1_t">2.1 Punctuality</strong><span data-i18n="r_2_1_d">Attend all sessions on time. Early departures require prior approval.</span></div>
+            <div class="rule-item"><strong data-i18n="r_2_2_t">2.2 Participation</strong><span data-i18n="r_2_2_d">Engage fully in lectures, forums, and workshops.</span></div>
+            <div class="rule-item"><strong data-i18n="r_2_3_t">2.3 Directives</strong><span data-i18n="r_2_3_d">Comply with committee instructions.</span></div>
+            <div class="rule-item"><strong data-i18n="r_2_4_t">2.4 Night Curfew (12:00 AM)</strong><span data-i18n="r_2_4_d">Return to accommodation before 12:00 AM.</span></div>
           </div>
         </div>
         <div class="rule-card">
           <div class="rule-header" onclick="toggleRuleCard(this)">
-            <span id="r-sec3-head">3. Safety Guidelines / 安全守则</span><span class="rule-arrow">▼</span>
+            <span data-i18n="r_sec3">3. Safety Guidelines</span><span class="rule-arrow">▼</span>
           </div>
           <div class="rule-body">
-            <div class="rule-item"><strong id="r-3-1-t">3.1 Departure Rules</strong><span id="r-3-1-d">Do not leave the camp premises without explicit permission.</span></div>
-            <div class="rule-item"><strong id="r-3-2-t">3.2 Personal Safety</strong><span id="r-3-2-d">Follow safety protocols during activities.</span></div>
-            <div class="rule-item"><strong id="r-3-3-t">3.3 Buddy System</strong><span id="r-3-3-d">Travel with a partner/group at all times.</span></div>
+            <div class="rule-item"><strong data-i18n="r_3_1_t">3.1 Departure Rules</strong><span data-i18n="r_3_1_d">Do not leave the camp premises without explicit permission.</span></div>
+            <div class="rule-item"><strong data-i18n="r_3_2_t">3.2 Personal Safety</strong><span data-i18n="r_3_2_d">Follow safety protocols during activities.</span></div>
+            <div class="rule-item"><strong data-i18n="r_3_3_t">3.3 Buddy System</strong><span data-i18n="r_3_3_d">Travel with a partner/group at all times.</span></div>
           </div>
         </div>
       </div>
 
       <div class="pledge-card">
-        <h3 id="r-pledge-title">📝 Camper Pledge / 营员承诺</h3>
-        <div class="pledge-box" id="r-pledge-body">
+        <h3 data-i18n="r_pl_title">📝 Camper Pledge</h3>
+        <div class="pledge-box" data-i18n="r_pl_box">
           I pledge to participate in "Youth Policy Lab 2026" with an active, open, and responsible mindset. I will abide by all camp rules.
         </div>
         <label class="check-item">
           <input type="checkbox" id="chk_rules_pledge" onchange="togglePledge(this)">
           <div class="check-item-text">
-            <span class="item-title" id="r-pledge-chk-title">I have read, understood, and agree to abide by all camp rules.</span>
-            <span class="item-desc" id="r-pledge-chk-desc">Clicking this acknowledges your digital pledge.</span>
+            <span class="item-title" data-i18n="r_pl_chkT">I have read, understood, and agree to abide by all camp rules.</span>
+            <span class="item-desc" data-i18n="r_pl_chkD">Clicking this acknowledges your digital pledge.</span>
           </div>
         </label>
       </div>
@@ -853,13 +849,10 @@
 
   <!-- SPLASH SCREEN MODE (?mode=splash) -->
   <div id="splash-screen">
-    <!-- TOP RIGHT: SUPERAPP QR CODE -->
     <div class="splash-qr-topright">
       <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://youthpolicylab.pages.dev" alt="SuperApp QR">
       <p>Scan for SuperApp</p>
     </div>
-
-    <!-- CENTER: LOGO AND BROADCAST TEXT -->
     <div class="splash-center-content">
       <img src="logo-light.png" alt="Youth Policy Lab Logo" class="splash-logo">
       <div class="splash-banner" id="splash-live-text">Welcome to Youth Policy Lab 2026</div>
@@ -873,12 +866,10 @@
       <input type="password" id="admin-pin" class="input-field" placeholder="Enter PIN" style="text-align: center; font-size: 1.5rem; letter-spacing: 5px; margin-top: 20px;">
       <button class="btn-primary" onclick="unlockAdmin()">Unlock Remote</button>
     </div>
-
     <div class="glass-card" id="admin-dashboard" style="display: none; width: 100%; max-width: 600px;">
       <h3>🎛️ Projector Remote Control</h3>
       <input type="text" id="admin-broadcast-text" class="input-field" placeholder="Type text to display on projector..." style="margin-top: 15px;">
       <button class="btn-primary" onclick="updateProjector()">Broadcast to Screen</button>
-
       <h3 style="margin-top: 30px;">📦 Logistics Check-in</h3>
       <div style="display: flex; gap: 10px; margin-top: 15px;">
         <button class="btn-primary" style="background: var(--brand-green)">Scan Meal QR</button>
@@ -892,8 +883,8 @@
     <div class="room-modal-card">
       <div id="roomModalContent"></div>
       <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button class="btn-primary" id="roomModalCopyBtn">Copy Details</button>
-        <button class="btn-primary" style="background: var(--surface-secondary); color: var(--text-primary); border: 1px solid var(--border-color);" onclick="closeRoomModal()">Close</button>
+        <button class="btn-primary" id="roomModalCopyBtn" data-i18n="mod_copy">Copy Details</button>
+        <button class="btn-primary" style="background: var(--surface-secondary); color: var(--text-primary); border: 1px solid var(--border-color);" onclick="closeRoomModal()" data-i18n="mod_close">Close</button>
       </div>
     </div>
   </div>
@@ -902,7 +893,197 @@
   <div id="tooltip"></div>
   <div id="toast">Copied to clipboard!</div>
 
+  <!-- Dictionary & Scripts -->
   <script>
+    // --- DICTIONARY ---
+    const i18n = {
+      // Header & CD
+      "cd_label": { "en": "Event Starts In", "zh": "活动倒数", "ms": "Acara Bermula Dalam" },
+      "cd_days": { "en": "Days", "zh": "天", "ms": "Hari" },
+      "cd_hours": { "en": "Hours", "zh": "小时", "ms": "Jam" },
+      "cd_mins": { "en": "Mins", "zh": "分钟", "ms": "Minit" },
+      "cd_secs": { "en": "Secs", "zh": "秒", "ms": "Saat" },
+      "sync_conn": { "en": "Connecting...", "zh": "连接中...", "ms": "Menyambung..." },
+      
+      // Tabs
+      "nav_dir": { "en": "Directory", "zh": "住宿指南", "ms": "Direktori" },
+      "nav_time": { "en": "Timeline", "zh": "行程表", "ms": "Garis Masa" },
+      "nav_hub": { "en": "Hub", "zh": "资讯中心", "ms": "Hab" },
+      "nav_eng": { "en": "Engage", "zh": "互动参与", "ms": "Penglibatan" },
+      "nav_hand": { "en": "Handbook", "zh": "活动手册", "ms": "Buku Panduan" },
+      "nav_pack": { "en": "Packing List", "zh": "行李清单", "ms": "Senarai Semak" },
+      "nav_rules": { "en": "Camp Rules", "zh": "营规", "ms": "Peraturan Kem" },
+      
+      // Dir Tools
+      "dir_search": { "en": "Search participant name...", "zh": "搜索营员名字...", "ms": "Cari nama peserta..." },
+      "dir_all": { "en": "All", "zh": "全部", "ms": "Semua" },
+      "dir_vac": { "en": "🟢 Vacant", "zh": "🟢 空房", "ms": "🟢 Kosong" },
+      "dir_vip": { "en": "⭐ VIPs", "zh": "⭐ 贵宾", "ms": "⭐ VIP" },
+      "dir_boys": { "en": "👦 Boys", "zh": "👦 男生", "ms": "👦 Lelaki" },
+      "dir_girls": { "en": "👧 Girls", "zh": "👧 女生", "ms": "👧 Perempuan" },
+      "dir_3d": { "en": "3D", "zh": "3D", "ms": "3D" },
+      "dir_flat": { "en": "Flat", "zh": "平面", "ms": "Rata" },
+      "dir_l3": { "en": "Level 3", "zh": "三楼", "ms": "Aras 3" },
+      "dir_l2": { "en": "Level 2", "zh": "二楼", "ms": "Aras 2" },
+      "time_load": { "en": "Loading Live Itinerary...", "zh": "正在加载最新行程...", "ms": "Memuatkan Jadual..." },
+
+      // Packing/Rules Tools
+      "tool_print": { "en": "🖨️ Print / PDF", "zh": "🖨️ 打印 / PDF", "ms": "🖨️ Cetak / PDF" },
+      "tool_reset": { "en": "🔄 Reset", "zh": "🔄 重置", "ms": "🔄 Set Semula" },
+      "tool_expand": { "en": "Expand All", "zh": "全部展开", "ms": "Buka Semua" },
+      "tool_collapse": { "en": "Collapse All", "zh": "全部收起", "ms": "Tutup Semua" },
+      
+      // Hub
+      "hub_wifi": { "en": "📶 Wi-Fi Quick-Connect", "zh": "📶 无线网络连接", "ms": "📶 Sambungan Wi-Fi" },
+      "hub_wifi_d": { "en": "Connect to the official hostel network.", "zh": "连接到官方宿舍网络。", "ms": "Sambung ke rangkaian rasmi asrama." },
+      "hub_wifi_btn": { "en": "Copy Password", "zh": "复制密码", "ms": "Salin Kata Laluan" },
+      "hub_sos": { "en": "🚨 Emergency SOS & Contacts", "zh": "🚨 紧急援助与联络", "ms": "🚨 Bantuan Kecemasan" },
+      "hub_sos_d": { "en": "Tap to call directly.", "zh": "点击直接拨打。", "ms": "Ketik untuk panggil terus." },
+      "hub_sos_1": { "en": "🩺 Medical Support", "zh": "🩺 医疗援助", "ms": "🩺 Bantuan Perubatan" },
+      "hub_sos_2": { "en": "🛡️ Camp Security", "zh": "🛡️ 营地保安", "ms": "🛡️ Keselamatan Kem" },
+      "hub_sos_3": { "en": "📋 Committee Hotdesk", "zh": "📋 筹委热线", "ms": "📋 Talian Urusetia" },
+      "hub_comm": { "en": "🚆 Monorail Commute Guide", "zh": "🚆 单轨火车通勤指南", "ms": "🚆 Panduan Komuter Monorel" },
+      "hub_comm_d": { "en": "Route from YMCA Hostel to Event Venue.", "zh": "从YMCA宿舍前往活动会场的路线。", "ms": "Laluan dari Asrama YMCA ke Tempat Acara." },
+      "hub_comm_l1": { "en": "Walk 5 minutes to ", "zh": "步行5分钟至 ", "ms": "Jalan kaki 5 minit ke " },
+      "hub_comm_l2": { "en": "Scan your pre-loaded Touch 'n Go card.", "zh": "使用已充值的Touch 'n Go卡进站。", "ms": "Imbas kad Touch 'n Go anda." },
+      "hub_comm_l3": { "en": "Board train heading towards ", "zh": "搭乘前往以下方向的列车：", "ms": "Naik kereta api menghala ke " },
+      "hub_comm_l4": { "en": "Alight at ", "zh": "在此站下车：", "ms": "Turun di " },
+      
+      // Engage
+      "eng_qa": { "en": "💬 Live Q&A Portal", "zh": "💬 现场问答平台", "ms": "💬 Portal Soal Jawab" },
+      "eng_qa_d": { "en": "Submit your questions for the YB Forums. Selected questions will appear on the projector.", "zh": "向论坛嘉宾提问，被选中的问题将显示在投影仪上。", "ms": "Hantar soalan anda untuk Forum YB. Soalan terpilih akan dipaparkan." },
+      "eng_qa_n": { "en": "Your Name (Optional)", "zh": "你的名字 (选填)", "ms": "Nama Anda (Pilihan)" },
+      "eng_qa_ph": { "en": "Type your question here...", "zh": "在此输入你的问题...", "ms": "Taip soalan anda di sini..." },
+      "eng_qa_btn": { "en": "Submit Question", "zh": "提交问题", "ms": "Hantar Soalan" },
+      "eng_fb": { "en": "⭐ Post-Session Feedback", "zh": "⭐ 讲座反馈", "ms": "⭐ Maklum Balas Sesi" },
+      "eng_fb_d": { "en": "Rate the latest workshop", "zh": "为刚刚结束的讲座评分", "ms": "Nilaikan bengkel terkini" },
+      "eng_fb_ph": { "en": "Any additional comments?", "zh": "有任何补充意见吗？", "ms": "Ada komen tambahan?" },
+      "eng_fb_btn": { "en": "Submit Feedback", "zh": "提交反馈", "ms": "Hantar Maklum Balas" },
+      "hand_link": { "en": "Handbook View Link ↗", "zh": "在线阅读活动手册 ↗", "ms": "Pautan Buku Panduan ↗" },
+
+      // Packing List
+      "pack_prog": { "en": "🎒 Packing Progress", "zh": "🎒 准备进度", "ms": "🎒 Kemajuan Barang" },
+      "pack_cat1": { "en": "Clothing & Attire", "zh": "衣着用品", "ms": "Pakaian & Kelengkapan" },
+      "p_c1_t": { "en": "Opening & Closing Ceremony Outfit", "zh": "开幕及闭幕服装", "ms": "Pakaian Perasmian & Penutup" },
+      "p_c1_d": { "en": "Camp T-Shirt + Long Pants", "zh": "营衣 + 长裤", "ms": "T-Shirt Kem + Seluar Panjang" },
+      "p_c2_t": { "en": "Daily Clothes (3D2N)", "zh": "充足替换衣物 (3天2夜)", "ms": "Pakaian Harian (3H2M)" },
+      "p_c2_d": { "en": "Sufficient changes. Long pants MANDATORY during activities", "zh": "活动期间必须穿长裤", "ms": "Pakaian mencukupi. Seluar panjang DIWAJIBKAN semasa aktiviti" },
+      "p_c3_t": { "en": "Semi-Formal Outfit (1 Set)", "zh": "半正式服装 (1套)", "ms": "Pakaian Separa Formal (1 Set)" },
+      "p_c3_d": { "en": "Collared shirt + pants/skirt + covered shoes (No tight clothes)", "zh": "有领衬衫 + 长裤/长裙 + 包鞋 (禁止紧身衣)", "ms": "Kemeja berkolar + seluar/skirt + kasut tertutup" },
+      "p_c4_t": { "en": "Covered Shoes / Sports Shoes", "zh": "包鞋 / 运动鞋", "ms": "Kasut Tertutup / Kasut Sukan" },
+      "p_c4_d": { "en": "Closed-toe footwear required", "zh": "必须穿无露趾鞋", "ms": "Kasut tanpa jari terbuka diperlukan" },
+      
+      "pack_cat2": { "en": "Personal Essentials", "zh": "个人用品", "ms": "Keperluan Peribadi" },
+      "p_p1_t": { "en": "Toiletries Kit", "zh": "洗漱用品", "ms": "Kit Penjagaan Diri" },
+      "p_p1_d": { "en": "Towel, toothbrush, toothpaste, body wash, hair dryer", "zh": "毛巾、牙刷、牙膏、沐浴露、吹风机", "ms": "Tuala, berus/ubat gigi, sabun, pengering rambut" },
+      "p_p2_t": { "en": "Water Bottle", "zh": "水壶", "ms": "Botol Air" },
+      "p_p2_d": { "en": "Reusable bottle for refills", "zh": "自备水壶以方便装水", "ms": "Botol boleh guna semula" },
+      "p_p3_t": { "en": "Touch 'n Go Card (Locals Only)", "zh": "Touch 'n Go卡 (本地生)", "ms": "Kad Touch 'n Go (Warga Tempatan)" },
+      "p_p3_d": { "en": "Pre-reload funds for self-funded Monorail transit", "zh": "请提前充值以自费搭乘单轨列车", "ms": "Tambah nilai awal untuk pengangkutan Monorel" },
+      "p_p4_t": { "en": "Pocket Cash", "zh": "零用现金", "ms": "Wang Saku" },
+      "p_p4_d": { "en": "Small amount of cash (~RM50)", "zh": "准备少量现金 (~RM50)", "ms": "Sejumlah wang tunai kecil (~RM50)" },
+      "p_p5_t": { "en": "Umbrella or Raincoat", "zh": "雨伞 / 雨衣", "ms": "Payung / Baju Hujan" },
+      "p_p5_d": { "en": "Weather protection", "zh": "防雨准备", "ms": "Perlindungan cuaca" },
+      "p_p6_t": { "en": "Sanitary Products", "zh": "卫生用品", "ms": "Produk Sanitari" },
+      "p_p6_d": { "en": "If required", "zh": "若需要", "ms": "Jika perlu" },
+      
+      "pack_cat3": { "en": "Study & Health", "zh": "学习与医药", "ms": "Pembelajaran & Kesihatan" },
+      "p_s1_t": { "en": "Notebook & Stationery", "zh": "笔记本与文具", "ms": "Buku Nota & Alat Tulis" },
+      "p_s1_d": { "en": "Pens, notepad for policy workshops", "zh": "记录政策工作坊内容的文具", "ms": "Pen dan buku untuk bengkel polisi" },
+      "p_s2_t": { "en": "Chargers & Power Banks", "zh": "充电器与充电宝", "ms": "Pengecas & Power Bank" },
+      "p_s2_d": { "en": "Keep your electronics powered", "zh": "确保电子设备电量充足", "ms": "Pastikan peranti anda dicas" },
+      "p_m1_t": { "en": "Personal Medication", "zh": "个人常用药物", "ms": "Ubat Peribadi" },
+      "p_m1_d": { "en": "Prepare according to personal medical needs", "zh": "按个人医疗需求准备", "ms": "Sediakan mengikut keperluan kesihatan sendiri" },
+      
+      "pack_pro": { "en": "🚫 Prohibited Items", "zh": "🚫 禁止携带物品", "ms": "🚫 Barang Larangan" },
+      "p_pro1": { "en": "❌ Alcohol", "zh": "❌ 酒精饮品", "ms": "❌ Minuman Beralkohol" },
+      "p_pro2": { "en": "❌ Cigarettes & Vapes", "zh": "❌ 香烟与电子烟", "ms": "❌ Rokok & Vape" },
+      "p_pro3": { "en": "❌ Playing Cards & Gambling Gear", "zh": "❌ 扑克牌及赌博用品", "ms": "❌ Kad Terup & Peralatan Judi" },
+      "p_pro4": { "en": "❌ Dangerous Items", "zh": "❌ 危险物品", "ms": "❌ Barang Berbahaya" },
+      "p_pro5": { "en": "❌ Loudspeakers & Audio Gear", "zh": "❌ 音箱或高音量设备", "ms": "❌ Pembesar Suara" },
+
+      // Camp Rules
+      "r_spirit": { "en": "YOUTH LEADERSHIP SPIRIT", "zh": "青年领袖精神", "ms": "SEMANGAT KEPIMPINAN BELIA" },
+      "r_sp1": { "en": "Learning", "zh": "学习", "ms": "Pembelajaran" },
+      "r_sp2": { "en": "Critical Thinking", "zh": "思辨", "ms": "Pemikiran Kritis" },
+      "r_sp3": { "en": "Service", "zh": "服务", "ms": "Perkhidmatan" },
+      "r_sp4": { "en": "Leadership", "zh": "领导", "ms": "Kepimpinan" },
+      
+      "r_pro_title": { "en": "🚫 Section 6: Zero-Tolerance Rules", "zh": "🚫 第六部分: 严格禁止事项", "ms": "🚫 Seksyen 6: Peraturan Toleransi Sifar" },
+      "r_pr1": { "en": "❌ Gambling", "zh": "❌ 赌博行为", "ms": "❌ Perjudian" },
+      "r_pr2": { "en": "❌ Violence & Bullying", "zh": "❌ 暴力与霸凌", "ms": "❌ Keganasan & Buli" },
+      "r_pr3": { "en": "❌ Drugs & Dangerous Items", "zh": "❌ 毒品与危险物品", "ms": "❌ Dadah & Senjata" },
+      "r_pr4": { "en": "❌ Drunkenness", "zh": "❌ 酗酒", "ms": "❌ Mabuk" },
+      "r_pr5": { "en": "❌ Smoking", "zh": "❌ 非指定区域吸烟", "ms": "❌ Merokok" },
+      "r_pr6": { "en": "❌ Cyberbullying", "zh": "❌ 网络霸凌", "ms": "❌ Buli Siber" },
+      "r_pr7": { "en": "❌ Unauthorized Absence", "zh": "❌ 擅自离营", "ms": "❌ Keluar Tanpa Kebenaran" },
+
+      "r_sec1": { "en": "1. Respect & Unity", "zh": "1. 尊重与团结", "ms": "1. Hormat & Perpaduan" },
+      "r_1_1_t": { "en": "1.1 Mutual Respect", "zh": "1.1 互相尊重", "ms": "1.1 Saling Menghormati" },
+      "r_1_1_d": { "en": "Respect every camper, committee member, mentor, and guest.", "zh": "尊重每位营员、筹委、导师及嘉宾。", "ms": "Hormati setiap peserta, jawatankuasa, mentor dan tetamu." },
+      "r_1_2_t": { "en": "1.2 Team Spirit", "zh": "1.2 团队精神", "ms": "1.2 Semangat Berpasukan" },
+      "r_1_2_d": { "en": "Actively participate in group activities, support each other.", "zh": "积极参与小组活动，互相扶持。", "ms": "Sertai aktiviti kumpulan secara aktif, saling menyokong." },
+      "r_1_3_t": { "en": "1.3 Youth Leadership Image", "zh": "1.3 青年领袖形象", "ms": "1.3 Imej Kepimpinan Belia" },
+      "r_1_3_d": { "en": "Demonstrate responsibility, integrity, and discipline.", "zh": "展现负责任、诚信与纪律。", "ms": "Tunjukkan tanggungjawab, integriti dan disiplin." },
+      
+      "r_sec2": { "en": "2. Discipline & Attendance", "zh": "2. 纪律与出席率", "ms": "2. Disiplin & Kehadiran" },
+      "r_2_1_t": { "en": "2.1 Punctuality", "zh": "2.1 守时", "ms": "2.1 Menepati Masa" },
+      "r_2_1_d": { "en": "Attend all sessions on time. Early departures require prior approval.", "zh": "准时出席所有环节。早退需提前获得批准。", "ms": "Hadir sesi tepat masa. Keluar awal perlu kelulusan." },
+      "r_2_2_t": { "en": "2.2 Participation", "zh": "2.2 参与度", "ms": "2.2 Penyertaan" },
+      "r_2_2_d": { "en": "Engage fully in lectures, forums, and workshops.", "zh": "全心投入讲座、论坛与工作坊。", "ms": "Libatkan diri sepenuhnya dalam kuliah, forum dan bengkel." },
+      "r_2_3_t": { "en": "2.3 Directives", "zh": "2.3 服从指示", "ms": "2.3 Arahan" },
+      "r_2_3_d": { "en": "Comply with committee instructions.", "zh": "遵守筹委的指示。", "ms": "Patuhi arahan jawatankuasa." },
+      "r_2_4_t": { "en": "2.4 Night Curfew", "zh": "2.4 晚间宵禁", "ms": "2.4 Perintah Berkurung" },
+      "r_2_4_d": { "en": "Return to accommodation before 12:00 AM.", "zh": "必须在午夜12点前返回宿舍。", "ms": "Kembali ke asrama sebelum 12:00 tengah malam." },
+
+      "r_sec3": { "en": "3. Safety Guidelines", "zh": "3. 安全守则", "ms": "3. Garis Panduan Keselamatan" },
+      "r_3_1_t": { "en": "3.1 Departure Rules", "zh": "3.1 离营规则", "ms": "3.1 Peraturan Keluar Kem" },
+      "r_3_1_d": { "en": "Do not leave the camp premises without explicit permission.", "zh": "未经明确许可，严禁擅自离开营地。", "ms": "Dilarang keluar dari kawasan kem tanpa kebenaran." },
+      "r_3_2_t": { "en": "3.2 Personal Safety", "zh": "3.2 个人安全", "ms": "3.2 Keselamatan Peribadi" },
+      "r_3_2_d": { "en": "Follow safety protocols during activities.", "zh": "在活动期间遵守安全规程。", "ms": "Patuhi protokol keselamatan semasa aktiviti." },
+      "r_3_3_t": { "en": "3.3 Buddy System", "zh": "3.3 结伴制度", "ms": "3.3 Sistem Buddy" },
+      "r_3_3_d": { "en": "Travel with a partner/group at all times.", "zh": "时刻与同伴或小组结伴同行。", "ms": "Sentiasa bergerak bersama rakan/kumpulan." },
+
+      "r_pl_title": { "en": "📝 Camper Pledge", "zh": "📝 营员承诺", "ms": "📝 Ikrar Peserta" },
+      "r_pl_box": { "en": "I pledge to participate in 'Youth Policy Lab 2026' with an active, open, and responsible mindset. I will abide by all camp rules.", "zh": "我承诺以积极、开放及负责任的心态参与“2026这Young说政事”，并遵守所有营规。", "ms": "Saya berikrar untuk menyertai 'Youth Policy Lab 2026' dengan minda aktif dan bertanggungjawab. Saya akan mematuhi semua peraturan kem." },
+      "r_pl_chkT": { "en": "I have read, understood, and agree to abide by all camp rules.", "zh": "我已阅读、理解并同意遵守所有营规。", "ms": "Saya telah membaca, memahami, dan bersetuju mematuhi peraturan." },
+      "r_pl_chkD": { "en": "Clicking this acknowledges your digital pledge.", "zh": "勾选此项即代表您签署电子承诺书。", "ms": "Klik ini menandakan ikrar digital anda." },
+
+      // Modals
+      "mod_copy": { "en": "Copy Details", "zh": "复制详情", "ms": "Salin Butiran" },
+      "mod_close": { "en": "Close", "zh": "关闭", "ms": "Tutup" }
+    };
+
+    // --- LANGUAGE SWITCHER LOGIC ---
+    const langSwitcher = document.getElementById('langSwitcher');
+    let currentLang = localStorage.getItem('ypl_lang') || 'en';
+    langSwitcher.value = currentLang;
+
+    function applyTranslations(lang) {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[key] && i18n[key][lang]) {
+          el.innerText = i18n[key][lang];
+        }
+      });
+      document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+        const key = el.getAttribute('data-i18n-ph');
+        if (i18n[key] && i18n[key][lang]) {
+          el.placeholder = i18n[key][lang];
+        }
+      });
+    }
+
+    langSwitcher.addEventListener('change', (e) => {
+      const selectedLang = e.target.value;
+      localStorage.setItem('ypl_lang', selectedLang);
+      applyTranslations(selectedLang);
+    });
+
+    // Apply translations on load
+    applyTranslations(currentLang);
+
+
     // --- Theme Management ---
     const themeToggle = document.getElementById('themeToggle');
     const brandLogo = document.getElementById('brandLogo');
@@ -1017,10 +1198,12 @@
 
     function submitQA(event) {
       const btn = event.target;
+      const originalText = btn.innerText;
       btn.innerText = "Submitting...";
       setTimeout(() => {
         btn.innerText = "Question Submitted! ✅";
         btn.style.background = "var(--brand-green)";
+        setTimeout(() => { btn.innerText = originalText; btn.style.background = "var(--brand-blue)"; }, 3000);
       }, 1000);
     }
 
@@ -1078,7 +1261,13 @@
           });
 
           statusBadge.classList.add('synced');
-          statusBadge.querySelector('span').textContent = `Synced at ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+          // Don't overwrite the span inner text, just update a nested time string
+          let timeEl = statusBadge.querySelector('.sync-time');
+          if(!timeEl) {
+              statusBadge.querySelector('span').innerHTML += ` <span class="sync-time" style="font-weight:400; opacity:0.8;"></span>`;
+              timeEl = statusBadge.querySelector('.sync-time');
+          }
+          timeEl.textContent = `(${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})`;
         },
         error: function() {
           statusBadge.classList.remove('synced');
@@ -1110,7 +1299,7 @@
               html += `<div class="timeline-item"><div class="timeline-time">${time}</div><div class="timeline-content"><div class="timeline-title">${activity}</div>${venue ? `<div class="timeline-venue">📍 ${venue}</div>` : ''}${remarks ? `<div class="timeline-venue" style="color:var(--brand-blue)">🗣 ${remarks}</div>` : ''}</div></div>`;
             }
           });
-          container.innerHTML = html || '<div style="text-align:center; color:var(--text-secondary); font-weight:500;">Timeline data is empty.</div>';
+          container.innerHTML = html || `<div style="text-align:center; color:var(--text-secondary); font-weight:500;">Timeline data is empty.</div>`;
         }
       });
     }
@@ -1258,7 +1447,11 @@
       const checked = document.querySelectorAll('#tab-packing input[type="checkbox"]:checked');
       const total = checkboxes.length; const count = checked.length;
       const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-      document.getElementById('p-prog-val').textContent = `${count} / ${total} (${pct}%)`;
+      
+      // Update string without removing span wrapper
+      let titleSpan = document.getElementById('p-prog-title').outerHTML;
+      document.querySelector('.progress-header').innerHTML = titleSpan + `<span id="p-prog-val">${count} / ${total} (${pct}%)</span>`;
+      
       document.getElementById('p-prog-fill').style.width = `${pct}%`;
       const state = {}; checkboxes.forEach(chk => { state[chk.id] = chk.checked; });
       localStorage.setItem('ypl_packing_checklist', JSON.stringify(state));
