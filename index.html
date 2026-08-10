@@ -5,56 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Youth Policy Lab - SuperApp</title>
   
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Youth Policy Lab SuperApp">
+  <meta property="og:description" content="The official Youth Policy Lab SuperApp for schedules, accommodation, handbook, packing information and camp rules.">
+  <meta property="og:image" content="https://youthpolicylab.pages.dev/og-image.png">
+  <meta property="og:url" content="https://youthpolicylab.pages.dev/">
+
+  <!-- PapaParse for direct Google Sheets CSV integration -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
+      /* Official Youth Policy Lab Brand Colors */
       --brand-orange: #FF5722;
       --brand-green: #00C853;
       --brand-blue: #007AFF;
+      --brand-yellow: #FFC748;
       --brand-black: #141419;
       
-      /* Liquid Glass UI Light */
+      /* Liquid Glass Theme UI Variables (Light) */
       --bg-color: #f0f2f5;
-      --surface-color: rgba(255, 255, 255, 0.7);
-      --surface-secondary: rgba(255, 255, 255, 0.5);
+      --surface-color: rgba(255, 255, 255, 0.75);
+      --surface-secondary: rgba(255, 255, 255, 0.55);
       --text-primary: var(--brand-black);
-      --text-secondary: #555;
-      --border-color: rgba(0, 0, 0, 0.1);
-      --glass-bg: rgba(255, 255, 255, 0.65);
+      --text-secondary: #555555;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --glass-bg: rgba(255, 255, 255, 0.75);
       --glass-blur: blur(24px) saturate(180%);
       --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.07);
+      
+      /* Room Blocks */
+      --corridor: rgba(233, 236, 239, 0.8);
+      --occupied-gradient: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-green) 100%);
     }
 
     body.dark-mode {
-      /* Liquid Glass UI Dark */
-      --bg-color: #000000;
-      --surface-color: rgba(28, 28, 30, 0.6);
-      --surface-secondary: rgba(44, 44, 46, 0.5);
+      /* Liquid Glass Theme UI Variables (Dark) */
+      --bg-color: #050505;
+      --surface-color: rgba(28, 28, 30, 0.65);
+      --surface-secondary: rgba(44, 44, 46, 0.55);
       --text-primary: #f5f5f7;
       --text-secondary: #a1a1a6;
       --border-color: rgba(255, 255, 255, 0.1);
-      --glass-bg: rgba(28, 28, 30, 0.65);
+      --glass-bg: rgba(28, 28, 30, 0.75);
       --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --corridor: rgba(44, 44, 46, 0.8);
     }
 
+    html, body { overscroll-behavior-y: none; touch-action: pan-x pan-y; -webkit-tap-highlight-color: transparent; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     body { 
       background-color: var(--bg-color); 
       color: var(--text-primary); 
       font-family: 'Poppins', 'Noto Sans SC', sans-serif;
+      -webkit-font-smoothing: antialiased;
       min-height: 100dvh; 
       display: flex; 
       flex-direction: column; 
       align-items: center; 
-      padding: 0 0 80px 0;
-      transition: background-color 0.3s ease;
-      background-image: radial-gradient(circle at 15% 50%, rgba(0, 122, 255, 0.05), transparent 25%),
-                        radial-gradient(circle at 85% 30%, rgba(0, 200, 83, 0.05), transparent 25%);
+      padding: 0 0 60px 0;
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      background-image: radial-gradient(circle at 15% 50%, rgba(0, 122, 255, 0.04), transparent 25%),
+                        radial-gradient(circle at 85% 30%, rgba(0, 200, 83, 0.04), transparent 25%);
     }
 
     /* GLASSMORPHISM UTILITIES */
@@ -68,36 +86,191 @@
       padding: 24px;
     }
 
+    /* 1. MAIN HEADER */
     .main-header { width: 100%; padding: 30px 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; max-width: 1250px; }
-    .brand-section { display: flex; align-items: center; justify-content: center; width: 100%; position: relative; }
-    .brand-logo { height: 60px; }
-    .theme-toggle { position: absolute; right: 0; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 50%; width: 44px; height: 44px; cursor: pointer; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
+    .brand-section { display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; position: relative; }
+    .brand-logo { height: 60px; width: auto; object-fit: contain; transition: opacity 0.2s ease; }
+    h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-primary); }
+    .brand-hl-1 { color: var(--brand-blue); } .brand-hl-2 { color: var(--brand-green); } .brand-hl-3 { color: var(--brand-orange); }
 
-    .sticky-toolbar {
-      position: sticky; top: 0; width: 100%; background: var(--glass-bg);
+    .theme-toggle {
+      background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 50%;
+      width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; cursor: pointer; position: absolute; right: 0; transition: all 0.2s ease;
       backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-      border-bottom: 1px solid var(--border-color); padding: 12px 40px; z-index: 100;
-      display: flex; justify-content: center; flex-wrap: wrap; gap: 12px;
     }
+    .theme-toggle:hover { transform: scale(1.1); }
 
-    .tab-nav { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 12px; border: 1px solid var(--border-color); flex-wrap: wrap; justify-content: center; }
-    .tab-nav button { background: transparent; color: var(--text-secondary); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-    .tab-nav button.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .header-info-row { display: flex; justify-content: center; align-items: center; width: 100%; flex-wrap: wrap; gap: 20px; }
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+      background: var(--surface-color); color: var(--text-secondary); border: 1px solid var(--border-color); transition: all 0.3s ease;
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-secondary); transition: all 0.3s ease; }
+    .status-badge.synced .status-dot { background: var(--brand-green); box-shadow: 0 0 8px rgba(0, 200, 83, 0.4); }
+    .status-badge.synced { color: var(--text-primary); }
+    .refresh-btn { background: none; border: none; cursor: pointer; padding: 0; margin-left: 4px; font-size: 1rem; color: inherit; transition: transform 0.4s ease; }
 
-    .tab-content { display: none; width: 100%; max-width: 1050px; padding: 20px; flex-direction: column; gap: 24px; }
+    /* Countdown Timer */
+    .countdown-section { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .countdown-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); }
+    .countdown-timer { display: flex; align-items: flex-start; gap: 8px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 16px; padding: 14px 22px; box-shadow: var(--shadow-soft); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
+    .countdown-unit { display: flex; flex-direction: column; align-items: center; min-width: 46px; }
+    .countdown-value { font-size: 1.7rem; font-weight: 700; color: var(--brand-orange); font-variant-numeric: tabular-nums; line-height: 1; }
+    .countdown-unit-label { font-size: 0.65rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+    .countdown-separator { font-size: 1.5rem; font-weight: 700; color: var(--text-secondary); padding-top: 2px; }
+    .countdown-date { font-size: 0.7rem; font-weight: 500; color: var(--text-secondary); }
+
+    /* 2. STICKY TOOLBAR */
+    .sticky-toolbar {
+      position: sticky; top: 0; width: 100%; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+      border-bottom: 1px solid var(--border-color); padding: 12px 40px; z-index: 100; display: flex; justify-content: space-between; align-items: center; gap: 20px; box-shadow: var(--shadow-soft);
+    }
+    .tab-nav { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 10px; gap: 4px; border: 1px solid var(--border-color); flex-wrap: wrap; }
+    .tab-nav button { background: transparent; color: var(--text-secondary); border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.2s ease; }
+    .tab-nav button.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+    .toolbar-right { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .dir-tools.hidden, .packing-tools.hidden, .rules-tools.hidden { display: none !important; }
+
+    /* Search & Filters */
+    .search-wrapper { position: relative; width: 250px; }
+    #searchInput { width: 100%; padding: 8px 32px 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-primary); font-size: 0.9rem; font-family: 'Poppins', sans-serif; font-weight: 500; transition: all 0.2s; }
+    #searchInput:focus { outline: none; border-color: var(--brand-blue); box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15); }
+    .clear-search-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); display: none; background: transparent; border: none; font-size: 1rem; color: var(--text-secondary); cursor: pointer; padding: 0; }
+    
+    .filter-group, .controls { display: flex; background: var(--surface-secondary); padding: 4px; border-radius: 8px; gap: 4px; border: 1px solid var(--border-color); }
+    .filter-btn, .btn { background: transparent; color: var(--text-secondary); border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif; transition: all 0.2s ease; white-space: nowrap; }
+    .filter-btn.active, .btn.active { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+    /* Tab Content Wrappers */
+    .tab-content { display: none; width: 100%; justify-content: center; }
     .tab-content.active { display: flex; }
 
-    /* HUB & ENGAGE STYLES */
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    /* TAB 1: 3D PERSPECTIVE CANVAS */
+    .viewport { perspective: 1400px; width: 100%; max-width: 1250px; display: flex; flex-direction: column; gap: 60px; padding: 40px 20px; position: relative; }
+    .quick-jump-bar { position: sticky; top: 90px; z-index: 90; display: flex; justify-content: center; gap: 12px; pointer-events: none; margin-bottom: -20px; width: 100%; }
+    .quick-jump-btn { pointer-events: auto; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 2px solid var(--brand-blue); color: var(--brand-blue); padding: 6px 20px; border-radius: 30px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: var(--shadow-soft); transition: all 0.2s ease; }
+    .quick-jump-btn:hover { background: var(--brand-blue); color: #fff; }
+
+    .floor-container {
+      background: var(--surface-color); backdrop-filter: var(--glass-blur); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px;
+      transform-style: preserve-3d; transform: rotateX(45deg) rotateZ(-5deg) translateZ(0);
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: var(--shadow-soft); scroll-margin-top: 150px;
+    }
+    .viewport.flat .floor-container { transform: rotateX(0deg) rotateZ(0deg) translateZ(0); }
+
+    .floor-title { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 24px; transform: translateZ(10px); display: inline-block; padding-bottom: 4px; border-bottom: 4px solid var(--brand-orange); }
+    .wing-title { font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); margin: 16px 0 8px 0; text-transform: uppercase; letter-spacing: 1px; transform: translateZ(10px); }
+    .room-row { display: flex; gap: 8px; margin-bottom: 10px; transform-style: preserve-3d; }
+    .room-block { flex: 1; min-width: 52px; height: 60px; position: relative; transform-style: preserve-3d; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease, opacity 0.3s ease; cursor: pointer; }
+    .room-block:focus { outline: none; }
+    
+    .room-block[data-room] .face-top { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; background-color: var(--surface-secondary); color: var(--text-secondary); border-radius: 6px; transform: translateZ(16px); box-shadow: inset 0 0 0 1px var(--border-color); transition: all 0.3s ease; }
+    .room-block[data-room] .face-front { position: absolute; width: 100%; height: 16px; bottom: 0; transform-origin: bottom; transform: rotateX(-90deg); background-color: var(--border-color); filter: brightness(0.8); border-radius: 0 0 6px 6px; transition: all 0.3s ease; }
+    
+    .room-block.occupied .face-top { background: var(--occupied-gradient) !important; color: #ffffff !important; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3) !important; }
+    .room-block.occupied .face-front { background: var(--brand-blue) !important; filter: brightness(0.75); }
+    
+    .room-block:hover { transform: translateZ(16px) scale(1.05); z-index: 50; }
+    .room-block:hover .face-top { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 0 0 2px #ffffff !important; }
+    
+    .viewport.filtered .room-block:not(.highlight):not([data-room-type="corridor"]) .face-top { background: var(--surface-secondary) !important; color: var(--text-secondary) !important; box-shadow: none !important; }
+    .viewport.filtered .room-block:not(.highlight) { pointer-events: none; transform: translateZ(0) scale(0.98) !important; }
+    .room-block.highlight .face-top { box-shadow: 0 0 0 4px var(--text-primary), 0 15px 30px rgba(0,0,0,0.2) !important; z-index: 60; }
+    
+    .room-block[data-room-type="corridor"] { cursor: default; }
+    .room-block[data-room-type="corridor"] .face-top { background-color: var(--corridor); color: var(--text-secondary); transform: translateZ(2px); }
+    .room-block[data-room-type="corridor"] .face-front { background-color: var(--border-color); height: 2px; }
+
+    /* TAB 2: TIMELINE */
+    .timeline-wrapper { width: 100%; max-width: 700px; padding: 40px 20px; display: flex; flex-direction: column; gap: 16px; }
+    .timeline-date-header { font-size: 1.4rem; font-weight: 700; color: var(--brand-orange); margin-top: 24px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 2px dashed var(--border-color); display: inline-block; }
+    .timeline-item { display: flex; gap: 20px; background: var(--surface-color); backdrop-filter: var(--glass-blur); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); transition: transform 0.2s ease, box-shadow 0.2s; box-shadow: var(--shadow-soft); }
+    .timeline-item:hover { transform: translateY(-4px); border-color: var(--brand-blue); }
+    .timeline-time { min-width: 100px; font-size: 1rem; font-weight: 700; color: var(--brand-blue); flex-shrink: 0; }
+    .timeline-content { display: flex; flex-direction: column; gap: 6px; }
+    .timeline-title { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); }
+    .timeline-venue { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); }
+
+    /* TAB 3 & 4 (NEW): HUB & ENGAGE */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; width: 100%; max-width: 1050px; padding: 30px 20px; }
     .sos-btn { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: rgba(255, 87, 34, 0.1); border: 1px solid var(--brand-orange); border-radius: 12px; color: var(--brand-orange); text-decoration: none; font-weight: 700; margin-bottom: 10px; }
     .input-field { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--surface-secondary); color: var(--text-primary); font-family: 'Poppins'; margin-bottom: 12px; }
     .btn-primary { background: var(--brand-blue); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; }
-    
-    /* STAR RATING */
-    .star-rating { display: flex; gap: 8px; font-size: 2rem; color: #ccc; cursor: pointer; margin-bottom: 16px; justify-content: center; }
+    .star-rating { display: flex; gap: 8px; font-size: 2rem; color: var(--border-color); cursor: pointer; margin-bottom: 16px; justify-content: center; }
     .star-rating .star:hover, .star-rating .star.active { color: var(--brand-yellow); }
 
-    /* SPLASH & ADMIN MODES */
+    /* TAB 5: HANDBOOK CANVA */
+    .handbook-wrapper { width: 100%; max-width: 800px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
+    .canva-embed-container { position: relative; width: 100%; max-width: calc((100dvh - 160px) * 0.7047); aspect-ratio: 1 / 1.4189; box-shadow: var(--shadow-soft); border-radius: 12px; overflow: hidden; background: var(--surface-secondary); border: 1px solid var(--border-color); }
+    .canva-embed-container iframe { position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; }
+
+    /* TAB 6: PACKING LIST */
+    .packing-wrapper { width: 100%; max-width: 1100px; padding: 30px 20px; display: flex; flex-direction: column; gap: 24px; }
+    .packing-hero { background: var(--surface-color); backdrop-filter: var(--glass-blur); border: 1px solid var(--border-color); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-soft); display: flex; flex-direction: column; gap: 16px; }
+    .progress-container { display: flex; flex-direction: column; gap: 8px; }
+    .progress-header { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 0.95rem; }
+    .progress-bar-bg { width: 100%; height: 12px; background: var(--surface-secondary); border-radius: 6px; overflow: hidden; border: 1px solid var(--border-color); }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--brand-blue), var(--brand-green)); border-radius: 6px; transition: width 0.3s ease; }
+    
+    .packing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    .packing-card { background: var(--surface-color); backdrop-filter: var(--glass-blur); border: 1px solid var(--border-color); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-soft); display: flex; flex-direction: column; gap: 16px; }
+    .packing-card h3 { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 10px; color: var(--text-primary); border-bottom: 2px dashed var(--border-color); padding-bottom: 12px; }
+    .checklist-group { display: flex; flex-direction: column; gap: 12px; }
+    .check-item { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; user-select: none; padding: 6px 8px; border-radius: 8px; transition: background 0.2s ease; }
+    .check-item:hover { background: var(--surface-secondary); }
+    .check-item input[type="checkbox"] { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; border: 2px solid var(--text-secondary); border-radius: 6px; margin-top: 2px; outline: none; cursor: pointer; display: grid; place-content: center; transition: all 0.2s ease; flex-shrink: 0; }
+    .check-item input[type="checkbox"]:checked { background-color: var(--brand-green); border-color: var(--brand-green); }
+    .check-item input[type="checkbox"]:checked::before { content: "✓"; color: white; font-size: 13px; font-weight: 700; }
+    .check-item-text { display: flex; flex-direction: column; gap: 2px; }
+    .item-title { font-weight: 600; font-size: 0.95rem; color: var(--text-primary); transition: color 0.2s, text-decoration 0.2s; }
+    .check-item input[type="checkbox"]:checked ~ .check-item-text .item-title { text-decoration: line-through; color: var(--text-secondary); }
+    .item-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.3; }
+
+    .alert-banner { background: rgba(255, 87, 34, 0.08); border: 1px solid var(--brand-orange); border-radius: 16px; padding: 18px 24px; display: flex; flex-direction: column; gap: 12px; }
+    .alert-banner h4 { color: var(--brand-orange); font-weight: 700; font-size: 1rem; }
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+    .prohibited-tag { background: var(--surface-color); border: 1px solid rgba(255, 87, 34, 0.3); color: var(--brand-orange); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+
+    /* TAB 7: CAMP RULES */
+    .rules-wrapper { width: 100%; max-width: 1050px; padding: 30px 20px; display: flex; flex-direction: column; gap: 24px; }
+    .rules-spirit-card { background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(0, 200, 83, 0.1)); border: 1px solid var(--brand-blue); border-radius: 20px; padding: 28px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; box-shadow: var(--shadow-soft); }
+    .spirit-title { font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--brand-blue); }
+    .spirit-pillars { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .spirit-pillar { background: var(--surface-color); padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 1rem; border: 1px solid var(--border-color); color: var(--text-primary); }
+    
+    .rules-accordion { display: flex; flex-direction: column; gap: 16px; }
+    .rule-card { background: var(--surface-color); backdrop-filter: var(--glass-blur); border: 1px solid var(--border-color); border-radius: 18px; overflow: hidden; transition: border-color 0.2s ease, box-shadow 0.2s ease; box-shadow: var(--shadow-soft); }
+    .rule-card:hover { border-color: var(--brand-blue); }
+    .rule-header { padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; font-weight: 700; font-size: 1.05rem; }
+    .rule-arrow { font-size: 0.9rem; color: var(--text-secondary); transition: transform 0.3s ease; }
+    .rule-card.active .rule-arrow { transform: rotate(180deg); }
+    .rule-body { display: none; padding: 0 24px 20px 24px; border-top: 1px dashed var(--border-color); flex-direction: column; gap: 12px; margin-top: 8px; padding-top: 16px; }
+    .rule-card.active .rule-body { display: flex; }
+    .rule-item { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary); }
+    .rule-item strong { color: var(--text-primary); font-weight: 600; }
+    
+    .pledge-card { background: var(--surface-color); backdrop-filter: var(--glass-blur); border: 2px solid var(--brand-green); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: var(--shadow-soft); }
+    .pledge-card h3 { color: var(--brand-green); font-size: 1.15rem; font-weight: 700; }
+    .pledge-box { background: var(--surface-secondary); padding: 16px; border-radius: 12px; font-size: 0.88rem; line-height: 1.6; color: var(--text-primary); border-left: 4px solid var(--brand-green); }
+
+    /* TOOLTIPS, TOASTS & PRINT */
+    #tooltip { position: fixed; display: none; background: var(--glass-bg); backdrop-filter: var(--glass-blur); color: var(--text-primary); padding: 16px; border-radius: 14px; font-size: 0.85rem; pointer-events: none; z-index: 1000; box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 0 0 1px var(--border-color); min-width: 240px; }
+    .click-hint { font-size: 0.7rem; color: var(--text-secondary); margin-top: 12px; text-align: center; font-weight: 500; }
+    #toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 100px); background: var(--brand-green); color: white; padding: 12px 24px; border-radius: 30px; font-weight: 700; font-size: 0.95rem; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 2000; pointer-events: none; }
+    #toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+    @media print {
+      body * { visibility: hidden; }
+      #tab-packing, #tab-packing *, #tab-rules, #tab-rules * { visibility: visible; }
+      #tab-packing, #tab-rules { position: absolute; left: 0; top: 0; width: 100%; }
+      .sticky-toolbar, .main-header, .theme-toggle { display: none !important; }
+      .packing-card, .rule-card, .pledge-card { break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; }
+      .rule-body { display: flex !important; }
+    }
+
+    /* SPLASH & ADMIN MODES (OVERLAYS) */
     #splash-screen, #admin-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
     body.mode-splash #splash-screen { display: flex; }
     body.mode-admin #admin-screen { display: flex; }
@@ -106,35 +279,228 @@
     .splash-logo { height: 150px; margin-bottom: 40px; }
     .splash-banner { background: var(--brand-blue); color: white; padding: 20px 40px; border-radius: 20px; font-size: 2.5rem; font-weight: 700; text-align: center; box-shadow: 0 20px 40px rgba(0, 122, 255, 0.3); }
     .qr-container { background: white; padding: 20px; border-radius: 20px; margin-top: 40px; }
+
+    /* MOBILE RESPONSIVE ADAPTATIONS */
+    @media (max-width: 1024px) {
+      .sticky-toolbar { flex-direction: column; padding: 12px 20px; gap: 12px; }
+      .toolbar-right { width: 100%; justify-content: center; }
+      .search-wrapper { max-width: 100%; width: 100%; flex: 1; }
+      .viewport { padding: 20px 10px; perspective: none; }
+      .quick-jump-bar { top: 180px; }
+      .floor-container { transform: none !important; padding: 20px 15px; border-radius: 16px; overflow-x: auto; scroll-margin-top: 180px; }
+      .room-block:hover { transform: none; z-index: 1; }
+      .room-row { min-width: 600px; }
+      .theme-toggle { position: relative; }
+    }
+    @media (max-width: 768px) {
+      .main-header { padding: 20px 16px; }
+      .brand-section { flex-direction: column; gap: 10px; }
+      .theme-toggle { position: absolute; top: 0; right: 0; width: 36px; height: 36px; font-size: 1rem; }
+      .brand-logo { height: 50px; }
+      h1 { font-size: 1.4rem; text-align: center; }
+      .header-info-row { flex-direction: column; gap: 16px; }
+      .sticky-toolbar { padding: 10px 12px; }
+      .tab-nav { width: 100%; display: flex; }
+      .tab-nav button { flex: 1; text-align: center; padding: 8px 4px; font-size: 0.78rem; }
+      .filter-group { display: flex !important; overflow-x: auto; max-width: 100%; width: 100%; -webkit-overflow-scrolling: touch; padding: 4px; gap: 6px; }
+      .filter-btn { flex-shrink: 0; padding: 6px 12px; font-size: 0.8rem; }
+      .controls { display: none !important; } 
+      .search-wrapper { width: 100%; }
+      .handbook-wrapper, .timeline-wrapper, .packing-wrapper, .rules-wrapper, .grid-2 { padding: 16px 12px; }
+      .canva-embed-container { max-width: 100%; }
+      .quick-jump-bar { top: 210px; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- NORMAL APP UI -->
+  <!-- SCROLLING HEADER -->
   <header class="main-header">
     <div class="brand-section">
-      <img src="logo-light.png" alt="Youth Policy Lab" class="brand-logo" id="brandLogo">
-      <button id="themeToggle" class="theme-toggle">🌙</button>
+      <img src="logo-light.png" alt="Youth Policy Lab Logo" class="brand-logo" id="brandLogo" onerror="this.style.display='none'; document.getElementById('fallbackTitle').style.display='block';">
+      <h1 id="fallbackTitle" style="display:none;"><span class="brand-hl-1">Youth</span> <span class="brand-hl-2">Policy</span> <span class="brand-hl-3">Lab</span></h1>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle Dark Mode">🌙</button>
+    </div>
+
+    <div class="countdown-section" id="countdownSection">
+      <div class="countdown-label" id="countdownLabel">Event Starts In</div>
+      <div class="countdown-timer" id="countdownTimer">
+        <div class="countdown-unit"><span class="countdown-value" id="cd-days">00</span><span class="countdown-unit-label">Days</span></div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-unit"><span class="countdown-value" id="cd-hours">00</span><span class="countdown-unit-label">Hours</span></div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-unit"><span class="countdown-value" id="cd-mins">00</span><span class="countdown-unit-label">Mins</span></div>
+        <div class="countdown-separator">:</div>
+        <div class="countdown-unit"><span class="countdown-value" id="cd-secs">00</span><span class="countdown-unit-label">Secs</span></div>
+      </div>
+      <div class="countdown-date">14 Aug 2026 · 9:00 AM MYT</div>
+    </div>
+    
+    <div class="header-info-row dir-tools" id="dirToolsHeader">
+      <div id="sync-status" class="status-badge">
+        <div class="status-dot"></div>
+        <span>Connecting...</span>
+        <button id="manualRefreshBtn" class="refresh-btn" title="Force Refresh Data">🔄</button>
+      </div>
     </div>
   </header>
 
+  <!-- STICKY NAV TOOLBAR -->
   <nav class="sticky-toolbar">
     <div class="tab-nav">
-      <button onclick="switchTab('directory')">Directory</button>
+      <button class="active" onclick="switchTab('directory')">Directory</button>
       <button onclick="switchTab('timeline')">Timeline</button>
-      <button onclick="switchTab('hub')">Hub (SOS/Wi-Fi)</button>
-      <button onclick="switchTab('engage')">Engage (Q&A)</button>
+      <button onclick="switchTab('hub')">Hub</button>
+      <button onclick="switchTab('engage')">Engage</button>
       <button onclick="switchTab('handbook')">Handbook</button>
-      <button class="active" onclick="switchTab('packing')">Packing List</button>
+      <button onclick="switchTab('packing')">Packing List</button>
+      <button onclick="switchTab('rules')">Camp Rules</button>
+    </div>
+
+    <!-- Directory Tools -->
+    <div class="toolbar-right dir-tools" id="dirToolsNav">
+      <div class="search-wrapper">
+        <input type="text" id="searchInput" placeholder="Search participant name..." autocomplete="off">
+        <button id="clearSearchBtn" class="clear-search-btn" aria-label="Clear search">✕</button>
+      </div>
+      <div class="filter-group">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="vacant">🟢 Vacant</button>
+        <button class="filter-btn" data-filter="vip">⭐ VIPs</button>
+        <button class="filter-btn" data-filter="boys">👦 Boys</button>
+        <button class="filter-btn" data-filter="girls">👧 Girls</button>
+      </div>
+      <div class="controls">
+        <button class="btn active" onclick="setView('3d')">3D</button>
+        <button class="btn" onclick="setView('2d')">Flat</button>
+      </div>
+    </div>
+
+    <!-- Packing List Tools -->
+    <div class="toolbar-right packing-tools hidden" id="packingToolsNav">
+      <div class="filter-group">
+        <button class="filter-btn active" id="lang-en" onclick="setPackingLang('en')">English</button>
+        <button class="filter-btn" id="lang-zh" onclick="setPackingLang('zh')">简体中文</button>
+      </div>
+      <button class="btn" onclick="window.print()">🖨️ Print / PDF</button>
+      <button class="btn" onclick="resetPackingList()" style="color: var(--brand-orange)">🔄 Reset</button>
+    </div>
+
+    <!-- Rules Tools -->
+    <div class="toolbar-right rules-tools hidden" id="rulesToolsNav">
+      <div class="filter-group">
+        <button class="filter-btn active" id="rules-lang-en" onclick="setRulesLang('en')">English</button>
+        <button class="filter-btn" id="rules-lang-zh" onclick="setRulesLang('zh')">简体中文</button>
+      </div>
+      <button class="btn" onclick="toggleAllRules(true)"> Expand All</button>
+      <button class="btn" onclick="toggleAllRules(false)"> Collapse All</button>
     </div>
   </nav>
 
-  <!-- EXISTING TABS (Directory, Timeline, Handbook, Packing) GO HERE. 
-       (I have omitted the HTML for the existing maps/packing lists here to save space, 
-       just paste your existing <div class="tab-content" id="tab-directory"> etc. here) -->
+  <!-- TAB 1: DIRECTORY MAP -->
+  <div class="tab-content active" id="tab-directory">
+    <div class="viewport" id="viewport">
+      <div class="quick-jump-bar">
+        <button class="quick-jump-btn" onclick="document.getElementById('floor-L3').scrollIntoView({behavior: 'smooth'})">Level 3</button>
+        <button class="quick-jump-btn" onclick="document.getElementById('floor-L2').scrollIntoView({behavior: 'smooth'})">Level 2</button>
+      </div>
 
-  <!-- NEW TAB: HUB (Wi-Fi, SOS, Commute) -->
-  <div class="tab-content active" id="tab-hub">
+      <!-- LEVEL 3 -->
+      <div class="floor-container" id="floor-L3">
+        <div class="floor-title">Level 3</div>
+        <div class="wing-title">Wing C</div>
+        <div class="room-row">
+          <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 312" data-room="312" data-room-type="double"><div class="face-top">312</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 311" data-room="311" data-room-type="twin"><div class="face-top">311</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 310" data-room="310" data-room-type="double"><div class="face-top">310</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 309" data-room="309" data-room-type="twin"><div class="face-top">309</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 307" data-room="307" data-room-type="twin"><div class="face-top">307</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 305" data-room="305" data-room-type="twin"><div class="face-top">305</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 304" data-room="304" data-room-type="double"><div class="face-top">304</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 303" data-room="303" data-room-type="twin"><div class="face-top">303</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 302" data-room="302" data-room-type="double"><div class="face-top">302</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 301" data-room="301" data-room-type="twin"><div class="face-top">301</div><div class="face-front"></div></div>
+          <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
+        </div>
+
+        <div class="wing-title">Wing D</div>
+        <div class="room-row">
+          <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 329" data-room="329" data-room-type="twin"><div class="face-top">329</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 328" data-room="328" data-room-type="double"><div class="face-top">328</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 327" data-room="327" data-room-type="twin"><div class="face-top">327</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 325" data-room="325" data-room-type="twin"><div class="face-top">325</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 323" data-room="323" data-room-type="twin"><div class="face-top">323</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 321" data-room="321" data-room-type="twin"><div class="face-top">321</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 320" data-room="320" data-room-type="double"><div class="face-top">320</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 319" data-room="319" data-room-type="twin"><div class="face-top">319</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 318" data-room="318" data-room-type="triple"><div class="face-top">318</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 317" data-room="317" data-room-type="triple"><div class="face-top">317</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 316" data-room="316" data-room-type="triple"><div class="face-top">316</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 315" data-room="315" data-room-type="triple"><div class="face-top">315</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 314" data-room="314" data-room-type="triple"><div class="face-top">314</div><div class="face-front"></div></div>
+          <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
+        </div>
+      </div>
+
+      <!-- LEVEL 2 -->
+      <div class="floor-container" id="floor-L2">
+        <div class="floor-title">Level 2</div>
+        <div class="wing-title">Wing A</div>
+        <div class="room-row">
+          <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 212" data-room="212" data-room-type="double"><div class="face-top">212</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 211" data-room="211" data-room-type="twin"><div class="face-top">211</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 210" data-room="210" data-room-type="double"><div class="face-top">210</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 209" data-room="209" data-room-type="twin"><div class="face-top">209</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 208" data-room="208" data-room-type="twin"><div class="face-top">208</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 207" data-room="207" data-room-type="twin"><div class="face-top">207</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 206" data-room="206" data-room-type="twin"><div class="face-top">206</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 205" data-room="205" data-room-type="double"><div class="face-top">205</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 204" data-room="204" data-room-type="twin"><div class="face-top">204</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 203" data-room="203" data-room-type="double"><div class="face-top">203</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 202" data-room="202" data-room-type="double"><div class="face-top">202</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 201" data-room="201" data-room-type="twin"><div class="face-top">201</div><div class="face-front"></div></div>
+          <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
+        </div>
+
+        <div class="wing-title">Wing B</div>
+        <div class="room-row">
+          <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 229" data-room="229" data-room-type="twin"><div class="face-top">229</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 228" data-room="228" data-room-type="double"><div class="face-top">228</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 227" data-room="227" data-room-type="twin"><div class="face-top">227</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 226" data-room="226" data-room-type="twin"><div class="face-top">226</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 225" data-room="225" data-room-type="twin"><div class="face-top">225</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 224" data-room="224" data-room-type="twin"><div class="face-top">224</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 223" data-room="223" data-room-type="twin"><div class="face-top">223</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 222" data-room="222" data-room-type="twin"><div class="face-top">222</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 221" data-room="221" data-room-type="twin"><div class="face-top">221</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 220" data-room="220" data-room-type="double"><div class="face-top">220</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 219" data-room="219" data-room-type="twin"><div class="face-top">219</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 218" data-room="218" data-room-type="twin"><div class="face-top">218</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 217" data-room="217" data-room-type="twin"><div class="face-top">217</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 216" data-room="216" data-room-type="twin"><div class="face-top">216</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 215" data-room="215" data-room-type="twin"><div class="face-top">215</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 214" data-room="214" data-room-type="twin"><div class="face-top">214</div><div class="face-front"></div></div>
+          <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: EVENT TIMELINE -->
+  <div class="tab-content" id="tab-timeline">
+    <div class="timeline-wrapper" id="timeline-container">
+      <div style="text-align: center; color: var(--text-secondary); padding: 40px; font-weight: 500;">
+        Loading Live Itinerary...
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: HUB (Wi-Fi, SOS, Commute) -->
+  <div class="tab-content" id="tab-hub">
     <div class="grid-2">
       <!-- Wi-Fi -->
       <div class="glass-card">
@@ -143,7 +509,7 @@
         <div style="background: var(--surface-secondary); padding: 15px; border-radius: 10px; text-align: center; font-weight: 700; letter-spacing: 1px; font-size: 1.2rem; margin-bottom: 10px;">
           YMCA-GUEST-2026
         </div>
-        <button class="btn-primary" onclick="navigator.clipboard.writeText('YMCA-GUEST-2026'); alert('Password copied!');">Copy Password</button>
+        <button class="btn-primary" onclick="navigator.clipboard.writeText('YMCA-GUEST-2026'); showToast('Password copied!');">Copy Password</button>
       </div>
 
       <!-- Emergency SOS -->
@@ -157,10 +523,10 @@
     </div>
 
     <!-- Commute Guide -->
-    <div class="glass-card">
+    <div class="glass-card" style="max-width: 1050px; width: 100%;">
       <h3>🚆 Monorail Commute Guide</h3>
       <p style="color: var(--text-secondary); margin-bottom: 16px;">Route from YMCA Hostel to Event Venue.</p>
-      <div style="aspect-ratio: 16/9; background: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 16px;">
+      <div style="aspect-ratio: 16/9; background: var(--surface-secondary); border: 1px solid var(--border-color); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: var(--text-secondary);">
         [ Video Commute Guide Placeholder ]
       </div>
       <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-secondary);">
@@ -172,7 +538,7 @@
     </div>
   </div>
 
-  <!-- NEW TAB: ENGAGE (Q&A, Feedback, Gallery) -->
+  <!-- TAB 4: ENGAGE (Q&A, Feedback) -->
   <div class="tab-content" id="tab-engage">
     <div class="grid-2">
       <!-- Live Q&A -->
@@ -181,7 +547,7 @@
         <p style="color: var(--text-secondary); margin: 10px 0 20px 0; font-size: 0.9rem;">Submit your questions for the YB Forums. Selected questions will appear on the projector.</p>
         <input type="text" id="qa-name" class="input-field" placeholder="Your Name / 姓名 (Optional)">
         <textarea id="qa-text" class="input-field" rows="3" placeholder="Type your question here..."></textarea>
-        <button class="btn-primary" onclick="submitQA()">Submit Question</button>
+        <button class="btn-primary" onclick="submitQA(event)">Submit Question</button>
       </div>
 
       <!-- Session Feedback -->
@@ -197,12 +563,157 @@
     </div>
   </div>
 
+  <!-- TAB 5: EVENT HANDBOOK -->
+  <div class="tab-content" id="tab-handbook">
+    <div class="handbook-wrapper">
+      <div class="canva-embed-container">
+        <iframe loading="lazy" src="https://www.canva.com/design/DAHRPS_ZU_o/CByP7RS412eexO5d8742dw/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+      </div>
+      <a href="https://www.canva.com/design/DAHRPS_ZU_o/CByP7RS412eexO5d8742dw/view?utm_content=DAHRPS_ZU_o&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 600; margin-top: 16px; transition: color 0.2s; display: inline-block;">
+        这young说政事小册子 by Wei Ying ↗
+      </a>
+    </div>
+  </div>
+
+  <!-- TAB 6: PACKING LIST -->
+  <div class="tab-content" id="tab-packing">
+    <div class="packing-wrapper">
+      <div class="packing-hero">
+        <div class="progress-container">
+          <div class="progress-header">
+            <span id="p-prog-title">🎒 Packing Progress / 准备进度</span>
+            <span id="p-prog-val">0 / 0 (0%)</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="p-prog-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="packing-grid">
+        <div class="packing-card">
+          <h3><span class="icon">👕</span> <span id="p-c1-title">Clothing & Attire / 衣着用品</span></h3>
+          <div class="checklist-group">
+            <label class="check-item"><input type="checkbox" id="chk_c1"><div class="check-item-text"><span class="item-title" id="p-c1-1-t">Opening & Closing Ceremony Outfit</span><span class="item-desc" id="p-c1-1-d">Camp T-Shirt + Long Pants | 开幕及闭幕服装（营衣 + 长裤）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_c2"><div class="check-item-text"><span class="item-title" id="p-c2-1-t">Daily Clothes (3D2N)</span><span class="item-desc" id="p-c2-1-d">Sufficient changes of clothes. Long pants MANDATORY during activities | 充足替换衣物 （活动期间必须穿长裤）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_c3"><div class="check-item-text"><span class="item-title" id="p-c3-1-t">Semi-Formal Outfit (1 Set)</span><span class="item-desc" id="p-c3-1-d">Collared shirt + long pants/skirt + covered shoes (No tight clothes) | 有领衬衫+长裤/长裙+包鞋（终极回合）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_c4"><div class="check-item-text"><span class="item-title" id="p-c4-1-t">Covered Shoes / Sports Shoes</span><span class="item-desc" id="p-c4-1-d">Closed-toe footwear required | 包鞋／运动鞋</span></div></label>
+          </div>
+        </div>
+        <div class="packing-card">
+          <h3><span class="icon">🛁</span> <span id="p-c2-title">Personal Essentials / 个人用品</span></h3>
+          <div class="checklist-group">
+            <label class="check-item"><input type="checkbox" id="chk_p1"><div class="check-item-text"><span class="item-title" id="p-p1-1-t">Toiletries Kit</span><span class="item-desc" id="p-p1-1-d">Towel, toothbrush, toothpaste, body wash, hair dryer | 洗漱用品（毛巾/牙刷/牙膏/沐浴露/吹风机等）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p2"><div class="check-item-text"><span class="item-title" id="p-p2-1-t">Water Bottle</span><span class="item-desc" id="p-p2-1-d">Reusable bottle for refills | 水壶</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p3"><div class="check-item-text"><span class="item-title" id="p-p3-1-t">Touch 'n Go Card (Locals Only)</span><span class="item-desc" id="p-p3-1-d">Pre-reload funds for self-funded Monorail transit | TNG卡（请提前Top-Up自费搭乘Monorail）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p4"><div class="check-item-text"><span class="item-title" id="p-p4-1-t">Pocket Cash</span><span class="item-desc" id="p-p4-1-d">Small amount of cash (~RM50 for international students) | 少许现金（外国学生需提前兑换马币）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p5"><div class="check-item-text"><span class="item-title" id="p-p5-1-t">Umbrella or Raincoat</span><span class="item-desc" id="p-p5-1-d">Weather protection | 雨伞/雨衣</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_p6"><div class="check-item-text"><span class="item-title" id="p-p6-1-t">Sanitary Products</span><span class="item-desc" id="p-p6-1-d">If required | 卫生棉（若需要）</span></div></label>
+          </div>
+        </div>
+        <div class="packing-card">
+          <h3><span class="icon">📝</span> <span id="p-c3-title">Study & Health / 学习与医药</span></h3>
+          <div class="checklist-group">
+            <label class="check-item"><input type="checkbox" id="chk_s1"><div class="check-item-text"><span class="item-title" id="p-s1-1-t">Notebook & Stationery</span><span class="item-desc" id="p-s1-1-d">Pens, notepad for policy workshops | 笔记本 + 文具（笔等）</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_s2"><div class="check-item-text"><span class="item-title" id="p-s2-1-t">Chargers & Power Banks</span><span class="item-desc" id="p-s2-1-d">Keep your electronics powered | 充电器与随身电源</span></div></label>
+            <label class="check-item"><input type="checkbox" id="chk_m1"><div class="check-item-text"><span class="item-title" id="p-m1-1-t">Personal Medication</span><span class="item-desc" id="p-m1-1-d">Prepare according to personal medical needs | 个人常用药物（请按需要准备）</span></div></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert-banner">
+        <h4 id="p-pro-title">🚫 Prohibited Items / 禁止携带物品</h4>
+        <div class="tag-cloud">
+          <span class="prohibited-tag" id="p-p-1">❌ Alcohol / 酒精饮品</span>
+          <span class="prohibited-tag" id="p-p-2">❌ Cigarettes & Vapes / 香烟与电子烟</span>
+          <span class="prohibited-tag" id="p-p-3">❌ Playing Cards & Gambling Gear / 扑克牌及赌博用品</span>
+          <span class="prohibited-tag" id="p-p-4">❌ Dangerous Items / 危险物品</span>
+          <span class="prohibited-tag" id="p-p-5">❌ Loudspeakers & Audio Gear / 音箱或高音量设备</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 7: CAMP RULES -->
+  <div class="tab-content" id="tab-rules">
+    <div class="rules-wrapper">
+      <div class="rules-spirit-card">
+        <div class="spirit-title" id="r-spirit-title">YOUTH LEADERSHIP SPIRIT / 青年领袖精神</div>
+        <div class="spirit-pillars">
+          <span class="spirit-pillar" id="r-sp-1">学习 · Learning</span>
+          <span class="spirit-pillar" id="r-sp-2">思辨 · Critical Thinking</span>
+          <span class="spirit-pillar" id="r-sp-3">服务 · Service</span>
+          <span class="spirit-pillar" id="r-sp-4">领导 · Leadership</span>
+        </div>
+      </div>
+
+      <div class="alert-banner">
+        <h4 id="r-prohib-title">🚫 Section 6: Zero-Tolerance Rules / 严格禁止事项</h4>
+        <div class="tag-cloud">
+          <span class="prohibited-tag" id="r-pr-1">❌ 赌博行为 Gambling</span>
+          <span class="prohibited-tag" id="r-pr-2">❌ 暴力 / 霸凌 Violence & Bullying</span>
+          <span class="prohibited-tag" id="r-pr-3">❌ 违禁品 Drugs & Dangerous Items</span>
+          <span class="prohibited-tag" id="r-pr-4">❌ 酗酒 Drunkenness</span>
+          <span class="prohibited-tag" id="r-pr-5">❌ 非指定区域吸烟 Smoking</span>
+          <span class="prohibited-tag" id="r-pr-6">❌ 网络霸凌 Cyberbullying</span>
+          <span class="prohibited-tag" id="r-pr-7">❌ 擅自离营 Unauthorized Absence</span>
+        </div>
+      </div>
+
+      <div class="rules-accordion">
+        <div class="rule-card active">
+          <div class="rule-header" onclick="toggleRuleCard(this)">
+            <span id="r-sec1-head">1. Respect & Unity / 尊重与团结</span><span class="rule-arrow">▼</span>
+          </div>
+          <div class="rule-body">
+            <div class="rule-item"><strong id="r-1-1-t">1.1 Mutual Respect</strong><span id="r-1-1-d">Respect every camper, committee member, mentor, and guest.</span></div>
+            <div class="rule-item"><strong id="r-1-2-t">1.2 Team Spirit</strong><span id="r-1-2-d">Actively participate in group activities, support each other.</span></div>
+            <div class="rule-item"><strong id="r-1-3-t">1.3 Youth Leadership Image</strong><span id="r-1-3-d">Demonstrate responsibility, integrity, and discipline.</span></div>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-header" onclick="toggleRuleCard(this)">
+            <span id="r-sec2-head">2. Discipline & Attendance / 活动纪律</span><span class="rule-arrow">▼</span>
+          </div>
+          <div class="rule-body">
+            <div class="rule-item"><strong id="r-2-1-t">2.1 Punctuality</strong><span id="r-2-1-d">Attend all sessions on time. Early departures require prior approval.</span></div>
+            <div class="rule-item"><strong id="r-2-2-t">2.2 Participation</strong><span id="r-2-2-d">Engage fully in lectures, forums, and workshops.</span></div>
+            <div class="rule-item"><strong id="r-2-3-t">2.3 Directives</strong><span id="r-2-3-d">Comply with committee instructions.</span></div>
+            <div class="rule-item"><strong id="r-2-4-t">2.4 Night Curfew (12:00 AM)</strong><span id="r-2-4-d">Return to accommodation before 12:00 AM.</span></div>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-header" onclick="toggleRuleCard(this)">
+            <span id="r-sec3-head">3. Safety Guidelines / 安全守则</span><span class="rule-arrow">▼</span>
+          </div>
+          <div class="rule-body">
+            <div class="rule-item"><strong id="r-3-1-t">3.1 Departure Rules</strong><span id="r-3-1-d">Do not leave the camp premises without explicit permission.</span></div>
+            <div class="rule-item"><strong id="r-3-2-t">3.2 Personal Safety</strong><span id="r-3-2-d">Follow safety protocols during activities.</span></div>
+            <div class="rule-item"><strong id="r-3-3-t">3.3 Buddy System</strong><span id="r-3-3-d">Travel with a partner/group at all times.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pledge-card">
+        <h3 id="r-pledge-title">📝 Camper Pledge / 营员承诺</h3>
+        <div class="pledge-box" id="r-pledge-body">
+          I pledge to participate in "Youth Policy Lab 2026" with an active, open, and responsible mindset. I will abide by all camp rules.
+        </div>
+        <label class="check-item">
+          <input type="checkbox" id="chk_rules_pledge" onchange="togglePledge(this)">
+          <div class="check-item-text">
+            <span class="item-title" id="r-pledge-chk-title">I have read, understood, and agree to abide by all camp rules.</span>
+            <span class="item-desc" id="r-pledge-chk-desc">Clicking this acknowledges your digital pledge.</span>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+
   <!-- SPLASH SCREEN MODE (?mode=splash) -->
   <div id="splash-screen">
     <img src="logo-light.png" alt="YPL Logo" class="splash-logo">
-    <div class="splash-banner" id="splash-live-text">
-      Welcome to Youth Policy Lab 2026
-    </div>
+    <div class="splash-banner" id="splash-live-text">Welcome to Youth Policy Lab 2026</div>
     <div class="qr-container">
       <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://youthpolicylab.pages.dev" alt="App QR">
       <p style="text-align: center; margin-top: 10px; font-weight: 700; color: black;">Scan to open App</p>
@@ -230,32 +741,87 @@
     </div>
   </div>
 
+  <!-- Overlays -->
+  <div id="tooltip"></div>
+  <div id="toast">Copied to clipboard!</div>
+
   <script>
-    // TAB SWITCHER
+    // --- Theme Management ---
+    const themeToggle = document.getElementById('themeToggle');
+    const brandLogo = document.getElementById('brandLogo');
+    const currentTheme = localStorage.getItem('theme');
+    
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-mode'); themeToggle.textContent = '☀️'; brandLogo.src = 'logo-dark.png';
+    } else {
+      themeToggle.textContent = '🌙'; brandLogo.src = 'logo-light.png';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark'); themeToggle.textContent = '☀️'; brandLogo.src = 'logo-dark.png';
+      } else {
+        localStorage.setItem('theme', 'light'); themeToggle.textContent = '🌙'; brandLogo.src = 'logo-light.png';
+      }
+    });
+
+    // --- Countdown Timer ---
+    const EVENT_START = new Date('2026-08-14T09:00:00+08:00');
+    setInterval(() => {
+      const diff = EVENT_START.getTime() - Date.now();
+      if (diff <= 0) return;
+      const pad = n => String(n).padStart(2, '0');
+      document.getElementById('cd-days').textContent = pad(Math.floor(diff / 86400000));
+      document.getElementById('cd-hours').textContent = pad(Math.floor((diff % 86400000) / 3600000));
+      document.getElementById('cd-mins').textContent = pad(Math.floor((diff % 3600000) / 60000));
+      document.getElementById('cd-secs').textContent = pad(Math.floor((diff % 60000) / 1000));
+    }, 1000);
+
+    // --- Tab Switching Logic ---
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.getElementById(`tab-${tabId}`).classList.add('active');
       document.querySelectorAll('.tab-nav button').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      
+      const btn = document.querySelector(`.tab-nav button[onclick="switchTab('${tabId}')"]`);
+      if (btn) btn.classList.add('active');
+
+      const leftTools = document.getElementById('dirToolsHeader');
+      const rightTools = document.getElementById('dirToolsNav');
+      const packingTools = document.getElementById('packingToolsNav');
+      const rulesTools = document.getElementById('rulesToolsNav');
+      
+      if(leftTools) leftTools.classList.add('hidden');
+      if(rightTools) rightTools.classList.add('hidden');
+      if(packingTools) packingTools.classList.add('hidden');
+      if(rulesTools) rulesTools.classList.add('hidden');
+
+      if (tabId === 'directory') {
+        if(leftTools) leftTools.classList.remove('hidden');
+        if(rightTools) rightTools.classList.remove('hidden');
+      } else if (tabId === 'packing') {
+        if(packingTools) packingTools.classList.remove('hidden');
+      } else if (tabId === 'rules') {
+        if(rulesTools) rulesTools.classList.remove('hidden');
+      }
     }
 
-    // STAR RATING LOGIC
-    document.querySelectorAll('.star').forEach(star => {
-      star.addEventListener('click', function() {
-        let value = this.getAttribute('data-value');
-        document.querySelectorAll('.star').forEach(s => {
-          s.classList.toggle('active', s.getAttribute('data-value') <= value);
-        });
-      });
-    });
+    // --- Toast & Tooltip ---
+    function showToast(message, isAlert = false) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.background = isAlert ? 'var(--brand-orange)' : 'var(--brand-green)';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
 
-    // MODE ROUTING (Splash & Admin)
+    // --- Mode Routing (Splash & Admin) ---
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
 
     if (mode === 'splash') {
       document.body.classList.add('mode-splash');
-      // Polling the Cloudflare Backend every 3 seconds for updates
       setInterval(async () => {
         try {
           const res = await fetch('/api/splash-state');
@@ -268,36 +834,248 @@
       document.body.classList.add('mode-admin');
     }
 
-    // ADMIN LOGIC
     function unlockAdmin() {
       const pin = document.getElementById('admin-pin').value;
-      if (pin === '2026') { // Basic client-side check, true security is in the Cloudflare Function
+      if (pin === '2026') {
         document.getElementById('admin-login').style.display = 'none';
         document.getElementById('admin-dashboard').style.display = 'block';
-      } else {
-        alert("Incorrect PIN");
-      }
+      } else { alert("Incorrect PIN"); }
     }
 
     async function updateProjector() {
       const text = document.getElementById('admin-broadcast-text').value;
-      await fetch('/api/splash-state', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: text, pin: document.getElementById('admin-pin').value })
-      });
-      alert('Broadcasted to projector!');
+      try {
+        await fetch('/api/splash-state', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text, pin: document.getElementById('admin-pin').value })
+        });
+        showToast('Broadcasted to projector!');
+      } catch (e) {
+        showToast('API Not Connected Yet. (Text: ' + text + ')', true);
+      }
     }
 
-    async function submitQA() {
+    function submitQA(event) {
       const btn = event.target;
       btn.innerText = "Submitting...";
-      // Will connect to Cloudflare D1 via fetch('/api/qna')
       setTimeout(() => {
         btn.innerText = "Question Submitted! ✅";
         btn.style.background = "var(--brand-green)";
       }, 1000);
     }
+
+    // --- Star Rating ---
+    document.querySelectorAll('.star').forEach(star => {
+      star.addEventListener('click', function() {
+        let value = this.getAttribute('data-value');
+        document.querySelectorAll('.star').forEach(s => {
+          s.classList.toggle('active', s.getAttribute('data-value') <= value);
+        });
+      });
+    });
+
+    // --- ORIGINAL PAPAPARSE & DIRECTORY LOGIC ---
+    const DIR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRMmnBQIEjwVoJhvD9l8LelAodWCfdSg8v3z8dNcBt7PkMiNP5a13Ylw3foUnfQvWdzU2NaXWgGCJWA/pub?gid=546426841&single=true&output=csv';
+    const TIMELINE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGCH-pDLeS0Rc56C_TABl3uCTWyj8DSnEaxFEJi-l0b1C4eJE_ExobLPzpiHuu3-VMDyzxYXh4KUbA/pub?gid=1028971239&single=true&output=csv';
+    let roomData = {};
+
+    function setView(mode) {
+      const viewport = document.getElementById('viewport');
+      const buttons = document.querySelectorAll('.controls .btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      if (mode === '2d') { viewport.classList.add('flat'); buttons[1].classList.add('active'); } 
+      else { viewport.classList.remove('flat'); buttons[0].classList.add('active'); }
+    }
+
+    function loadDirectoryData() {
+      const statusBadge = document.getElementById('sync-status');
+      Papa.parse(DIR_CSV_URL, {
+        download: true, header: false, skipEmptyLines: true,
+        complete: function(results) {
+          roomData = {};
+          results.data.forEach(row => {
+            if (row.length >= 4) {
+              const name = row[0] ? row[0].trim() : '';
+              const gender = row[1] ? row[1].trim() : '';
+              const roomType = row[2] ? row[2].trim() : '';
+              const roomNo = row[3] ? row[3].toString().trim() : '';
+              const remarks = row[4] ? row[4].trim() : '';
+
+              if (/^\d{3}$/.test(roomNo)) {
+                if (!roomData[roomNo]) roomData[roomNo] = { type: roomType, remarks: remarks, occupants: [] };
+                if (name) roomData[roomNo].occupants.push({ name, gender });
+                if (remarks && !roomData[roomNo].remarks) roomData[roomNo].remarks = remarks;
+                if (roomType && !roomData[roomNo].type) roomData[roomNo].type = roomType;
+              }
+            }
+          });
+
+          document.querySelectorAll('.room-block[data-room]').forEach(block => {
+            const roomNo = block.getAttribute('data-room');
+            const data = roomData[roomNo];
+            if (data && data.occupants && data.occupants.length > 0) block.classList.add('occupied');
+            else block.classList.remove('occupied');
+          });
+
+          statusBadge.classList.add('synced');
+          statusBadge.querySelector('span').textContent = `Synced at ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+        },
+        error: function() {
+          statusBadge.classList.remove('synced');
+          statusBadge.querySelector('span').textContent = '⚠️ Offline';
+        }
+      });
+    }
+
+    function loadTimelineData() {
+      Papa.parse(TIMELINE_CSV_URL, {
+        download: true, header: false, skipEmptyLines: true,
+        complete: function(results) { 
+          const container = document.getElementById('timeline-container');
+          let html = '';
+          results.data.forEach(row => {
+            const cleanRow = row.map(cell => cell ? cell.trim() : '');
+            const nonEmptyCells = cleanRow.filter(cell => cell !== '');
+            if (nonEmptyCells.length === 0) return;
+            const rowStr = cleanRow.join(' ').toLowerCase();
+            if (rowStr.includes('time') && (rowStr.includes('activity') || rowStr.includes('event'))) return;
+
+            if (nonEmptyCells.length === 1) {
+              html += `<div class="timeline-date-header">${nonEmptyCells[0]}</div>`;
+            } else {
+              let time = cleanRow[0] || ''; let activity = cleanRow[1] || ''; let venue = cleanRow[2] || ''; let remarks = cleanRow[3] || '';
+              if (!time && !activity && nonEmptyCells.length >= 2) { time = nonEmptyCells[0]; activity = nonEmptyCells[1]; venue = nonEmptyCells[2] || ''; remarks = nonEmptyCells[3] || ''; }
+              if (!activity && !time) return;
+
+              html += `<div class="timeline-item"><div class="timeline-time">${time}</div><div class="timeline-content"><div class="timeline-title">${activity}</div>${venue ? `<div class="timeline-venue">📍 ${venue}</div>` : ''}${remarks ? `<div class="timeline-venue" style="color:var(--brand-blue)">🗣 ${remarks}</div>` : ''}</div></div>`;
+            }
+          });
+          container.innerHTML = html || '<div style="text-align:center; color:var(--text-secondary); font-weight:500;">Timeline data is empty.</div>';
+        }
+      });
+    }
+
+    document.getElementById('manualRefreshBtn').addEventListener('click', function() {
+      this.style.transform = `rotate(${((this.rotation || 0) + 360)}deg)`; this.rotation = (this.rotation || 0) + 360;
+      showToast('Refreshing data...'); loadDirectoryData(); loadTimelineData();
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+    function applySearchAndFilter(query = '', filter = 'all') {
+      const viewport = document.getElementById('viewport');
+      query = query.toLowerCase().trim();
+      const isFiltering = query.length > 0 || filter !== 'all';
+      if (isFiltering) viewport.classList.add('filtered'); else viewport.classList.remove('filtered');
+
+      document.querySelectorAll('.room-block[data-room]').forEach(block => {
+        const roomNo = block.getAttribute('data-room');
+        const data = roomData[roomNo];
+        let match = false;
+
+        if (isFiltering) {
+          let textMatch = true;
+          if (query.length > 0) textMatch = data && data.occupants && data.occupants.some(o => o.name.toLowerCase().includes(query));
+
+          let filterMatch = true;
+          if (filter === 'vacant') filterMatch = !data || !data.occupants || data.occupants.length === 0;
+          else if (filter === 'vip') {
+            const isVipRemark = data && data.remarks && data.remarks.toLowerCase().includes('vip');
+            const isVipOccupant = data && data.occupants && data.occupants.some(o => (o.name && o.name.toLowerCase().includes('vip')) || (o.gender && o.gender.toLowerCase().includes('vip')));
+            filterMatch = isVipRemark || isVipOccupant;
+          } else if (filter === 'boys') filterMatch = data && data.occupants && data.occupants.some(o => { const g = (o.gender || '').toLowerCase(); return g.includes('boy') || g.includes('male') || g.includes('男') || g === 'm'; });
+          else if (filter === 'girls') filterMatch = data && data.occupants && data.occupants.some(o => { const g = (o.gender || '').toLowerCase(); return g.includes('girl') || g.includes('female') || g.includes('女') || g === 'f'; });
+
+          match = textMatch && filterMatch;
+          if (match) block.classList.add('highlight'); else block.classList.remove('highlight');
+        } else { block.classList.remove('highlight'); }
+      });
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      clearSearchBtn.style.display = e.target.value.length > 0 ? 'block' : 'none';
+      const activeBtn = document.querySelector('#dirToolsNav .filter-btn.active');
+      applySearchAndFilter(e.target.value, activeBtn ? activeBtn.getAttribute('data-filter') : 'all');
+    });
+
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = ''; clearSearchBtn.style.display = 'none';
+      const activeBtn = document.querySelector('#dirToolsNav .filter-btn.active');
+      applySearchAndFilter('', activeBtn ? activeBtn.getAttribute('data-filter') : 'all'); searchInput.focus();
+    });
+
+    document.querySelectorAll('#dirToolsNav .filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#dirToolsNav .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active'); applySearchAndFilter(searchInput.value, btn.getAttribute('data-filter'));
+      });
+    });
+
+    const tooltip = document.getElementById('tooltip');
+    document.querySelectorAll('.room-block[data-room]').forEach(block => {
+      block.addEventListener('mousemove', (e) => {
+        if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return; 
+        const roomNo = block.getAttribute('data-room'); const data = roomData[roomNo];
+        if (data) {
+          tooltip.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><strong style="font-size:1.1rem; color:var(--text-primary); font-weight:700;">Room ${roomNo}</strong><span style="font-size:0.7rem; background:var(--surface-secondary); padding:3px 8px; border-radius:6px; color:var(--text-secondary); font-weight:600;">${data.type || 'Room'}</span></div><div style="border-top:1px solid rgba(0,0,0,0.05); padding-top:8px;"><div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Occupants</div>${data.occupants.length > 0 ? data.occupants.map(occ => { const gLower = (occ.gender || '').toLowerCase(); const isBoy = gLower.includes('boy') || gLower.includes('male') || gLower.includes('男') || gLower === 'm'; return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;"><span style="font-weight:600; font-size:0.9rem; color:var(--text-primary);">${occ.name}</span><span style="font-size:0.7rem; color:${isBoy ? 'var(--brand-blue)' : 'var(--brand-orange)'}; font-weight:700;">${occ.gender}</span></div>`}).join('') : '<div style="color:var(--text-secondary); font-size:0.85rem; font-style:italic; font-weight:500;">No occupants assigned</div>'}</div>${data.remarks ? `<div style="margin-top:8px; background:rgba(255, 87, 34, 0.1); color:var(--brand-orange); font-size:0.75rem; font-weight:600; padding:4px 8px; border-radius:6px; display:inline-block; border:1px solid rgba(255, 87, 34, 0.2);">${data.remarks}</div>` : ''}<div class="click-hint">Click or press Enter to copy</div>`;
+        } else {
+          tooltip.innerHTML = `<strong style="font-size:1.1rem; color:var(--text-primary); font-weight:700;">Room ${roomNo}</strong><div style="color:var(--text-secondary); font-size:0.85rem; margin-top:6px; font-weight:500;">Vacant / Unassigned</div><div class="click-hint">Click or press Enter to copy</div>`;
+        }
+        tooltip.style.display = 'block'; tooltip.style.left = (e.clientX + 20) + 'px'; tooltip.style.top = (e.clientY + 20) + 'px';
+      });
+      block.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+      block.addEventListener('click', () => { if (navigator.vibrate) navigator.vibrate(10); triggerCopy(block); });
+    });
+
+    function triggerCopy(block) {
+      if(block.parentElement.parentElement.parentElement.classList.contains('filtered') && !block.classList.contains('highlight')) return;
+      const roomNo = block.getAttribute('data-room'); const data = roomData[roomNo];
+      let textToCopy = `Room ${roomNo}\n`;
+      if (data && data.occupants && data.occupants.length > 0) {
+        textToCopy += `Type: ${data.type || 'Room'}\nOccupants:\n`;
+        data.occupants.forEach(o => { textToCopy += `- ${o.name} (${o.gender})\n`; });
+        if (data.remarks) textToCopy += `Remarks: ${data.remarks}`;
+      } else { textToCopy += `Status: Vacant`; }
+      navigator.clipboard.writeText(textToCopy).then(() => showToast(`Room ${roomNo} details copied!`));
+    }
+
+    // --- PACKING LIST & RULES LOGIC ---
+    function updatePackingProgress() {
+      const checkboxes = document.querySelectorAll('#tab-packing input[type="checkbox"]');
+      const checked = document.querySelectorAll('#tab-packing input[type="checkbox"]:checked');
+      const total = checkboxes.length; const count = checked.length;
+      const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+      document.getElementById('p-prog-val').textContent = `${count} / ${total} (${pct}%)`;
+      document.getElementById('p-prog-fill').style.width = `${pct}%`;
+      const state = {}; checkboxes.forEach(chk => { state[chk.id] = chk.checked; });
+      localStorage.setItem('ypl_packing_checklist', JSON.stringify(state));
+    }
+    
+    const saved = localStorage.getItem('ypl_packing_checklist');
+    if (saved) {
+      try { const state = JSON.parse(saved); Object.keys(state).forEach(id => { const chk = document.getElementById(id); if (chk) chk.checked = state[id]; }); } catch (e) {}
+    }
+    document.querySelectorAll('#tab-packing input[type="checkbox"]').forEach(chk => { chk.addEventListener('change', updatePackingProgress); });
+    updatePackingProgress();
+
+    function resetPackingList() {
+      if (confirm('Reset all checkboxes?')) {
+        document.querySelectorAll('#tab-packing input[type="checkbox"]').forEach(chk => chk.checked = false);
+        updatePackingProgress(); showToast('Checklist reset!');
+      }
+    }
+
+    function toggleRuleCard(headerEl) { headerEl.parentElement.classList.toggle('active'); }
+    function toggleAllRules(expand) { document.querySelectorAll('.rule-card').forEach(card => { if (expand) card.classList.add('active'); else card.classList.remove('active'); }); }
+    function togglePledge(chk) { localStorage.setItem('ypl_rules_pledge_signed', chk.checked ? '1' : '0'); if (chk.checked) showToast('Camp pledge signed digitally!'); }
+    
+    if (localStorage.getItem('ypl_rules_pledge_signed') === '1') { document.getElementById('chk_rules_pledge').checked = true; }
+
+    // Init Data
+    loadDirectoryData(); loadTimelineData();
+    setInterval(() => { loadDirectoryData(); loadTimelineData(); }, 60000);
   </script>
 </body>
 </html>
