@@ -349,7 +349,7 @@
       .rule-body { display: flex !important; }
     }
 
-           /* =========================================
+    /* =========================================
        PREMIUM SPLASH SCREEN BACKDROP (?mode=splash) 
        ========================================= */
     #splash-screen {
@@ -403,6 +403,11 @@
       animation: superFloat 6s ease-in-out infinite; 
     }
     
+    @keyframes superFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-15px) scale(1.02); }
+    }
+
     /* Info Badges */
     .splash-info-row {
       display: flex;
@@ -474,6 +479,7 @@
     /* Stealth Audio Toggle */
     .stealth-audio-btn {
       position: absolute;
+      bottom: 40px; right: 40px;
       background: rgba(255, 255, 255, 0.5);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
@@ -524,7 +530,6 @@
       .splash-footer { bottom: 20px; flex-direction: column; gap: 10px; font-size: 0.8rem; text-align: center; width: 100%; }
       .stealth-audio-btn { width: 38px; height: 38px; }
     }
-
 
     /* ADMIN REMOTE MODE (?mode=admin) */
     #admin-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
@@ -983,7 +988,7 @@
     </div>
   </div>
 
-     <!-- SPLASH SCREEN MODE (?mode=splash) -->
+  <!-- SPLASH SCREEN MODE (?mode=splash) -->
   <div id="splash-screen">
     <!-- Ambient Background Orbs -->
     <div class="splash-orb orb-1"></div>
@@ -1031,36 +1036,7 @@
     <audio id="bg-music" loop preload="auto">
       <source src="background.ogg" type="audio/ogg">
     </audio>
-    <button id="audio-toggle" class="stealth-audio-btn muted" aria-label="Toggle Background Music" style="bottom: 30px; right: 40px;">
-      <span class="icon-muted">🔇</span>
-      <span class="icon-playing">🔊</span>
-    </button>
-  </div>
-
-
-    <!-- Center Cinematic Branding (From PDF Page 1) -->
-    <div class="splash-center-content">
-      <div class="splash-subtitle">青年领袖营</div>
-      <h1 class="splash-title">这YOUNG<span class="highlight">说政事</span></h1>
-      <div class="splash-year">2026</div>
-      
-      <div class="splash-info-row">
-        <div class="splash-badge">🗓️ 2026年8月14日(五) 至16日(日)</div>
-        <div class="splash-badge">📍 Wisma Cosway, Bukit Bintang (8楼)</div>
-      </div>
-    </div>
-
-    <!-- Social Footer (From PDF Page 1) -->
-    <div class="splash-footer">
-      <span>📷 IG: @youthpolicylabpj</span>
-      <span>✉️ Email: youthpolicylabpj@gmail.com</span>
-    </div>
-    
-    <!-- Audio Player & Stealth Toggle -->
-    <audio id="bg-music" loop preload="auto">
-      <source src="background.ogg" type="audio/ogg">
-    </audio>
-    <button id="audio-toggle" class="stealth-audio-btn muted" aria-label="Toggle Background Music" style="bottom: 30px; right: 40px;">
+    <button id="audio-toggle" class="stealth-audio-btn muted" aria-label="Toggle Background Music">
       <span class="icon-muted">🔇</span>
       <span class="icon-playing">🔊</span>
     </button>
