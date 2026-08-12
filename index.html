@@ -1635,38 +1635,110 @@
 
     function loadGroupsData() {
       Papa.parse(GROUPS_CSV_URL, {
-        download: true, header: false, skipEmptyLines: true,
+        download: true, 
+        header: false, // Parse as a 2D array to safely control exactly which columns we read
+        skipEmptyLines: true,
         complete: function(results) { 
           const container = document.getElementById('groups-container');
-          if (results.data.length === 0) {
+          
+          if (results.data.length < 2) {
             container.innerHTML = `<div style="text-align:center; color:var(--text-secondary); font-weight:500;">No data found.</div>`;
             return;
           }
-          let html = '<div style="overflow-x:auto; width:100%; border-radius: 16px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color);"><table style="width:100%; border-collapse: collapse; text-align: left; background: var(--surface-color); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); font-size: 0.9rem;">';
-          results.data.forEach((row, index) => {
-            html += '<tr style="transition: background 0.2s;" onmouseover="this.style.backgroundColor=\'rgba(0,122,255,0.05)\'" onmouseout="this.style.backgroundColor=\'transparent\'">';
-            row.forEach(cell => {
-              if (index === 0) {
-                html += `<th style="background: var(--surface-secondary); padding: 14px 16px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">${cell}</th>`;
-              } else {
-                html += `<td style="padding: 12px 16px; border-top: 1px solid var(--border-color); color: var(--text-primary);">${cell}</td>`;
-              }
-            });
-            html += '</tr>';
+
+          const rawData = results.data;
+          
+          // 1. Identify safe columns dynamically from the header row (Row 0)
+          const headers = rawData[0].map(h => typeof h === 'string' ? h.toLowerCase() : '');
+          
+          let groupColIdx = headers.findIndex(h => h.includes('group'));
+          let nameColIdx = headers.findIndex(h => h.includes('name') || h.includes('participant'));
+          let roleColIdx = headers.findIndex(h => h.includes('role') || h.includes('position') || h.includes('remark') || h.includes('title'));
+
+          // Fallbacks in case the CSV headers are named differently
+          if (groupColIdx === -1) groupColIdx = 0; 
+          if (nameColIdx === -1) nameColIdx = 1;
+          if (roleColIdx === -1) roleColIdx = 2;
+
+          // 2. Group the data strictly isolating Names and Roles
+          const grouped = {};
+          
+          for (let i = 1; i < rawData.length; i++) {
+            const row = rawData[i];
+            
+            const groupName = row[groupColIdx] ? row[groupColIdx].trim() : 'Unassigned';
+            const memberName = row[nameColIdx] ? row[nameColIdx].trim() : '';
+            const memberRole = row[roleColIdx] ? row[roleColIdx].trim().toLowerCase() : 'member';
+
+            // Skip empty rows
+            if (!memberName) continue;
+
+            if (!grouped[groupName]) {
+              grouped[groupName] = { leaders: [], members: [] };
+            }
+
+            // Categorize into Leaders and Members ONLY. All other sensitive data in the row is ignored.
+            if (memberRole.includes('leader') || memberRole.includes('faci') || memberRole.includes('head')) {
+              grouped[groupName].leaders.push(memberName);
+            } else {
+              grouped[groupName].members.push(memberName);
+            }
+          }
+
+          // 3. Render the UI using the glass-card style
+          let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; width: 100%;">';
+          
+          // Sort group names naturally (Group 1, Group 2, etc.)
+          const sortedGroupNames = Object.keys(grouped).sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
+
+          sortedGroupNames.forEach(groupName => {
+            const data = grouped[groupName];
+            
+            html += `
+              <div class="glass-card" style="display: flex; flex-direction: column; gap: 16px; padding: 24px;">
+                <h3 style="color: var(--text-primary); border-bottom: 2px dashed var(--border-color); padding-bottom: 12px; margin: 0; font-size: 1.3rem;">
+                  ${groupName}
+                </h3>
+                
+                <!-- Leaders Section -->
+                <div style="background: rgba(255, 87, 34, 0.05); padding: 14px; border-radius: 12px; border: 1px solid rgba(255, 87, 34, 0.2);">
+                  <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--brand-orange); letter-spacing: 1px; margin-bottom: 8px;">
+                    👑 Group Leaders
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 6px;">
+                    ${data.leaders.length > 0 
+                      ? data.leaders.map(leader => `<div style="font-weight: 700; font-size: 1rem; color: var(--text-primary);">${leader}</div>`).join('')
+                      : '<div style="font-size: 0.85rem; color: var(--brand-orange); font-style: italic;">No leaders assigned</div>'}
+                  </div>
+                </div>
+
+                <!-- Members Section -->
+                <div>
+                  <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 8px;">
+                    👥 Group Members
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 6px;">
+                    ${data.members.length > 0 
+                      ? data.members.map(member => `
+                          <div style="font-size: 0.95rem; color: var(--text-secondary); display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 5px; height: 5px; background: var(--brand-blue); border-radius: 50%;"></div>
+                            ${member}
+                          </div>`).join('')
+                      : '<div style="font-size: 0.85rem; color: var(--text-secondary); font-style: italic;">No members assigned</div>'}
+                  </div>
+                </div>
+              </div>
+            `;
           });
-          html += '</table></div>';
+          
+          html += '</div>';
           container.innerHTML = html;
         },
         error: function() {
-          document.getElementById('groups-loading').innerText = "Failed to load groups data.";
+          document.getElementById('groups-loading').innerText = "Failed to load groups data. Please check your connection.";
         }
       });
     }
-
-    document.getElementById('manualRefreshBtn').addEventListener('click', function() {
-      this.style.transform = `rotate(${((this.rotation || 0) + 360)}deg)`; this.rotation = (this.rotation || 0) + 360;
-      showToast('Refreshing data...'); loadDirectoryData(); loadTimelineData(); loadGroupsData();
-    });
 
     // --- Dynamic Countdown / Live Ticker Logic ---
     setInterval(() => {
