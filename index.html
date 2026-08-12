@@ -1636,59 +1636,70 @@
     function loadGroupsData() {
       Papa.parse(GROUPS_CSV_URL, {
         download: true, 
-        header: false, // Parse as a 2D array to safely control exactly which columns we read
+        header: false, // Parse as raw rows to handle vertical block structures
         skipEmptyLines: true,
         complete: function(results) { 
           const container = document.getElementById('groups-container');
           
-          if (results.data.length < 2) {
+          if (results.data.length === 0) {
             container.innerHTML = `<div style="text-align:center; color:var(--text-secondary); font-weight:500;">No data found.</div>`;
             return;
           }
 
           const rawData = results.data;
-          
-          // 1. Identify safe columns dynamically from the header row (Row 0)
-          const headers = rawData[0].map(h => typeof h === 'string' ? h.toLowerCase() : '');
-          
-          let groupColIdx = headers.findIndex(h => h.includes('group'));
-          let nameColIdx = headers.findIndex(h => h.includes('name') || h.includes('participant'));
-          let roleColIdx = headers.findIndex(h => h.includes('role') || h.includes('position') || h.includes('remark') || h.includes('title'));
-
-          // Fallbacks in case the CSV headers are named differently
-          if (groupColIdx === -1) groupColIdx = 0; 
-          if (nameColIdx === -1) nameColIdx = 1;
-          if (roleColIdx === -1) roleColIdx = 2;
-
-          // 2. Group the data strictly isolating Names and Roles
           const grouped = {};
-          
-          for (let i = 1; i < rawData.length; i++) {
+          let currentGroupName = null;
+          let memberIndex = 0; 
+
+          // 1. Parse the vertical block structure
+          for (let i = 0; i < rawData.length; i++) {
             const row = rawData[i];
+            const col0 = row[0] ? row[0].trim() : '';
+            const col1 = row[1] ? row[1].trim() : '';
             
-            const groupName = row[groupColIdx] ? row[groupColIdx].trim() : 'Unassigned';
-            const memberName = row[nameColIdx] ? row[nameColIdx].trim() : '';
-            const memberRole = row[roleColIdx] ? row[roleColIdx].trim().toLowerCase() : 'member';
+            // Skip completely empty rows
+            if (!col0 && !col1) continue;
 
-            // Skip empty rows
-            if (!memberName) continue;
-
-            if (!grouped[groupName]) {
-              grouped[groupName] = { leaders: [], members: [] };
+            // Detect a Group Header (e.g., "Group 1(6 Pax)")
+            if (col0.toLowerCase().includes('group')) {
+              // Extract just the "Group X" part, removing the "(6 Pax)"
+              currentGroupName = col0.split('(')[0].trim(); 
+              
+              if (!grouped[currentGroupName]) {
+                grouped[currentGroupName] = { leaders: [], members: [] };
+              }
+              // Reset the counter to 0 for the new group
+              memberIndex = 0; 
+              continue;
             }
 
-            // Categorize into Leaders and Members ONLY. All other sensitive data in the row is ignored.
-            if (memberRole.includes('leader') || memberRole.includes('faci') || memberRole.includes('head')) {
-              grouped[groupName].leaders.push(memberName);
-            } else {
-              grouped[groupName].members.push(memberName);
+            // Detect and skip the sub-header row ("名字", "Name")
+            if (col0 === '名字' || col1 === 'Name' || col0.toLowerCase() === 'name') {
+              continue;
+            }
+
+            // If we are currently inside a group block and have a valid name
+            if (currentGroupName && col0) {
+              // Strip out the (正) and (副) tags from the name text to make it clean
+              let cleanName = col0.replace(/[(（](正|副)[)）]/g, '').trim();
+
+              // Strictly allocate by position: 0 = Leader, 1 = Vice Leader, >1 = Members
+              if (memberIndex === 0) {
+                grouped[currentGroupName].leaders.push(cleanName + ' (Leader)');
+              } else if (memberIndex === 1) {
+                grouped[currentGroupName].leaders.push(cleanName + ' (Vice Leader)');
+              } else {
+                grouped[currentGroupName].members.push(cleanName);
+              }
+              
+              memberIndex++;
             }
           }
 
-          // 3. Render the UI using the glass-card style
+          // 2. Render the UI Glass Cards
           let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; width: 100%;">';
           
-          // Sort group names naturally (Group 1, Group 2, etc.)
+          // Sort groups naturally (Group 1, Group 2, ..., Group 10)
           const sortedGroupNames = Object.keys(grouped).sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
 
           sortedGroupNames.forEach(groupName => {
