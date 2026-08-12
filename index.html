@@ -1077,30 +1077,45 @@
 
   <!-- ADMIN REMOTE MODE (?mode=admin) -->
   <div id="admin-screen">
+    <!-- Login Screen -->
     <div class="glass-card" style="width: 100%; max-width: 400px; text-align: center;" id="admin-login">
       <h3>🔒 Committee Access</h3>
       <input type="password" id="admin-pin" class="input-field" placeholder="Enter PIN" style="text-align: center; font-size: 1.5rem; letter-spacing: 5px; margin-top: 20px;">
       <button class="btn-primary" onclick="unlockAdmin()">Unlock Remote</button>
     </div>
-    <div class="glass-card" id="admin-dashboard" style="display: none; width: 100%; max-width: 600px;">
-      <h3>🎛️ Projector Remote Control</h3>
-      <input type="text" id="admin-broadcast-text" class="input-field" placeholder="Type text to display on projector..." style="margin-top: 15px;">
-      <button class="btn-primary" onclick="updateProjector()">Broadcast to Screen</button>
-      <h3 style="margin-top: 30px;">📦 Logistics Check-in</h3>
-      <div style="display: flex; gap: 10px; margin-top: 15px;">
-        <button class="btn-primary" style="background: var(--brand-green)">Scan Meal QR</button>
-        <button class="btn-primary" style="background: var(--brand-orange)">Distribute Swag</button>
-      </div>
-    </div>
-  </div>
 
-  <!-- Mobile Room Details Modal Popup -->
-  <div id="roomModalOverlay" class="room-modal-overlay">
-    <div class="room-modal-card">
-      <div id="roomModalContent"></div>
-      <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button class="btn-primary" id="roomModalCopyBtn" data-i18n="mod_copy">Copy Details</button>
-        <button class="btn-primary" style="background: var(--surface-secondary); color: var(--text-primary); border: 1px solid var(--border-color);" onclick="closeRoomModal()" data-i18n="mod_close">Close</button>
+    <!-- Live Data Dashboard -->
+    <div class="glass-card" id="admin-dashboard" style="display: none; width: 100%; max-width: 1200px; padding: 30px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px;">
+        <h2 style="color: var(--brand-blue); margin: 0;">⚙️ Logistic Master Control</h2>
+        <button class="btn-primary" style="width: auto; background: var(--brand-orange);" onclick="window.location.href='/'">Exit</button>
+      </div>
+
+      <!-- Sheet Selector Tabs -->
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;" id="admin-tabs">
+        <button class="btn" style="background: var(--surface-secondary); border: 1px solid var(--border-color);" onclick="loadSheetData('FINALIZED Participant List!A1:Z500', this)">Participants</button>
+        <button class="btn" style="background: var(--surface-secondary); border: 1px solid var(--border-color);" onclick="loadSheetData('YMCA ROOM LIST!A1:Z500', this)">Room List</button>
+        <button class="btn" style="background: var(--surface-secondary); border: 1px solid var(--border-color);" onclick="loadSheetData('Group List for Logistic Faci!A1:Z500', this)">Group List</button>
+        <button class="btn" style="background: var(--surface-secondary); border: 1px solid var(--border-color);" onclick="loadSheetData('Meal Quotation!A1:Z500', this)">Meal Quotation</button>
+        <button class="btn" style="background: var(--surface-secondary); border: 1px solid var(--border-color);" onclick="loadSheetData('COMMITTEE DETAILS!A1:Z500', this)">Committee</button>
+        <button class="btn" style="background: var(--surface-secondary); border: 1px solid var(--border-color);" onclick="loadSheetData('Emergency Contact!A1:Z500', this)">Emergency</button>
+        <button class="btn" style="background: var(--surface-secondary); border: 1px solid var(--border-color);" onclick="loadSheetData('Early Departure Form!A1:Z500', this)">Early Departure</button>
+        <button class="btn" style="background: var(--surface-secondary); border: 1px solid var(--border-color);" onclick="loadSheetData('To Buy!A1:Z500', this)">To Buy</button>
+        <button class="btn" style="background: var(--surface-secondary); border: 1px solid var(--border-color);" onclick="loadSheetData('Punishment!A1:Z500', this)">Punishment</button>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div id="admin-loading" style="display: none; font-weight: bold; color: var(--text-secondary); text-align: center; margin: 40px 0;">
+        <span style="font-size: 2rem; display: block; margin-bottom: 10px; animation: pulse 1.5s infinite;">🔄</span>
+        Syncing live data from Google Sheets...
+      </div>
+
+      <!-- Dynamic Data Table -->
+      <div style="overflow-x: auto; background: var(--surface-secondary); border: 1px solid var(--border-color); border-radius: 12px; max-height: 60vh;">
+        <table id="admin-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; color: var(--text-primary);">
+          <thead id="table-head" style="background-color: rgba(0,0,0,0.05); font-weight: 700; position: sticky; top: 0; backdrop-filter: blur(10px);"></thead>
+          <tbody id="table-body"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -1356,25 +1371,81 @@
       document.body.classList.add('mode-admin');
     }
 
+    // --- ADMIN DASHBOARD LOGIC ---
+    const WORKER_URL = "https://broken-sun-7418.wyyctz9zt8.workers.dev";
+
     function unlockAdmin() {
       const pin = document.getElementById('admin-pin').value;
-      if (pin === '2026') {
+      if (pin === 'YPL2026') {
         document.getElementById('admin-login').style.display = 'none';
         document.getElementById('admin-dashboard').style.display = 'block';
-      } else { alert("Incorrect PIN"); }
+        // Auto-load the first tab (Participants) when unlocked
+        loadSheetData('FINALIZED Participant List!A1:Z500', document.querySelector('#admin-tabs button'));
+      } else { 
+        alert("Incorrect PIN"); 
+      }
     }
 
-    async function updateProjector() {
-      const text = document.getElementById('admin-broadcast-text').value;
-      try {
-        await fetch('/api/splash-state', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: text, pin: document.getElementById('admin-pin').value })
+    async function loadSheetData(range, btnElement) {
+      // 1. Update button aesthetics (highlight active tab)
+      if (btnElement) {
+        document.querySelectorAll('#admin-tabs button').forEach(b => {
+            b.style.background = 'var(--surface-secondary)';
+            b.style.color = 'var(--text-secondary)';
+            b.style.borderColor = 'var(--border-color)';
         });
-        showToast('Broadcasted to projector!');
-      } catch (e) {
-        showToast('API Not Connected Yet. (Text: ' + text + ')', true);
+        btnElement.style.background = 'var(--brand-blue)';
+        btnElement.style.color = 'white';
+        btnElement.style.borderColor = 'var(--brand-blue)';
+      }
+
+      const loadingEl = document.getElementById('admin-loading');
+      const headEl = document.getElementById('table-head');
+      const bodyEl = document.getElementById('table-body');
+
+      loadingEl.style.display = 'block';
+      headEl.innerHTML = '';
+      bodyEl.innerHTML = '';
+
+      try {
+        // 2. Fetch data from Cloudflare Worker
+        const response = await fetch(`${WORKER_URL}?range=${encodeURIComponent(range)}`);
+        const result = await response.json();
+
+        if (result.error) throw new Error(result.error);
+
+        const rows = result.values;
+        if (!rows || rows.length === 0) {
+          bodyEl.innerHTML = '<tr><td style="padding: 2rem; text-align: center;">No data found in this sheet.</td></tr>';
+          loadingEl.style.display = 'none';
+          return;
+        }
+
+        // 3. Render Headers dynamically
+        const headers = rows[0];
+        let headerHtml = '<tr>';
+        headers.forEach(text => {
+          headerHtml += `<th style="padding: 12px 16px; border-bottom: 2px solid var(--border-color); white-space: nowrap;">${text || ''}</th>`;
+        });
+        headerHtml += '</tr>';
+        headEl.innerHTML = headerHtml;
+
+        // 4. Render Data Rows dynamically
+        let bodyHtml = '';
+        for (let i = 1; i < rows.length; i++) {
+          bodyHtml += '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;">';
+          const row = rows[i];
+          for (let j = 0; j < headers.length; j++) {
+            bodyHtml += `<td style="padding: 12px 16px; white-space: nowrap;">${row[j] || ''}</td>`;
+          }
+          bodyHtml += '</tr>';
+        }
+        bodyEl.innerHTML = bodyHtml;
+
+      } catch (err) {
+        alert("Error loading sheet data: " + err.message);
+      } finally {
+        loadingEl.style.display = 'none';
       }
     }
 
