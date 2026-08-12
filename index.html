@@ -14,6 +14,9 @@
   <!-- PapaParse for direct Google Sheets CSV integration -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   
+  <!-- HTML5 QR Code Scanner -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1091,6 +1094,13 @@
         <button class="btn-primary" style="width: auto; background: var(--brand-orange);" onclick="window.location.href='/'">Exit</button>
       </div>
 
+      <!-- Logistics Scanner Tool -->
+      <div style="margin-bottom: 25px;">
+        <button class="btn-primary" style="background: var(--brand-green); width: 100%; font-size: 1.1rem; padding: 15px; box-shadow: 0 4px 15px rgba(0,200,83,0.3);" onclick="openScanner()">
+          📸 Scan Group Leader QR
+        </button>
+      </div>
+
       <!-- Sheet Selector Tabs -->
       <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;" id="admin-tabs">
         <button class="btn" style="background: var(--surface-secondary); border: 1px solid var(--border-color);" onclick="loadSheetData('FINALIZED Participant List!A1:Z500', this)">Participants</button>
@@ -1120,9 +1130,17 @@
     </div>
   </div>
 
+  <!-- QR Scanner Camera Modal -->
+  <div id="scanner-modal-overlay" class="room-modal-overlay">
+    <div class="room-modal-card" style="display: flex; flex-direction: column; align-items: center; padding: 20px;">
+      <h3 style="margin-bottom: 15px; color: var(--text-primary);">Scan QR Code</h3>
+      <div id="reader" style="width: 100%; max-width: 350px; border-radius: 12px; overflow: hidden; border: 2px solid var(--brand-blue); margin-bottom: 15px;"></div>
+      <button class="btn-primary" style="background: var(--surface-secondary); color: var(--text-primary); border: 1px solid var(--border-color); width: 100%;" onclick="closeScanner()">Cancel</button>
+    </div>
+  </div>
+
   <!-- Overlays -->
   <div id="tooltip"></div>
-  <div id="toast">Copied to clipboard!</div>
 
   <!-- Dictionary & Scripts -->
   <script>
@@ -1404,7 +1422,7 @@
         return; 
       }
 
-      // 2. If it's not in the cache, fetch it from Cloudflare
+      // 2. Fetch from Cloudflare
       loadingEl.style.display = 'block';
       headEl.innerHTML = '';
       bodyEl.innerHTML = '';
@@ -1414,7 +1432,7 @@
         const result = await response.json();
         if (result.error) throw new Error(result.error);
 
-        sheetCache[range] = result; // Save it for next time
+        sheetCache[range] = result; 
         renderTable(result.values, headEl, bodyEl);
       } catch (err) {
         alert("Error loading sheet data: " + err.message);
@@ -1445,11 +1463,34 @@
         bodyEl.innerHTML = bodyHtml;
     }
 
-      } catch (err) {
-        alert("Error loading sheet data: " + err.message);
-      } finally {
-        loadingEl.style.display = 'none';
+    // --- QR SCANNER LOGIC ---
+    let html5QrcodeScanner = null;
+
+    function openScanner() {
+      document.getElementById('scanner-modal-overlay').classList.add('active');
+      html5QrcodeScanner = new Html5Qrcode("reader");
+      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+      
+      html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess)
+      .catch((err) => {
+        alert("Camera error. Please ensure you have granted camera permissions to this website.");
+        closeScanner();
+      });
+    }
+
+    function closeScanner() {
+      if (html5QrcodeScanner) {
+        html5QrcodeScanner.stop().then(() => {
+          html5QrcodeScanner.clear();
+        }).catch(err => console.error("Failed to stop scanner", err));
       }
+      document.getElementById('scanner-modal-overlay').classList.remove('active');
+    }
+
+    function onScanSuccess(decodedText, decodedResult) {
+      closeScanner();
+      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      alert(`Successfully scanned: ${decodedText}`);
     }
 
     function submitQA(event) {
