@@ -1654,34 +1654,37 @@
           // 1. Parse the vertical block structure
           for (let i = 0; i < rawData.length; i++) {
             const row = rawData[i];
-            const col0 = row[0] ? row[0].trim() : '';
-            const col1 = row[1] ? row[1].trim() : '';
+            const col0 = row[0] ? row[0].trim() : ''; // e.g., Numbering, "领队:", "1", "2"
+            const col1 = row[1] ? row[1].trim() : ''; // e.g., Chinese Name
+            const col2 = row[2] ? row[2].trim() : ''; // e.g., English Name
             
-            // Skip completely empty rows
-            if (!col0 && !col1) continue;
-
             // Detect a Group Header (e.g., "Group 1(6 Pax)")
-            if (col0.toLowerCase().includes('group')) {
-              // Extract just the "Group X" part, removing the "(6 Pax)"
-              currentGroupName = col0.split('(')[0].trim(); 
+            if (col0.toLowerCase().includes('group') || col1.toLowerCase().includes('group')) {
+              let groupString = col0.toLowerCase().includes('group') ? col0 : col1;
+              currentGroupName = groupString.split('(')[0].trim(); // Removes "(6 Pax)"
               
               if (!grouped[currentGroupName]) {
                 grouped[currentGroupName] = { leaders: [], members: [] };
               }
-              // Reset the counter to 0 for the new group
-              memberIndex = 0; 
+              memberIndex = 0; // Reset for the new group
               continue;
             }
 
             // Detect and skip the sub-header row ("名字", "Name")
-            if (col0 === '名字' || col1 === 'Name' || col0.toLowerCase() === 'name') {
+            if (col1 === '名字' || col2 === 'Name' || col1.toLowerCase() === 'name') {
               continue;
             }
 
             // If we are currently inside a group block and have a valid name
-            if (currentGroupName && col0) {
+            if (currentGroupName && (col1 || col2)) {
+              // Prioritize the Chinese Name (col1), fallback to English Name (col2)
+              let rawName = col1 || col2;
+              
               // Strip out the (正) and (副) tags from the name text to make it clean
-              let cleanName = col0.replace(/[(（](正|副)[)）]/g, '').trim();
+              let cleanName = rawName.replace(/[(（](正|副)[)）]/g, '').trim();
+
+              // Skip if it's somehow just a stray number
+              if (!cleanName || cleanName.match(/^[0-9]+$/)) continue;
 
               // Strictly allocate by position: 0 = Leader, 1 = Vice Leader, >1 = Members
               if (memberIndex === 0) {
