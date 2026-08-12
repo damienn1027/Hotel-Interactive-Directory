@@ -1373,13 +1373,13 @@
 
     // --- ADMIN DASHBOARD LOGIC ---
     const WORKER_URL = "https://broken-sun-7418.wyyctz9zt8.workers.dev";
+    const sheetCache = {}; // This stores data so we don't have to re-fetch!
 
     function unlockAdmin() {
       const pin = document.getElementById('admin-pin').value;
       if (pin === 'YPL2026') {
         document.getElementById('admin-login').style.display = 'none';
         document.getElementById('admin-dashboard').style.display = 'block';
-        // Auto-load the first tab (Participants) when unlocked
         loadSheetData('FINALIZED Participant List!A1:Z500', document.querySelector('#admin-tabs button'));
       } else { 
         alert("Incorrect PIN"); 
@@ -1387,60 +1387,63 @@
     }
 
     async function loadSheetData(range, btnElement) {
-      // 1. Update button aesthetics (highlight active tab)
       if (btnElement) {
         document.querySelectorAll('#admin-tabs button').forEach(b => {
-            b.style.background = 'var(--surface-secondary)';
-            b.style.color = 'var(--text-secondary)';
-            b.style.borderColor = 'var(--border-color)';
+            b.style.background = 'var(--surface-secondary)'; b.style.color = 'var(--text-secondary)'; b.style.borderColor = 'var(--border-color)';
         });
-        btnElement.style.background = 'var(--brand-blue)';
-        btnElement.style.color = 'white';
-        btnElement.style.borderColor = 'var(--brand-blue)';
+        btnElement.style.background = 'var(--brand-blue)'; btnElement.style.color = 'white'; btnElement.style.borderColor = 'var(--brand-blue)';
       }
 
       const loadingEl = document.getElementById('admin-loading');
       const headEl = document.getElementById('table-head');
       const bodyEl = document.getElementById('table-body');
 
+      // 1. If we already fetched this sheet, load it instantly from cache!
+      if (sheetCache[range]) {
+        renderTable(sheetCache[range].values, headEl, bodyEl);
+        return; 
+      }
+
+      // 2. If it's not in the cache, fetch it from Cloudflare
       loadingEl.style.display = 'block';
       headEl.innerHTML = '';
       bodyEl.innerHTML = '';
 
       try {
-        // 2. Fetch data from Cloudflare Worker
         const response = await fetch(`${WORKER_URL}?range=${encodeURIComponent(range)}`);
         const result = await response.json();
-
         if (result.error) throw new Error(result.error);
 
-        const rows = result.values;
+        sheetCache[range] = result; // Save it for next time
+        renderTable(result.values, headEl, bodyEl);
+      } catch (err) {
+        alert("Error loading sheet data: " + err.message);
+      } finally {
+        loadingEl.style.display = 'none';
+      }
+    }
+
+    // Helper function to draw the table instantly
+    function renderTable(rows, headEl, bodyEl) {
         if (!rows || rows.length === 0) {
           bodyEl.innerHTML = '<tr><td style="padding: 2rem; text-align: center;">No data found in this sheet.</td></tr>';
-          loadingEl.style.display = 'none';
           return;
         }
 
-        // 3. Render Headers dynamically
         const headers = rows[0];
         let headerHtml = '<tr>';
-        headers.forEach(text => {
-          headerHtml += `<th style="padding: 12px 16px; border-bottom: 2px solid var(--border-color); white-space: nowrap;">${text || ''}</th>`;
-        });
+        headers.forEach(text => { headerHtml += `<th style="padding: 12px 16px; border-bottom: 2px solid var(--border-color); white-space: nowrap;">${text || ''}</th>`; });
         headerHtml += '</tr>';
         headEl.innerHTML = headerHtml;
 
-        // 4. Render Data Rows dynamically
         let bodyHtml = '';
         for (let i = 1; i < rows.length; i++) {
           bodyHtml += '<tr style="border-bottom: 1px solid rgba(0,0,0,0.05); transition: background 0.2s;">';
-          const row = rows[i];
-          for (let j = 0; j < headers.length; j++) {
-            bodyHtml += `<td style="padding: 12px 16px; white-space: nowrap;">${row[j] || ''}</td>`;
-          }
+          for (let j = 0; j < headers.length; j++) { bodyHtml += `<td style="padding: 12px 16px; white-space: nowrap;">${rows[i][j] || ''}</td>`; }
           bodyHtml += '</tr>';
         }
         bodyEl.innerHTML = bodyHtml;
+    }
 
       } catch (err) {
         alert("Error loading sheet data: " + err.message);
