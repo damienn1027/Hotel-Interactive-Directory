@@ -1552,10 +1552,11 @@
 
         let d = new Date(dateStr);
         if (isNaN(d.getTime())) { 
-          // Smart fallback: Check the string for specific camp dates
-          if (dateStr.includes('15')) {
+          // Bulletproof fallback: Catch text like "Day 2" or "第三天"
+          const lowerDate = dateStr.toLowerCase();
+          if (lowerDate.includes('15') || lowerDate.includes('day 2') || lowerDate.includes('day2') || lowerDate.includes('第二天')) {
             d = new Date('2026-08-15');
-          } else if (dateStr.includes('16')) {
+          } else if (lowerDate.includes('16') || lowerDate.includes('day 3') || lowerDate.includes('day3') || lowerDate.includes('第三天')) {
             d = new Date('2026-08-16');
           } else {
             d = new Date('2026-08-14'); 
