@@ -223,6 +223,15 @@
     .room-block.occupied .face-top { background: var(--occupied-gradient) !important; color: #ffffff !important; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3) !important; }
     .room-block.occupied .face-front { background: var(--brand-blue) !important; filter: brightness(0.75); }
     
+    .room-block.vacant .face-top {
+      background: rgba(0, 200, 83, 0.15) !important;
+      color: var(--brand-green) !important;
+      border: 1px dashed var(--brand-green);
+    }
+    .room-block.vacant .face-front {
+      background: var(--brand-green) !important;
+      filter: brightness(0.6);
+    }
     .room-block:hover { transform: translateZ(16px) scale(1.05); z-index: 50; }
     .room-block:hover .face-top { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 0 0 2px #ffffff !important; }
     
@@ -917,6 +926,70 @@
       <!-- LEVEL 3 -->
       <div class="floor-container" id="floor-L3">
         <div class="floor-title" data-i18n="dir_l3">Level 3</div>
+        
+        <div class="wing-title">Wing C</div>
+        <div class="room-row">
+          <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 311" data-room="311" data-room-type="twin"><div class="face-top">311</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 309" data-room="309" data-room-type="twin"><div class="face-top">309</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 307" data-room="307" data-room-type="twin"><div class="face-top">307</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 305" data-room="305" data-room-type="twin"><div class="face-top">305</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 303" data-room="303" data-room-type="twin"><div class="face-top">303</div><div class="face-front"></div></div>
+          <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
+        </div>
+
+        <div class="wing-title">Wing D</div>
+        <div class="room-row">
+          <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 329" data-room="329" data-room-type="twin"><div class="face-top">329</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 327" data-room="327" data-room-type="twin"><div class="face-top">327</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 323" data-room="323" data-room-type="twin"><div class="face-top">323</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 321" data-room="321" data-room-type="twin"><div class="face-top">321</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 319" data-room="319" data-room-type="twin"><div class="face-top">319</div><div class="face-front"></div></div>
+          <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
+        </div>
+      </div>
+
+      <!-- LEVEL 2 -->
+      <div class="floor-container" id="floor-L2">
+        <div class="floor-title" data-i18n="dir_l2">Level 2</div>
+        
+        <div class="wing-title">Wing A</div>
+        <div class="room-row">
+          <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 212" data-room="212" data-room-type="double"><div class="face-top">212</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 211" data-room="211" data-room-type="twin"><div class="face-top">211</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 210" data-room="210" data-room-type="double"><div class="face-top">210</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 209" data-room="209" data-room-type="twin"><div class="face-top">209</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 207" data-room="207" data-room-type="twin"><div class="face-top">207</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 206" data-room="206" data-room-type="double"><div class="face-top">206</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 205" data-room="205" data-room-type="twin"><div class="face-top">205</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 203" data-room="203" data-room-type="twin"><div class="face-top">203</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 202" data-room="202" data-room-type="double"><div class="face-top">202</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 201" data-room="201" data-room-type="twin"><div class="face-top">201</div><div class="face-front"></div></div>
+          <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
+        </div>
+
+        <div class="wing-title">Wing B</div>
+        <div class="room-row">
+          <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 229" data-room="229" data-room-type="twin"><div class="face-top">229</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 227" data-room="227" data-room-type="twin"><div class="face-top">227</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 225" data-room="225" data-room-type="twin"><div class="face-top">225</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 223" data-room="223" data-room-type="twin"><div class="face-top">223</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 221" data-room="221" data-room-type="twin"><div class="face-top">221</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 217" data-room="217" data-room-type="double"><div class="face-top">217</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 216" data-room="216" data-room-type="double"><div class="face-top">216</div><div class="face-front"></div></div>
+          <div class="room-block" tabindex="0" role="button" aria-label="Room 215" data-room="215" data-room-type="double"><div class="face-top">215</div><div class="face-front"></div></div>
+          <div class="room-block" data-room-type="corridor" style="min-width:50px;"><div class="face-top">LIFT</div><div class="face-front"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+      <!-- LEVEL 3 -->
+      <div class="floor-container" id="floor-L3">
+        <div class="floor-title" data-i18n="dir_l3">Level 3</div>
         <div class="wing-title">Wing C</div>
         <div class="room-row">
           <div class="room-block" data-room-type="corridor" style="min-width:40px;"><div class="face-top">EMG</div><div class="face-front"></div></div>
@@ -1596,8 +1669,17 @@
           document.querySelectorAll('.room-block[data-room]').forEach(block => {
             const roomNo = block.getAttribute('data-room');
             const data = roomData[roomNo];
-            if (data && data.occupants && data.occupants.length > 0) block.classList.add('occupied');
-            else block.classList.remove('occupied');
+            
+            // If the room has occupants, color it as Occupied (Blue/Gradient)
+            if (data && data.occupants && data.occupants.length > 0) {
+              block.classList.add('occupied');
+              block.classList.remove('vacant');
+            } 
+            // If the room is empty, color it as Vacant (Green)
+            else {
+              block.classList.remove('occupied');
+              block.classList.add('vacant');
+            }
           });
 
           lastSyncedTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
