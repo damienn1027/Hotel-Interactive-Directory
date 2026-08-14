@@ -1551,7 +1551,17 @@
         if (!ampm && hours >= 1 && hours <= 7) hours += 12; 
 
         let d = new Date(dateStr);
-        if (isNaN(d.getTime())) { d = new Date('2026-08-14'); }
+        if (isNaN(d.getTime())) { 
+          // Smart fallback: Check the string for specific camp dates
+          if (dateStr.includes('15')) {
+            d = new Date('2026-08-15');
+          } else if (dateStr.includes('16')) {
+            d = new Date('2026-08-16');
+          } else {
+            d = new Date('2026-08-14'); 
+          }
+        }
+        
         d.setHours(hours, mins, 0, 0);
         return d;
       };
